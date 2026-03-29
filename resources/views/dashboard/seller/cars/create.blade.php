@@ -1,0 +1,200 @@
+@extends($layout)
+@section('title', 'New Listing')
+@section('page-title', 'New Listing')
+
+@section('content')
+
+    <a href="{{ route($prefix . '.cars.index') }}"
+        class="inline-flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-700 transition-colors mb-6">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Listings
+    </a>
+
+    <form method="POST" action="{{ route($prefix . '.cars.store') }}" enctype="multipart/form-data"
+          onsubmit="this.querySelector('[type=submit]').disabled=true; this.querySelector('[type=submit]').textContent='Publishing…'">
+        @csrf
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {{-- Left: Main details --}}
+            <div class="lg:col-span-2 space-y-5">
+
+                {{-- Basic info --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Vehicle Details</p>
+                    <div class="grid grid-cols-2 gap-4">
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brand <span class="text-red-400">*</span></label>
+                            <input type="text" name="brand" value="{{ old('brand') }}" placeholder="e.g. BYD, Tesla"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('brand')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Model <span class="text-red-400">*</span></label>
+                            <input type="text" name="model" value="{{ old('model') }}" placeholder="e.g. Atto 3, Model 3"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('model')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Year <span class="text-red-400">*</span></label>
+                            <input type="number" name="year" value="{{ old('year') }}" placeholder="e.g. 2023"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('year')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Variant</label>
+                            <input type="text" name="variant" value="{{ old('variant') }}" placeholder="e.g. Extended Range"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('variant')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Drivetrain <span class="text-red-400">*</span></label>
+                            <select name="drivetrain"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                                <option value="">Select drivetrain</option>
+                                @foreach(['ev' => 'Electric (EV)', 'hybrid' => 'Hybrid', 'petrol' => 'Petrol', 'diesel' => 'Diesel'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('drivetrain') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('drivetrain')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Condition <span class="text-red-400">*</span></label>
+                            <select name="condition"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                                <option value="">Select condition</option>
+                                @foreach(['new' => 'New', 'used' => 'Used', 'certified' => 'Certified Pre-Owned'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('condition') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('condition')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Specs --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Specifications</p>
+                    <div class="grid grid-cols-2 gap-4">
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mileage (km) <span class="text-red-400">*</span></label>
+                            <input type="number" name="mileage" value="{{ old('mileage', 0) }}" min="0"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('mileage')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Color</label>
+                            <input type="text" name="color" value="{{ old('color') }}" placeholder="e.g. Pearl White"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('color')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">EV Range (km)</label>
+                            <input type="number" name="range_km" value="{{ old('range_km') }}" placeholder="e.g. 480"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('range_km')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Battery (kWh)</label>
+                            <input type="number" name="battery_kwh" value="{{ old('battery_kwh') }}" placeholder="e.g. 60" step="any" min="0"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('battery_kwh')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Description --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Description</p>
+                    <textarea name="description" rows="4" placeholder="Describe the vehicle condition, history, features..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all resize-none">{{ old('description') }}</textarea>
+                    @error('description')<p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- Images --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Photos</p>
+                    <p class="text-xs text-slate-400 font-medium mb-4">Upload up to 8 photos. First image becomes the cover. JPG, PNG or WebP, max 3MB each.</p>
+                    <input type="file" name="images[]" multiple accept="image/*"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-600 focus:outline-none focus:border-[#16a34a] transition-all file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-[#16a34a] file:transition-all file:uppercase">
+                    @error('images.*')<p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>@enderror
+                </div>
+
+            </div>
+
+            {{-- Right: Price, stock, location --}}
+            <div class="space-y-5">
+
+                {{-- Pricing --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Pricing</p>
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Price (NRs) <span class="text-red-400">*</span></label>
+                            <input type="number" name="price" value="{{ old('price') }}" placeholder="e.g. 5500000"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('price')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                        </div>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="price_negotiable" value="1"
+                                class="w-4 h-4 rounded border-slate-300 text-[#16a34a] focus:ring-[#4ade80]"
+                                {{ old('price_negotiable') ? 'checked' : '' }}>
+                            <span class="text-sm font-bold text-slate-600">Price is negotiable</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Stock --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Stock</p>
+                    <p class="text-xs text-slate-400 font-medium mb-4">How many units of this vehicle do you have available to sell?</p>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quantity <span class="text-red-400">*</span></label>
+                        <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 1) }}" min="1" max="1000"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                        @error('stock_quantity')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                    </div>
+                    <!-- <div class="mt-3 p-3 bg-slate-50 rounded-xl">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Examples</p>
+                        <p class="text-xs text-slate-500 font-medium">Private seller with 1 car → <span class="font-black text-slate-700">1</span></p>
+                        <p class="text-xs text-slate-500 font-medium mt-1">Dealership with 5 units → <span class="font-black text-slate-700">5</span></p>
+                    </div> -->
+                </div>
+
+                {{-- Location --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Location</p>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">City <span class="text-red-400">*</span></label>
+                        <input type="text" name="location" value="{{ old('location') }}" placeholder="e.g. Kathmandu"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                        @error('location')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+
+                {{-- Submit --}}
+                <button type="submit"
+                    class="w-full flex items-center justify-center gap-3 bg-slate-900 text-white py-4 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-900">
+                    Publish Listing →
+                </button>
+                <p class="text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                    Your listing goes live immediately after publishing.
+                </p>
+
+            </div>
+        </div>
+    </form>
+
+@endsection

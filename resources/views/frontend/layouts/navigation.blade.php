@@ -1,0 +1,294 @@
+<header class="fixed top-0 left-0 w-full flex justify-center pt-4 md:pt-6 z-50">
+    <nav
+        class="w-[92%] max-w-7xl bg-white/80 backdrop-blur-xl border border-white/40 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] px-4 md:px-6 py-3 flex items-center justify-between transition-all duration-300">
+
+        {{-- Left: main nav links --}}
+        <div class="hidden lg:flex items-center">
+            <div class="flex space-x-1 text-[14px] font-bold text-slate-800">
+                <a href="{{ route('marketplace') }}"
+                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('marketplace') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    Marketplace
+                </a>
+                <a href="{{ route('news') }}"
+                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('news') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    News
+                </a>
+                <a href="{{ route('loan_calculator') }}"
+                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('loan_calculator') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    Loan Calculator
+                </a>
+                <a href="{{ route('compare_cars') }}"
+                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('compare_cars') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    Compare Cars
+                </a>
+            </div>
+        </div>
+
+        {{-- Centre: logo --}}
+        <div class="flex items-center">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
+                <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-[#16a34a] transition-all duration-500 shadow-lg group-hover:rotate-[360deg]">
+                    <span class="text-white font-bold text-sm italic">BC</span>
+                </div>
+                <span class="text-lg md:text-xl font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
+            </a>
+        </div>
+
+        {{-- Right: secondary nav + auth --}}
+        <div class="flex items-center space-x-2 md:space-x-4">
+            <div class="hidden lg:flex items-center space-x-2">
+                <a href="{{ route('map_location') }}"
+                    class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('map_location') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Map Search</a>
+                <a href="{{ route('contact') }}"
+                    class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('contact') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Contact</a>
+
+                <div class="h-6 w-[1px] bg-slate-200 mx-2"></div>
+
+                @auth
+                    @php
+                        $user = auth()->user();
+                        if ($user->hasRole('buyer'))         $dashRoute = route('buyer.dashboard');
+                        elseif ($user->hasRole('seller'))    $dashRoute = route('seller.dashboard');
+                        elseif ($user->hasRole('business'))  $dashRoute = route('business.dashboard');
+                        else                                 $dashRoute = route('dashboard');
+                        $roleLabel = $user->hasRole('buyer') ? 'Buyer'
+                                   : ($user->hasRole('seller') ? 'Seller'
+                                   : ($user->hasRole('business') ? 'Business' : 'User'));
+                    @endphp
+
+                    <!-- {{-- Dashboard quick-link --}}
+                    <a href="{{ $dashRoute }}"
+                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold text-green-700 bg-green-50 hover:bg-green-100 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a> -->
+
+                    {{-- Avatar + dropdown --}}
+                    <div class="relative" id="userMenuWrapper">
+                        <button onclick="toggleUserMenu()"
+                            class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-all group">
+                            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-[11px] font-black uppercase tracking-wide shrink-0">
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                            </div>
+                            <div class="text-left leading-tight">
+                                <p class="text-[13px] font-bold text-slate-900 leading-none">{{ explode(' ', $user->name)[0] }}</p>
+                                <p class="text-[10px] font-bold text-green-600 uppercase tracking-wide leading-none mt-0.5">{{ $roleLabel }}</p>
+                            </div>
+                            <svg id="userChevron" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        {{-- Dropdown panel --}}
+                        <div id="userDropdown"
+                            class="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] border border-slate-100 py-2 invisible opacity-0 scale-95 transition-all duration-200 origin-top-right z-50">
+
+                            <div class="px-4 py-3 border-b border-slate-100">
+                                <p class="text-[13px] font-bold text-slate-900 truncate">{{ $user->name }}</p>
+                                <p class="text-[11px] text-slate-400 truncate">{{ $user->email }}</p>
+                            </div>
+
+                            <a href="{{ $dashRoute }}"
+                                class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                                My Dashboard
+                            </a>
+
+                            <a href="{{ route('profile.edit') }}"
+                                class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Profile Settings
+                            </a>
+
+                            <div class="border-t border-slate-100 my-1"></div>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-red-600 hover:bg-red-50 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                @else
+                    <a href="{{ route('login') }}" class="text-[14px] font-bold text-slate-900 px-3 hover:text-green-600 transition-colors">Login</a>
+                @endauth
+            </div>
+
+            @guest
+                <a href="{{ route('register') }}"
+                    class="hidden sm:inline-flex items-center justify-center bg-[#4ade80] text-black px-5 py-2.5 rounded-xl text-[13px] font-black shadow-lg shadow-green-400/20 hover:bg-[#22c55e] transition-all active:scale-95">
+                    Sign Up
+                </a>
+            @endguest
+
+            <button onclick="toggleMobileMenu()"
+                class="lg:hidden w-10 h-10 flex items-center justify-center bg-slate-100 rounded-xl text-slate-900">
+                <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 transition-transform"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    {{-- Mobile Menu --}}
+    <div id="mobileMenu" class="fixed inset-0 z-[-1] invisible opacity-0 transition-all duration-300">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="toggleMobileMenu()"></div>
+
+        <div class="absolute top-24 left-1/2 -translate-x-1/2 w-[92%] bg-white rounded-[2rem] p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 origin-top"
+            id="menuCard">
+            <div class="flex flex-col space-y-2">
+
+                @auth
+                    @php
+                        $user = auth()->user();
+                        if ($user->hasRole('buyer'))         $dashRoute = route('buyer.dashboard');
+                        elseif ($user->hasRole('seller'))    $dashRoute = route('seller.dashboard');
+                        elseif ($user->hasRole('business'))  $dashRoute = route('business.dashboard');
+                        else                                 $dashRoute = route('dashboard');
+                        $roleLabel = $user->hasRole('buyer') ? 'Buyer'
+                                   : ($user->hasRole('seller') ? 'Seller'
+                                   : ($user->hasRole('business') ? 'Business' : 'User'));
+                    @endphp
+                    <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[12px] font-black uppercase shrink-0">
+                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        </div>
+                        <div>
+                            <p class="text-[14px] font-bold text-slate-900 leading-tight">{{ $user->name }}</p>
+                            <p class="text-[11px] font-bold text-green-600 uppercase tracking-wide">{{ $roleLabel }}</p>
+                        </div>
+                    </div>
+
+                    <a href="{{ $dashRoute }}"
+                        class="flex items-center justify-between p-4 rounded-2xl bg-green-50 text-green-700 font-bold text-sm">
+                        <span>My Dashboard</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                @endauth
+
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-4 mt-2">Explore BijuliCar</p>
+
+                <a href="{{ route('marketplace') }}"
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('marketplace') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                    <span class="font-bold">Marketplace</span>
+                    <span class="text-lg">⚡</span>
+                </a>
+
+                <a href="{{ route('loan_calculator') }}"
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('loan_calculator') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                    <span class="font-bold">Loan Calculator</span>
+                    <span class="text-lg">💳</span>
+                </a>
+
+                <a href="{{ route('map_location') }}"
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('map_location') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                    <span class="font-bold">Map Search</span>
+                    <span class="text-lg">📍</span>
+                </a>
+
+                <a href="{{ route('news') }}"
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('news') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                    <span class="font-bold">News & Updates</span>
+                    <span class="text-lg">📰</span>
+                </a>
+
+                <div class="h-px bg-slate-100 my-2"></div>
+
+                @auth
+                    <a href="{{ route('profile.edit') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 text-slate-700 font-bold text-sm">
+                        <span>Profile Settings</span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="w-full flex items-center justify-between p-4 rounded-2xl bg-red-50 text-red-600 font-bold text-sm">
+                            <span>Sign Out</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </form>
+                @else
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <a href="{{ route('login') }}"
+                            class="flex items-center justify-center py-4 rounded-2xl bg-slate-100 text-slate-900 font-bold text-sm">Login</a>
+                        <a href="{{ route('register') }}"
+                            class="flex items-center justify-center py-4 rounded-2xl bg-[#4ade80] text-black font-black text-sm shadow-lg shadow-green-400/20">Sign Up</a>
+                    </div>
+                @endauth
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        const card = document.getElementById('menuCard');
+        const icon = document.getElementById('menuIcon');
+
+        if (menu.classList.contains('invisible')) {
+            menu.classList.remove('invisible', 'opacity-0');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+        } else {
+            menu.classList.add('opacity-0');
+            card.classList.add('scale-95');
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            setTimeout(() => menu.classList.add('invisible'), 300);
+        }
+    }
+
+    function toggleUserMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        const chevron  = document.getElementById('userChevron');
+        if (!dropdown) return;
+        const isOpen = !dropdown.classList.contains('invisible');
+        if (isOpen) {
+            dropdown.classList.add('invisible', 'opacity-0', 'scale-95');
+            chevron.style.transform = '';
+        } else {
+            dropdown.classList.remove('invisible', 'opacity-0', 'scale-95');
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        const wrapper = document.getElementById('userMenuWrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            const dropdown = document.getElementById('userDropdown');
+            const chevron  = document.getElementById('userChevron');
+            if (dropdown && !dropdown.classList.contains('invisible')) {
+                dropdown.classList.add('invisible', 'opacity-0', 'scale-95');
+                if (chevron) chevron.style.transform = '';
+            }
+        }
+    });
+</script>

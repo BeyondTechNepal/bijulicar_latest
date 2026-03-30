@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- News Header --}}
-    <section class="relative pt-32 pb-16 lg:pt-48 lg:pb-24 overflow-hidden bg-[#0a0f1e] text-white">
+    <section class="relative pt-20 pb-10 lg:pt-32 lg:pb-16 overflow-hidden bg-[#0a0f1e] text-white">
         <div class="absolute inset-0 z-0">
             {{-- <img src="{{ asset('images/news_header.jpg') }}"
                 class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background"> --}}
@@ -25,12 +25,12 @@
                             Intelligence Hub</span>
                     </div>
 
-                    <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.8] mb-8">
+                    <h1 class="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.8] mb-6">
                         Auto<span class="text-slate-400 block lg:inline lg:ml-4">Intel</span>
                     </h1>
 
                     <p
-                        class="text-slate-400 text-sm lg:text-lg font-medium max-w-xl leading-relaxed border-l-2 border-white/10 pl-6">
+                        class="text-slate-400 text-sm lg:text-base font-medium max-w-xl leading-relaxed border-l-2 border-white/10 pl-6">
                         Stay ahead of the curve with expert analysis on <span class="text-white">EV breakthroughs</span>,
                         hybrid efficiency, and the evolving landscape of traditional precision engineering.
                     </p>
@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="mt-16 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-10">
+            <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6">
                 <button
                     class="px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-[#4ade80]/20 hover:scale-105 transition-transform">
                     Discover
@@ -71,7 +71,15 @@
                 </button>
             </div>
         </div>
+        <div
+            class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
+            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Scroll</span>
+            <div class="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center p-1">
+                <div class="w-1 h-2 bg-[#4ade80] rounded-full"></div>
+            </div>
+        </div>
     </section>
+
     <div class="space-y-32 pb-24">
         @foreach ($articles as $article)
             <section class="news-article">

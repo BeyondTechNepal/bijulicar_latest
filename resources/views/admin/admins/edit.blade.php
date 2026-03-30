@@ -103,6 +103,16 @@
                                     <p class="text-[10px] text-slate-400 mt-1 font-medium">Full system ownership. Destructive permission rights.</p>
                                 </div>
                             </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="role" value="newsadmin" class="sr-only peer" {{ old('role', $currentRole) === 'newsadmin' ? 'checked' : '' }}>
+                                <div class="border-2 border-slate-100 rounded-2xl p-5 transition-all group-hover:bg-slate-50 peer-checked:border-rose-500 peer-checked:bg-rose-50/50">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-black uppercase tracking-widest text-rose-600">News Admin</span>
+                                        <div class="w-3 h-3 rounded-full border-2 border-slate-300 peer-checked:border-rose-500"></div>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1 font-medium">Manage news content and publications.</p>
+                                </div>
+                            </label>
                         </div>
                     @endif
                 </div>

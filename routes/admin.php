@@ -59,6 +59,18 @@ Route::prefix('admin')
                 // home banner
                 Route::resource('home_banner', \App\Http\Controllers\Admin\HomeBannerController::class);
 
+                // Admin Roles CRUD
+                Route::get('/admin-roles', [\App\Http\Controllers\Admin\AdminRoleController::class, 'index'])->name('admin_roles.index');
+                Route::get('/admin-roles/create', [\App\Http\Controllers\Admin\AdminRoleController::class, 'create'])->name('admin_roles.create');
+                Route::post('/admin-roles', [\App\Http\Controllers\Admin\AdminRoleController::class, 'store'])->name('admin_roles.store');
+                Route::get('/admin-roles/{role}/edit', [\App\Http\Controllers\Admin\AdminRoleController::class, 'edit'])->name('admin_roles.edit');
+                Route::put('/admin-roles/{role}', [\App\Http\Controllers\Admin\AdminRoleController::class, 'update'])->name('admin_roles.update');
+
+                // Update permissions for a role
+                Route::post('/admin-roles/{role}/permissions', [\App\Http\Controllers\Admin\AdminRoleController::class, 'updatePermissions'])->name('admin_roles.permissions.update');
+
+                // Delete role
+                Route::delete('/admin-roles/{role}', [\App\Http\Controllers\Admin\AdminRoleController::class, 'destroy'])->name('admin_roles.destroy');
             });
 
             // 4. Staff Management (Superadmin ONLY)

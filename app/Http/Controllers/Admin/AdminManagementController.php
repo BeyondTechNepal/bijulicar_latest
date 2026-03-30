@@ -28,7 +28,7 @@ class AdminManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:admins,email'],
             'password' => ['required', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'superadmin'])],
+            'role' => ['required', Rule::in(['admin', 'superadmin', 'newsadmin'])],
         ]);
 
         $admin = Admin::create([
@@ -36,6 +36,7 @@ class AdminManagementController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+        
         $admin->assignRole($request->role);
 
         return redirect()
@@ -57,7 +58,7 @@ class AdminManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:admins,email,' . $admin->id],
             'password' => ['nullable', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'superadmin'])],
+            'role' => ['required', Rule::in(['admin', 'superadmin', 'newsadmin'])],
         ]);
 
         $data = ['name' => $request->name, 'email' => $request->email];

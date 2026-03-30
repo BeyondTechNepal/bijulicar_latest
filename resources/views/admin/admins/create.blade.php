@@ -62,6 +62,15 @@
                                 <div class="text-xs text-gray-500 mt-0.5">Full access</div>
                             </div>
                         </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="role" value="newsadmin" class="sr-only peer"
+                                {{ old('role') === 'newsadmin' ? 'checked' : '' }}>
+                            <div
+                                class="border-2 border-gray-200 rounded-xl p-4 text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+                                <div class="text-sm font-semibold">News Admin</div>
+                                <div class="text-xs text-gray-500 mt-0.5">Manage news content</div>
+                            </div>
+                        </label>
                     </div>
                     @error('role')
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>

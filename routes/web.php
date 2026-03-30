@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // ── Public frontend routes ─────────────────────────────────────────────
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])->name('marketplace');
+Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::class, 'search'])->name('marketplace.search');
 // Route::get('/news', fn() => view('frontend.pages.news'))->name('news');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 // Route::get('/map_location', fn() => view('frontend.pages.map_location'))->name('map_location');

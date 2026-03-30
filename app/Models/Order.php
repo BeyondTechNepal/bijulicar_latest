@@ -14,6 +14,9 @@ class Order extends Model
         'status',
         'total_price',
         'notes',
+        'buyer_name',
+        'buyer_phone',
+        'buyer_email',
         'ordered_at',
     ];
 

@@ -61,16 +61,57 @@
 
             {{-- Buyer info --}}
             <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Buyer</p>
-                <div class="flex items-center gap-4">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Buyer Contact</p>
+                <div class="flex items-center gap-4 mb-4">
                     <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center font-black text-slate-500 text-lg uppercase shrink-0">
-                        {{ substr($order->buyer->name, 0, 1) }}
+                        {{ substr($order->buyer_name ?? $order->buyer->name, 0, 1) }}
                     </div>
                     <div>
-                        <p class="text-sm font-black text-slate-900">{{ $order->buyer->name }}</p>
-                        <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ $order->buyer->email }}</p>
+                        <p class="text-sm font-black text-slate-900">{{ $order->buyer_name ?? $order->buyer->name }}</p>
+                        <p class="text-[11px] text-slate-400 font-medium mt-0.5">Registered: {{ $order->buyer->name }}</p>
                     </div>
                 </div>
+
+                <div class="space-y-2.5 pt-4 border-t border-slate-100">
+                    {{-- Phone --}}
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</p>
+                            @if($order->buyer_phone)
+                                <a href="tel:{{ $order->buyer_phone }}" class="text-sm font-black text-slate-900 hover:text-green-600 transition-colors">
+                                    {{ $order->buyer_phone }}
+                                </a>
+                            @else
+                                <p class="text-sm text-slate-400 font-medium italic">Not provided</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</p>
+                            @if($order->buyer_email)
+                                <a href="mailto:{{ $order->buyer_email }}" class="text-sm font-black text-slate-900 hover:text-blue-600 transition-colors truncate block">
+                                    {{ $order->buyer_email }}
+                                </a>
+                            @else
+                                <p class="text-sm text-slate-400 font-medium italic">Not provided</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 @if($order->notes)
                 <div class="mt-4 pt-4 border-t border-slate-100">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Buyer's Note</p>

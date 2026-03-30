@@ -17,8 +17,8 @@
         {{-- Table header --}}
         <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 bg-slate-50">
             <div class="col-span-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Vehicle</div>
-            <div class="col-span-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer</div>
-            <div class="col-span-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</div>
+            <div class="col-span-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer</div>
+            <div class="col-span-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</div>
             <div class="col-span-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</div>
             <div class="col-span-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</div>
         </div>
@@ -42,13 +42,16 @@
                 </div>
             </div>
 
-            {{-- Buyer --}}
-            <div class="col-span-2">
-                <p class="text-sm font-bold text-slate-700">{{ $order->buyer->name }}</p>
+            {{-- Buyer name + phone --}}
+            <div class="col-span-3">
+                <p class="text-sm font-bold text-slate-700">{{ $order->buyer_name ?? $order->buyer->name }}</p>
+                @if($order->buyer_phone)
+                    <p class="text-[11px] text-green-600 font-bold mt-0.5">📞 {{ $order->buyer_phone }}</p>
+                @endif
             </div>
 
             {{-- Price --}}
-            <div class="col-span-2">
+            <div class="col-span-1">
                 <p class="text-sm font-black text-slate-800">{{ $order->car->formattedPrice() }}</p>
             </div>
 

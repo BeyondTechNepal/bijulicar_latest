@@ -289,19 +289,70 @@
                                         View My Orders
                                     </a>
                                 @elseif ($car->inStock())
-                                    <form method="POST" action="{{ route('buyer.orders.store') }}">
+                                    <form method="POST" action="{{ route('buyer.orders.store') }}" id="orderForm">
                                         @csrf
                                         <input type="hidden" name="car_id" value="{{ $car->id }}">
-                                        <div class="mb-3">
-                                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Note to Seller (optional)</label>
-                                            <textarea name="notes" rows="3" placeholder="Any questions or requirements..."
-                                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] resize-none font-medium"></textarea>
+
+                                        {{-- Contact details section --}}
+                                        <div class="mb-3 pb-3 border-b border-slate-100">
+                                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Your Contact Details</p>
+
+                                            {{-- Full Name --}}
+                                            <div class="mb-2.5">
+                                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Full Name <span class="text-red-400">*</span></label>
+                                                <input type="text" name="buyer_name"
+                                                    value="{{ old('buyer_name', auth()->user()->name) }}"
+                                                    required
+                                                    placeholder="Your full name"
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_name') border-red-400 @enderror">
+                                                @error('buyer_name')
+                                                    <p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            {{-- Phone --}}
+                                            <div class="mb-2.5">
+                                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Phone Number <span class="text-red-400">*</span></label>
+                                                <input type="tel" name="buyer_phone"
+                                                    value="{{ old('buyer_phone') }}"
+                                                    required
+                                                    placeholder="e.g. 98XXXXXXXX"
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_phone') border-red-400 @enderror">
+                                                @error('buyer_phone')
+                                                    <p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            {{-- Email --}}
+                                            <div class="mb-0">
+                                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Email Address <span class="text-red-400">*</span></label>
+                                                <input type="email" name="buyer_email"
+                                                    value="{{ old('buyer_email', auth()->user()->email) }}"
+                                                    required
+                                                    placeholder="you@example.com"
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_email') border-red-400 @enderror">
+                                                @error('buyer_email')
+                                                    <p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
                                         </div>
+
+                                        {{-- Note to seller --}}
+                                        <div class="mb-3">
+                                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Note to Seller <span class="text-slate-300">(optional)</span></label>
+                                            <textarea name="notes" rows="2" placeholder="Any questions or requirements..."
+                                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] resize-none font-medium">{{ old('notes') }}</textarea>
+                                        </div>
+
                                         <button type="submit"
                                             class="w-full py-4 rounded-xl bg-slate-900 text-white text-[13px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2">
                                             Place Order
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                         </button>
+
+                                        <p class="text-[10px] text-slate-400 text-center mt-2 font-medium">
+                                            Your contact info will be shared with the seller.
+                                        </p>
                                     </form>
                                 @else
                                     <div class="w-full py-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[12px] font-black uppercase tracking-widest text-center">

@@ -33,13 +33,18 @@
             <form method="GET" action="{{ route('marketplace') }}" id="quick-form">
                 <div class="bg-white rounded-[2rem] lg:rounded-full p-2 lg:p-2.5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-md">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 items-center">
-                        <div class="w-full relative group">
-                            <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors">
+
+                        {{-- Search with autocomplete --}}
+                        <div class="w-full relative group" x-data>
+                            <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </div>
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search BYD, Tesla..."
+                            <input type="text" name="search" id="search-input" value="{{ request('search') }}" placeholder="Search BYD, Tesla..."
+                                autocomplete="off"
                                 class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
+                            <ul id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden max-h-56 overflow-y-auto"></ul>
                         </div>
+
                         <div class="w-full relative">
                             <select name="drivetrain" class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 appearance-none cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight">
                                 <option value="all">Drivetrain</option>
@@ -50,16 +55,19 @@
                             </select>
                             <div class="absolute inset-y-0 right-6 flex items-center pointer-events-none text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg></div>
                         </div>
-                        <div class="w-full relative">
-                            <select name="location" class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 appearance-none cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight">
-                                <option value="all">Location</option>
-                                @foreach($locations as $loc)
-                                <option value="{{ $loc }}" {{ request('location') === $loc ? 'selected' : '' }}>{{ $loc }}</option>
-                                @endforeach
-                            </select>
-                            <div class="absolute inset-y-0 right-6 flex items-center pointer-events-none text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg></div>
+
+                        {{-- Location with typeahead (replaces dropdown) --}}
+                        <div class="w-full relative group">
+                            <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <input type="text" name="location" id="location-input" value="{{ request('location') }}" placeholder="Any location..."
+                                autocomplete="off"
+                                class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
+                            <ul id="location-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden max-h-48 overflow-y-auto"></ul>
                         </div>
-                        <button type="submit" class="w-full px-12 py-4 lg:py-6 bg-black text-white rounded-2xl lg:rounded-full font-black uppercase italic tracking-widest text-sm hover:bg-[#4ade80] hover:text-black transition-all duration-500 active:scale-95 shadow-xl shadow-black/20">
+
+                        <button type="submit" id="search-btn" class="w-full px-12 py-4 lg:py-6 bg-black text-white rounded-2xl lg:rounded-full font-black uppercase italic tracking-widest text-sm hover:bg-[#4ade80] hover:text-black transition-all duration-500 active:scale-95 shadow-xl shadow-black/20">
                             Search Units
                         </button>
                     </div>
@@ -77,28 +85,63 @@
                     <div id="advanced-panel" class="{{ request()->hasAny(['brand','model_name','year_from','year_to','price_min','price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl overflow-hidden">
                         <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;"></div>
                         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                            <div class="space-y-3">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-[#4ade80]">Vehicle brand</label>
-                                <input type="text" name="brand" value="{{ request('brand') }}" placeholder="e.g. Tesla, BYD" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
-                            </div>
-                            <div class="space-y-3">
+
+                            <!-- {{-- Brand with autocomplete --}}
+                            <div class="space-y-3 relative">
+                                <label class="text-[10px] font-black uppercase tracking-widest text-[#4ade80]">Vehicle Brand</label>
+                                <input type="text" name="brand" id="brand-input" value="{{ request('brand') }}" placeholder="e.g. Tesla, BYD"
+                                    autocomplete="off"
+                                    class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
+                                <ul id="brand-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-48 overflow-y-auto"></ul>
+                            </div> -->
+
+                            {{-- Model with autocomplete --}}
+                            <div class="space-y-3 relative">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Model Name</label>
-                                <input type="text" name="model_name" value="{{ request('model_name') }}" placeholder="e.g. Model 3" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
+                                <input type="text" name="model_name" id="model-input" value="{{ request('model_name') }}" placeholder="e.g. Model 3"
+                                    autocomplete="off"
+                                    class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
+                                <ul id="model-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-48 overflow-y-auto"></ul>
                             </div>
+
+                            {{-- Year range — select dropdowns from real data --}}
                             <div class="space-y-3 lg:col-span-2">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Year Range</label>
+                                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    Year Range
+                                    <span class="text-slate-600 normal-case font-medium ml-1">({{ $minYear }} – {{ $maxYear }})</span>
+                                </label>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <input type="number" name="year_from" value="{{ request('year_from') }}" placeholder="From" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white placeholder:text-slate-600 outline-none">
-                                    <input type="number" name="year_to"   value="{{ request('year_to') }}"   placeholder="To"   class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white placeholder:text-slate-600 outline-none">
+                                    <select name="year_from" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:ring-2 focus:ring-[#4ade80]/20 outline-none appearance-none cursor-pointer">
+                                        <option value="">From</option>
+                                        @for ($y = $minYear; $y <= $maxYear; $y++)
+                                            <option value="{{ $y }}" {{ (int)request('year_from') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
+                                        @endfor
+                                    </select>
+                                    <select name="year_to" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:ring-2 focus:ring-[#4ade80]/20 outline-none appearance-none cursor-pointer">
+                                        <option value="">To</option>
+                                        @for ($y = $maxYear; $y >= $minYear; $y--)
+                                            <option value="{{ $y }}" {{ (int)request('year_to') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
+                                        @endfor
+                                    </select>
                                 </div>
                             </div>
+
+                            {{-- Price slider --}}
                             <div class="space-y-3 lg:col-span-2">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Price Structure (NRs)</label>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <input type="text" name="price_min" value="{{ request('price_min') }}" placeholder="Min" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white placeholder:text-slate-600 outline-none">
-                                    <input type="text" name="price_max" value="{{ request('price_max') }}" placeholder="Max" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white placeholder:text-slate-600 outline-none">
-                                </div>
+                                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    Price Range (NRs)
+                                    <span class="text-[#4ade80] ml-2" id="price-display">
+                                        {{ request('price_min') ? number_format((int)request('price_min')) : number_format($minPrice) }}
+                                        –
+                                        {{ request('price_max') ? number_format((int)request('price_max')) : number_format($maxPrice) }}
+                                    </span>
+                                </label>
+                                <input type="hidden" name="price_min" id="price_min" value="{{ request('price_min', $minPrice) }}">
+                                <input type="hidden" name="price_max" id="price_max" value="{{ request('price_max', $maxPrice) }}">
+                                <div id="price-slider" class="relative h-6 flex items-center px-2"></div>
                             </div>
+
+                            {{-- Only available toggle --}}
                             <div class="flex items-end pb-1 lg:justify-center">
                                 <label class="relative inline-flex items-center cursor-pointer group">
                                     <input type="checkbox" name="only_available" value="1" class="sr-only peer" {{ request('only_available') ? 'checked' : '' }}>
@@ -106,6 +149,7 @@
                                     <span class="ml-3 text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Only Available</span>
                                 </label>
                             </div>
+
                             <div class="flex items-end justify-end gap-3">
                                 <a href="{{ route('marketplace') }}" class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white">Clear</a>
                                 <button type="submit" class="px-10 py-4 bg-[#4ade80] text-black rounded-xl text-[10px] font-black uppercase tracking-widest italic hover:bg-white transition-all shadow-lg shadow-black/40">Apply</button>
@@ -114,23 +158,11 @@
                     </div>
                 </div>
 
-                {{-- Stats + sort --}}
-                <div class="mt-10 flex flex-col md:flex-row items-center justify-between gap-6 px-4">
-                    <div class="flex flex-wrap justify-center items-center gap-4 lg:gap-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
-                            <span class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $totalActive }} Active Units</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
-                            <span class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $cars->total() }} Results</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-[9px] lg:text-[10px] font-bold text-slate-600 uppercase italic">Sort:</span>
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}" class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-colors {{ request('sort','newest') === 'newest' ? 'text-white underline decoration-[#4ade80] decoration-2 underline-offset-4' : 'text-slate-500 hover:text-white' }}">Newest</a>
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-colors {{ request('sort') === 'price_asc' ? 'text-white underline decoration-[#4ade80] decoration-2 underline-offset-4' : 'text-slate-500 hover:text-white' }}">Price ↑</a>
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}" class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-colors {{ request('sort') === 'price_desc' ? 'text-white underline decoration-[#4ade80] decoration-2 underline-offset-4' : 'text-slate-500 hover:text-white' }}">Price ↓</a>
+                {{-- Stats (updated live by JS after each search) --}}
+                <div class="mt-10 flex flex-wrap items-center gap-4 px-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
+                        <span class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $totalActive }} Active Units</span>
                     </div>
                 </div>
             </form>
@@ -216,142 +248,347 @@
     @endif
 
     {{-- ── Car listings grid ───────────────────────────────────────────── --}}
-    <section class="py-20 bg-[#f1f5f9]">
+    <section id="listings-section" class="py-20 bg-[#f1f5f9]">
         <div class="max-w-7xl mx-auto px-6">
 
-            @if($cars->isNotEmpty())
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($cars as $car)
-                <div class="group bg-white rounded-[2rem] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col">
-
-                    {{-- Image --}}
-                    <div class="relative h-48 bg-slate-900 overflow-hidden">
-                        @if($car->primary_image)
-                            <img src="{{ asset('storage/' . $car->primary_image) }}"
-                                class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-                                alt="{{ $car->displayName() }}">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center">
-                                <span class="text-6xl opacity-10 group-hover:opacity-20 transition-opacity">⚡</span>
-                            </div>
-                        @endif
-                        <div class="absolute top-4 left-4">
-                            <span @class([
-                                'text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest',
-                                'bg-[#4ade80] text-black' => $car->drivetrain === 'ev',
-                                'bg-blue-500 text-white'  => $car->drivetrain === 'hybrid',
-                                'bg-slate-600 text-white' => in_array($car->drivetrain, ['petrol','diesel']),
-                            ])>{{ $car->drivetrain === 'ev' ? '⚡ EV' : ucfirst($car->drivetrain) }}</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-black/60 text-white backdrop-blur-sm">
-                                {{ ucfirst($car->condition) }}
-                            </span>
-                        </div>
-                    </div>
-
-                    {{-- Body --}}
-                    <div class="p-6 flex flex-col flex-1">
-
-                        {{-- Title & location --}}
-                        <div class="mb-4">
-                            <h3 class="text-[15px] font-black text-slate-900 uppercase italic tracking-tight leading-snug">{{ $car->displayName() }}</h3>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1 flex items-center gap-1">
-                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                {{ $car->location }}
-                            </p>
-                        </div>
-
-                        {{-- Spec badges --}}
-                        <div class="flex flex-wrap gap-2 mb-5">
-                            <span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">{{ number_format($car->mileage) }} km</span>
-                            @if($car->range_km)
-                                <span class="text-[10px] font-black px-2 py-1 bg-[#4ade80]/10 text-[#16a34a] rounded-lg uppercase tracking-wider border border-[#4ade80]/20">{{ $car->range_km }} km range</span>
-                            @endif
-                            @if($car->battery_kwh)
-                                <span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">{{ $car->battery_kwh }} kWh</span>
-                            @endif
-                        </div>
-
-                        {{-- Price + actions --}}
-                        <div class="mt-auto pt-4 border-t border-slate-100">
-
-                            {{-- Price row --}}
-                            <div class="mb-4">
-                                <span class="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">Price</span>
-                                <span class="text-xl font-black text-slate-900 italic tracking-tight whitespace-nowrap">NRs {{ number_format($car->price) }}</span>
-                                @if($car->price_negotiable)
-                                    <span class="block text-[9px] font-black text-[#16a34a] uppercase tracking-widest mt-0.5">Negotiable</span>
-                                @endif
-                            </div>
-
-                            {{-- Action buttons --}}
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('cars.show', $car) }}"
-                                    class="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-slate-200 transition-all shrink-0">
-                                    Details
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                </a>
-
-                                @auth
-                                    @if(auth()->user()->hasRole('buyer'))
-                                        @php
-                                            $alreadyOrdered = auth()->user()->orders()
-                                                ->where('car_id', $car->id)
-                                                ->whereIn('status', ['pending','confirmed','completed'])
-                                                ->exists();
-                                        @endphp
-                                        @if($alreadyOrdered)
-                                            <span class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest">✓ Ordered</span>
-                                        @else
-                                            <form method="POST" action="{{ route('buyer.orders.store') }}">
-                                                @csrf
-                                                <input type="hidden" name="car_id" value="{{ $car->id }}">
-                                                <button type="submit"
-                                                    class="flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all active:scale-95 shadow-lg">
-                                                    Order
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    @endif
-                                    {{-- Sellers & business: no order button, no login nudge --}}
-                                @else
-                                    {{-- Guest: nudge to login --}}
-                                    <a href="{{ route('login') }}"
-                                        class="flex items-center gap-1.5 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all">
-                                        Login to Order
-                                    </a>
-                                @endauth
-                            </div>
-                        </div>
-                    </div>
+            {{-- Results count & sort (updated live by JS) --}}
+            <div id="results-meta" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                <p id="results-count" class="text-[11px] font-black text-slate-400 uppercase tracking-widest"></p>
+                <div class="flex items-center gap-3">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase italic">Sort:</span>
+                    <button data-sort="newest"    class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Newest</button>
+                    <button data-sort="price_asc" class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↑</button>
+                    <button data-sort="price_desc"class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↓</button>
                 </div>
-                @endforeach
             </div>
 
-            @if($cars->hasPages())
-            <div class="mt-12 flex justify-center">
-                {{ $cars->links() }}
+            {{-- Loading spinner --}}
+            <div id="listings-loading" class="hidden py-20 flex justify-center">
+                <div class="w-10 h-10 rounded-full border-4 border-slate-200 border-t-[#4ade80] animate-spin"></div>
             </div>
-            @endif
 
-            @else
-            <div class="text-center py-20">
+            {{-- Dynamic grid --}}
+            <div id="listings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            {{-- Pagination --}}
+            <div id="listings-pagination" class="mt-12 flex justify-center gap-2"></div>
+
+            {{-- Empty state (hidden by default) --}}
+            <div id="listings-empty" class="hidden text-center py-20">
                 <p class="text-6xl mb-6">🔍</p>
                 <h3 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-3">No vehicles found</h3>
                 <p class="text-slate-500 font-medium mb-8">Try adjusting your search or filters.</p>
-                <a href="{{ route('marketplace') }}" class="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg">Clear Filters →</a>
+                <button onclick="clearFilters()" class="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg">Clear Filters →</button>
             </div>
-            @endif
 
         </div>
     </section>
 
     <script>
-        function toggleFilters() {
-            document.getElementById('advanced-panel').classList.toggle('hidden');
+    // ── Server data ───────────────────────────────────────────────────────
+    const ALL_BRANDS    = @json($brands->values());
+    const ALL_MODELS    = @json($models->values());
+    const ALL_LOCATIONS = @json($locations->values());
+    const PRICE_MIN     = {{ $minPrice }};
+    const PRICE_MAX     = {{ $maxPrice }};
+    const SEARCH_URL    = '{{ route("marketplace.search") }}';
+    const LOGIN_URL     = '{{ route("login") }}';
+    const IS_AUTH       = @json(auth()->check());
+    const MIN_YEAR      = {{ $minYear }};
+    const MAX_YEAR      = {{ $maxYear }};
+
+    // ── State ─────────────────────────────────────────────────────────────
+    let currentSort = 'newest';
+    let currentPage = 1;
+
+    // ── Toggle advanced panel ─────────────────────────────────────────────
+    function toggleFilters() {
+        document.getElementById('advanced-panel').classList.toggle('hidden');
+    }
+
+    // ── Build params from form ────────────────────────────────────────────
+    function getParams(page = 1) {
+        const f = document.getElementById('quick-form');
+        const p = new URLSearchParams();
+        ['search','drivetrain','location','brand','model_name','year_from','year_to','price_min','price_max'].forEach(k => {
+            const el = f.elements[k];
+            if (!el) return;
+            const v = el.value?.trim();
+            if (v && v !== 'all' && v !== '') p.set(k, v);
+        });
+        const oa = f.elements['only_available'];
+        if (oa?.checked) p.set('only_available', '1');
+        p.set('sort', currentSort);
+        p.set('page', page);
+        return p;
+    }
+
+    // ── Fetch and render results ──────────────────────────────────────────
+    async function fetchResults(page = 1, scroll = true) {
+        currentPage = page;
+        const grid    = document.getElementById('listings-grid');
+        const loading = document.getElementById('listings-loading');
+        const empty   = document.getElementById('listings-empty');
+        const pag     = document.getElementById('listings-pagination');
+        const count   = document.getElementById('results-count');
+
+        grid.innerHTML = '';
+        empty.classList.add('hidden');
+        pag.innerHTML  = '';
+        loading.classList.remove('hidden');
+        loading.classList.add('flex');
+
+        const params = getParams(page);
+        // Update browser URL without reload
+        history.pushState(null, '', '?' + params.toString());
+
+        try {
+            const res  = await fetch(SEARCH_URL + '?' + params.toString());
+            const data = await res.json();
+
+            loading.classList.add('hidden');
+            loading.classList.remove('flex');
+
+            count.textContent = data.total + ' result' + (data.total !== 1 ? 's' : '');
+
+            if (data.cars.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            // Render cards
+            data.cars.forEach(car => { grid.appendChild(buildCard(car)); });
+
+            // Render pagination
+            if (data.last_page > 1) renderPagination(data.current_page, data.last_page);
+
+            // Scroll to listings
+            if (scroll) {
+                document.getElementById('listings-section')
+                    .scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Animate cards in
+            grid.querySelectorAll('.car-card').forEach((c, i) => {
+                c.style.opacity = '0';
+                c.style.transform = 'translateY(16px)';
+                setTimeout(() => {
+                    c.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    c.style.opacity = '1';
+                    c.style.transform = 'translateY(0)';
+                }, i * 50);
+            });
+
+        } catch (e) {
+            loading.classList.add('hidden');
+            grid.innerHTML = '<p class="text-slate-500 col-span-3 text-center py-10">Something went wrong. Please try again.</p>';
         }
+    }
+
+    // ── Build a single car card ───────────────────────────────────────────
+    function buildCard(car) {
+        const dtBadge = {
+            ev:     'bg-[#4ade80] text-black',
+            hybrid: 'bg-blue-500 text-white',
+            petrol: 'bg-slate-600 text-white',
+            diesel: 'bg-slate-600 text-white',
+        }[car.drivetrain] ?? 'bg-slate-600 text-white';
+        const dtLabel = car.drivetrain === 'ev' ? '⚡ EV' : car.drivetrain.charAt(0).toUpperCase() + car.drivetrain.slice(1);
+
+        const imgHtml = car.primary_image
+            ? `<img src="${car.primary_image}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" alt="${car.name}">`
+            : `<div class="w-full h-full flex items-center justify-center"><span class="text-6xl opacity-10 group-hover:opacity-20 transition-opacity">⚡</span></div>`;
+
+        const specBadges = [
+            `<span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">${car.mileage} km</span>`,
+            car.range_km    ? `<span class="text-[10px] font-black px-2 py-1 bg-[#4ade80]/10 text-[#16a34a] rounded-lg uppercase tracking-wider border border-[#4ade80]/20">${car.range_km} km range</span>` : '',
+            car.battery_kwh ? `<span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">${car.battery_kwh} kWh</span>` : '',
+        ].join('');
+
+        const actionHtml = `<a href="${car.url}" class="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all active:scale-95 shadow-lg">
+                Order Now
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>`;
+
+        const div = document.createElement('div');
+        div.className = 'car-card group bg-white rounded-[2rem] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col';
+        div.innerHTML = `
+            <div class="relative h-48 bg-slate-900 overflow-hidden">
+                ${imgHtml}
+                <div class="absolute top-4 left-4">
+                    <span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest ${dtBadge}">${dtLabel}</span>
+                </div>
+                <div class="absolute top-4 right-4">
+                    <span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-black/60 text-white backdrop-blur-sm">${car.condition}</span>
+                </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+                <div class="mb-4">
+                    <h3 class="text-[15px] font-black text-slate-900 uppercase italic tracking-tight leading-snug">${car.name}</h3>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1 flex items-center gap-1">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        ${car.location}
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-5">${specBadges}</div>
+                <div class="mt-auto pt-4 border-t border-slate-100">
+                    <div class="mb-4">
+                        <span class="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">Price</span>
+                        <span class="text-xl font-black text-slate-900 italic tracking-tight whitespace-nowrap">NRs ${car.price}</span>
+                        ${car.price_negotiable ? '<span class="block text-[9px] font-black text-[#16a34a] uppercase tracking-widest mt-0.5">Negotiable</span>' : ''}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="${car.url}" class="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-slate-200 transition-all shrink-0">
+                            Details
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </a>
+                        ${actionHtml}
+                    </div>
+                </div>
+            </div>`;
+
+        return div;
+    }
+
+    // ── Pagination ────────────────────────────────────────────────────────
+    function renderPagination(current, last) {
+        const pag = document.getElementById('listings-pagination');
+        const btn = (label, page, active = false, disabled = false) => {
+            const b = document.createElement('button');
+            b.textContent = label;
+            b.className = [
+                'px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all',
+                active   ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200',
+                disabled ? 'opacity-30 pointer-events-none' : '',
+            ].join(' ');
+            if (!disabled) b.addEventListener('click', () => fetchResults(page));
+            return b;
+        };
+        pag.appendChild(btn('←', current - 1, false, current === 1));
+        for (let p = 1; p <= last; p++) {
+            if (last > 7 && Math.abs(p - current) > 2 && p !== 1 && p !== last) {
+                if (p === current - 3 || p === current + 3) pag.appendChild(Object.assign(document.createElement('span'), { textContent: '…', className: 'px-2 text-slate-400' }));
+                continue;
+            }
+            pag.appendChild(btn(p, p, p === current));
+        }
+        pag.appendChild(btn('→', current + 1, false, current === last));
+    }
+
+    // ── Sort buttons ──────────────────────────────────────────────────────
+    function updateSortUI() {
+        document.querySelectorAll('.sort-btn').forEach(b => {
+            const active = b.dataset.sort === currentSort;
+            b.className = 'sort-btn text-[10px] font-black uppercase tracking-widest transition-colors ' +
+                (active ? 'text-slate-900 underline decoration-[#4ade80] decoration-2 underline-offset-4' : 'text-slate-400 hover:text-slate-900');
+        });
+    }
+    document.querySelectorAll('.sort-btn').forEach(b => {
+        b.addEventListener('click', () => {
+            currentSort = b.dataset.sort;
+            updateSortUI();
+            fetchResults(1);
+        });
+    });
+
+    // ── Form submit ───────────────────────────────────────────────────────
+    document.getElementById('quick-form').addEventListener('submit', e => {
+        e.preventDefault();
+        fetchResults(1);
+    });
+
+    // ── Clear ─────────────────────────────────────────────────────────────
+    function clearFilters() {
+        document.getElementById('quick-form').reset();
+        document.getElementById('price_min').value = PRICE_MIN;
+        document.getElementById('price_max').value = PRICE_MAX;
+        currentSort = 'newest';
+        updateSortUI();
+        fetchResults(1, false);
+    }
+
+    // ── Typeahead factory ─────────────────────────────────────────────────
+    function makeTypeahead(inputId, listId, dataArr, opts = {}) {
+        const input = document.getElementById(inputId);
+        const list  = document.getElementById(listId);
+        if (!input || !list) return;
+        const dark = opts.dark ?? false;
+        const itemCls = dark
+            ? 'px-5 py-3 cursor-pointer text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] transition-colors'
+            : 'px-5 py-3 cursor-pointer text-sm font-bold text-slate-800 hover:bg-[#4ade80]/10 hover:text-[#16a34a] transition-colors';
+
+        function render(matches) {
+            list.innerHTML = '';
+            if (!matches.length) { list.classList.add('hidden'); return; }
+            matches.forEach(val => {
+                const li = document.createElement('li');
+                li.className = itemCls;
+                li.textContent = val;
+                li.addEventListener('mousedown', e => { e.preventDefault(); input.value = val; list.classList.add('hidden'); });
+                list.appendChild(li);
+            });
+            list.classList.remove('hidden');
+        }
+        input.addEventListener('input',  () => { const q = input.value.trim().toLowerCase(); render(q ? dataArr.filter(v => v.toLowerCase().includes(q)).slice(0, 8) : []); });
+        input.addEventListener('focus',  () => { if (!input.value.trim()) render(dataArr.slice(0, 8)); });
+        document.addEventListener('click', e => { if (!input.contains(e.target) && !list.contains(e.target)) list.classList.add('hidden'); });
+    }
+
+    // ── Price dual-range slider ───────────────────────────────────────────
+    function initPriceSlider() {
+        const track   = document.getElementById('price-slider');
+        const inpMin  = document.getElementById('price_min');
+        const inpMax  = document.getElementById('price_max');
+        const display = document.getElementById('price-display');
+        if (!track) return;
+        track.innerHTML = `
+            <div class="relative w-full h-1.5 rounded-full" style="background:#1e293b;">
+                <div id="ps-range" class="absolute h-1.5 rounded-full" style="background:#4ade80;"></div>
+                <input id="ps-lo" type="range" min="${PRICE_MIN}" max="${PRICE_MAX}" step="50000" class="absolute w-full appearance-none pointer-events-none h-1.5 bg-transparent" style="top:0;left:0;">
+                <input id="ps-hi" type="range" min="${PRICE_MIN}" max="${PRICE_MAX}" step="50000" class="absolute w-full appearance-none pointer-events-none h-1.5 bg-transparent" style="top:0;left:0;">
+            </div>`;
+        const style = document.createElement('style');
+        style.textContent = `#ps-lo,#ps-hi{pointer-events:none}#ps-lo::-webkit-slider-thumb,#ps-hi::-webkit-slider-thumb{pointer-events:all;appearance:none;width:20px;height:20px;border-radius:50%;background:#4ade80;border:2px solid #fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}#ps-lo::-moz-range-thumb,#ps-hi::-moz-range-thumb{pointer-events:all;width:20px;height:20px;border-radius:50%;background:#4ade80;border:2px solid #fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}`;
+        document.head.appendChild(style);
+        const loEl = document.getElementById('ps-lo');
+        const hiEl = document.getElementById('ps-hi');
+        const rng  = document.getElementById('ps-range');
+        loEl.value = inpMin.value || PRICE_MIN;
+        hiEl.value = inpMax.value || PRICE_MAX;
+        const fmt = n => 'NRs ' + Number(n).toLocaleString();
+        function sync() {
+            let lo = parseInt(loEl.value), hi = parseInt(hiEl.value);
+            if (lo > hi) { [lo, hi] = [hi, lo]; loEl.value = lo; hiEl.value = hi; }
+            const pct = v => ((v - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100;
+            rng.style.left = pct(lo) + '%'; rng.style.width = (pct(hi) - pct(lo)) + '%';
+            inpMin.value = lo; inpMax.value = hi;
+            if (display) display.textContent = fmt(lo) + ' – ' + fmt(hi);
+        }
+        loEl.addEventListener('input', sync);
+        hiEl.addEventListener('input', sync);
+        sync();
+    }
+
+    // ── Boot ──────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        makeTypeahead('search-input',   'search-suggestions',   [...ALL_BRANDS, ...ALL_MODELS]);
+        makeTypeahead('location-input', 'location-suggestions', ALL_LOCATIONS);
+        makeTypeahead('brand-input',    'brand-suggestions',    ALL_BRANDS, { dark: true });
+        makeTypeahead('model-input',    'model-suggestions',    ALL_MODELS, { dark: true });
+        initPriceSlider();
+        updateSortUI();
+
+        // Pre-fill form from URL params (browser back/forward support)
+        const sp = new URLSearchParams(window.location.search);
+        if (sp.get('sort')) { currentSort = sp.get('sort'); updateSortUI(); }
+        ['search','drivetrain','location','brand','model_name','year_from','year_to','price_min','price_max'].forEach(k => {
+            const el = document.getElementById('quick-form').elements[k];
+            if (el && sp.get(k)) el.value = sp.get(k);
+        });
+
+        // Initial load — no scroll if page just opened fresh
+        fetchResults(parseInt(sp.get('page') || 1), window.location.search.length > 1);
+    });
     </script>
 
 @endsection

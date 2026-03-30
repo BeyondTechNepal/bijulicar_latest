@@ -13,7 +13,7 @@ class HomeController extends Controller
         $recentCars = Car::where('status', 'available')
             ->with(['primaryImage', 'seller'])
             ->latest()
-            ->take(3)
+            ->take(10)
             ->get();
 
         // Live counts for the fleet cards

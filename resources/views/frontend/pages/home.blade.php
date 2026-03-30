@@ -356,7 +356,23 @@
         </div>
 
         @if ($recentCars->isNotEmpty())
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {{-- Carousel wrapper --}}
+            <div class="relative">
+                {{-- Prev / Next buttons --}}
+                <button id="carousel-prev"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 w-11 h-11 rounded-full bg-white shadow-lg border border-slate-100 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all group hidden md:flex">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button id="carousel-next"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 w-11 h-11 rounded-full bg-white shadow-lg border border-slate-100 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all group hidden md:flex">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+
+                {{-- Scrollable track --}}
+                <div id="carousel-track"
+                    class="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4"
+                    style="scrollbar-width:none; -ms-overflow-style:none;">
+
                 @foreach ($recentCars as $car)
                 @php
                     $dtColors = [
@@ -369,7 +385,7 @@
                     $sellerRole = $car->seller?->getRoleNames()->first();
                 @endphp
 
-                <div class="group relative bg-white rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500">
+                <div class="group relative bg-white rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500 flex-none w-[85vw] sm:w-[42vw] lg:w-[30rem] snap-start">
 
                     {{-- Image --}}
                     <div class="relative h-64 overflow-hidden bg-slate-100">
@@ -461,7 +477,44 @@
                     </div>
                 </div>
                 @endforeach
-            </div>
+                </div>{{-- /carousel-track --}}
+            </div>{{-- /carousel wrapper --}}
+
+            <style>#carousel-track::-webkit-scrollbar{display:none}</style>
+
+            <script>
+            (function () {
+                const track = document.getElementById('carousel-track');
+                const btnPrev = document.getElementById('carousel-prev');
+                const btnNext = document.getElementById('carousel-next');
+                const CARD_W = () => track.querySelector('div')?.offsetWidth + 24 || 500; // card + gap
+                let autoTimer;
+
+                function scrollBy(dir) {
+                    track.scrollBy({ left: dir * CARD_W(), behavior: 'smooth' });
+                }
+
+                function startAuto() {
+                    autoTimer = setInterval(() => {
+                        // if near end, loop back
+                        if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
+                            track.scrollTo({ left: 0, behavior: 'smooth' });
+                        } else {
+                            scrollBy(1);
+                        }
+                    }, 3000);
+                }
+
+                function resetAuto() { clearInterval(autoTimer); startAuto(); }
+
+                btnNext?.addEventListener('click', () => { scrollBy(1); resetAuto(); });
+                btnPrev?.addEventListener('click', () => { scrollBy(-1); resetAuto(); });
+                track.addEventListener('touchstart', () => clearInterval(autoTimer), { passive: true });
+                track.addEventListener('touchend', () => startAuto(), { passive: true });
+
+                startAuto();
+            })();
+            </script>
 
         @else
             {{-- Empty state --}}

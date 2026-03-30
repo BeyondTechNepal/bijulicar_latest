@@ -294,6 +294,7 @@
     const SEARCH_URL    = '{{ route("marketplace.search") }}';
     const LOGIN_URL     = '{{ route("login") }}';
     const IS_AUTH       = @json(auth()->check());
+    const IS_BUYER      = @json(auth()->check() && auth()->user()->hasRole('buyer'));
     const MIN_YEAR      = {{ $minYear }};
     const MAX_YEAR      = {{ $maxYear }};
 
@@ -351,6 +352,12 @@
 
             count.textContent = data.total + ' result' + (data.total !== 1 ? 's' : '');
 
+            // Scroll to listings section always — whether results found or not
+            if (scroll) {
+                document.getElementById('listings-section')
+                    .scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
             if (data.cars.length === 0) {
                 empty.classList.remove('hidden');
                 return;
@@ -361,12 +368,6 @@
 
             // Render pagination
             if (data.last_page > 1) renderPagination(data.current_page, data.last_page);
-
-            // Scroll to listings
-            if (scroll) {
-                document.getElementById('listings-section')
-                    .scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
 
             // Animate cards in
             grid.querySelectorAll('.car-card').forEach((c, i) => {
@@ -405,10 +406,20 @@
             car.battery_kwh ? `<span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">${car.battery_kwh} kWh</span>` : '',
         ].join('');
 
-        const actionHtml = `<a href="${car.url}" class="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all active:scale-95 shadow-lg">
+        // Only buyers (and guests) see the Order Now button
+        // Sellers and business users are on the supply side — no ordering
+        let actionHtml = '';
+        if (!IS_AUTH) {
+            actionHtml = `<a href="${LOGIN_URL}" class="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all active:scale-95 shadow-lg">
                 Order Now
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>`;
+        } else if (IS_BUYER) {
+            actionHtml = `<a href="${car.url}" class="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all active:scale-95 shadow-lg">
+                Order Now
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>`;
+        }
 
         const div = document.createElement('div');
         div.className = 'car-card group bg-white rounded-[2rem] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col';

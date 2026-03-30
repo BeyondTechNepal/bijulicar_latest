@@ -301,7 +301,7 @@
                                             <div class="mb-2.5">
                                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Full Name <span class="text-red-400">*</span></label>
                                                 <input type="text" name="buyer_name"
-                                                    value="{{ old('buyer_name', auth()->user()->name) }}"
+                                                    
                                                     required
                                                     placeholder="Your full name"
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_name') border-red-400 @enderror">
@@ -327,9 +327,9 @@
                                             <div class="mb-0">
                                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Email Address <span class="text-red-400">*</span></label>
                                                 <input type="email" name="buyer_email"
-                                                    value="{{ old('buyer_email', auth()->user()->email) }}"
+                                                    
                                                     required
-                                                    placeholder="you@example.com"
+                                                    placeholder="you@gmail.com"
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_email') border-red-400 @enderror">
                                                 @error('buyer_email')
                                                     <p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>
@@ -365,7 +365,7 @@
                                     Edit Your Listing
                                 </a>
                             @else
-                                <p class="text-center text-[12px] text-slate-400 font-bold">Switch to a buyer account to order.</p>
+                                <p class="text-center text-[12px] text-slate-400 font-bold">You can't order other seller's car!</p>
                             @endif
                         @else
                             <a href="{{ route('login') }}"

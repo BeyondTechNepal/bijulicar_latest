@@ -83,6 +83,20 @@
                         <span class="hide-on-collapse">Users</span>
                     </a>
 
+                    <a href="{{ route('admin.verifications.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
+                       {{ request()->routeIs('admin.verifications*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        <span class="font-bold w-5 text-center">V</span>
+                        <span class="hide-on-collapse flex-1">Verifications</span>
+                        @php
+                            $pendingCount = \App\Models\SellerVerification::where('status','pending')->count()
+                                          + \App\Models\BusinessVerification::where('status','pending')->count();
+                        @endphp
+                        @if ($pendingCount > 0)
+                            <span class="hide-on-collapse text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-black">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('admin.permissions.index') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
                        {{ request()->routeIs('admin.permissions*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -134,7 +148,10 @@
 
                     <!-- Parent -->
                     <button @click="open = !open"
-                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all
+        {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*')
+            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20'
+            : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
 
                         <div class="flex items-center gap-3">
                             <span class="font-bold w-5 text-center">N</span>
@@ -152,14 +169,20 @@
                     <div x-show="open" x-collapse class="mt-1 ml-6 space-y-1">
 
                         <a href="{{ route('admin.news.index') }}"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news.index') ? 'bg-indigo-600 text-white' : 'text-gray-400  hover:bg-gray-800 hover:text-white' }}">
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
+            {{ request()->routeIs('admin.news.index')
+                ? 'bg-indigo-600 text-white'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                             <span class="w-5 text-center">•</span>
                             <span class="hide-on-collapse">News Articles</span>
                         </a>
 
                         @can('manage news banner')
                         <a href="{{ route('admin.news_banner.index') }}"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news_banner*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
+            {{ request()->routeIs('admin.news_banner*')
+                ? 'bg-indigo-600 text-white'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                             <span class="w-5 text-center">•</span>
                             <span class="hide-on-collapse">News Banner</span>
                         </a>
@@ -198,7 +221,8 @@
                     <div x-show="open" x-collapse class="mt-1 ml-6 space-y-1">
 
                         <a href="{{ route('admin.contact_banner.index') }}"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.contact_banner*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
+            {{ request()->routeIs('admin.contact_banner*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                             <span class="w-5 text-center">•</span>
                             <span class="hide-on-collapse">Contact Banner</span>
                         </a>

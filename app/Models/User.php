@@ -5,10 +5,13 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\SellerVerification;
+use App\Models\BusinessVerification;
 
 class User extends Authenticatable
 {
@@ -44,6 +47,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function sellerVerification(): HasOne
+        {
+            return $this->hasOne(SellerVerification::class);
+        }
+
+        public function businessVerification(): HasOne
+        {
+            return $this->hasOne(BusinessVerification::class);
+}
+
+// helper — works for both roles
+public function verification(): SellerVerification|BusinessVerification|null
+{
+    return $this->sellerVerification ?? $this->businessVerification;
+}
     // Seller / Business relationships
 
     /** Cars listed by this user (as seller or business) */

@@ -23,7 +23,7 @@ class NewsArticleController extends Controller
          * We check if the admin HAS the 'super-admin' role (Spatie).
          * If they DON'T have it, we filter the query so they only see their own work.
          */
-        if (!$admin->hasRole('superadmin')) {
+        if (!$admin->hasRole(['superadmin', 'admin'])) {
             $query->where('admin_id', $admin->id);
         }
 
@@ -109,7 +109,7 @@ class NewsArticleController extends Controller
         $admin = Auth::guard('admin')->user();
 
         // Check if the admin is NOT a super-admin AND doesn't own the article
-        if (!$admin->hasRole('super-admin') && $news->admin_id !== $admin->id) {
+        if (!$admin->hasRole(['superadmin', 'admin']) && $news->admin_id !== $admin->id) {
             abort(403, 'Unauthorized action. You do not own this article.');
         }
     }

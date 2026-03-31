@@ -3,42 +3,213 @@
 @section('title', 'Edit News Article')
 
 @section('content')
-<div class="max-w-5xl mx-auto p-6">
-    <div class="flex items-center justify-between mb-8">
-        <div>
-            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Edit News Entry</h1>
-            <p class="text-[10px] text-slate-500 font-mono uppercase mt-1 tracking-widest">Modified by: {{ $article->admin->name }}</p>
+    <div class="max-w-5xl mx-auto p-6 pb-20">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase">Edit Article</h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase mt-1 tracking-widest">Database Node:
+                    {{ $article->id }}</p>
+            </div>
+            <a href="{{ route('admin.news.index') }}"
+                class="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">&larr;
+                Back to Archive</a>
         </div>
+
+        <form action="{{ route('admin.news.update', $article->slug) }}" method="POST" enctype="multipart/form-data"
+            class="space-y-8">
+            @csrf
+            @method('PUT')
+
+            {{-- Section 1: Titles & Slug --}}
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 space-y-6">
+                <h3 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-2">Headline Configuration</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Main Title *</label>
+                        <input type="text" name="title" value="{{ old('title', $article->title) }}" required
+                            class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Slug (URL)</label>
+                        <input type="text" name="slug" value="{{ old('slug', $article->slug) }}"
+                            class="w-full border-slate-200 rounded-xl bg-slate-50 font-mono text-xs text-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Title Highlight</label>
+                        <input type="text" name="title_highlight"
+                            value="{{ old('title_highlight', $article->title_highlight) }}" placeholder="Red Text Part"
+                            class="w-full border-slate-200 rounded-xl text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Title Suffix</label>
+                        <input type="text" name="title_suffix" value="{{ old('title_suffix', $article->title_suffix) }}"
+                            placeholder="Ending Text" class="w-full border-slate-200 rounded-xl text-sm">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Section 2: Media & Lead --}}
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Hero Image</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-4 flex items-center gap-4">
+                            <img src="{{ asset('storage/' . $article->hero_image) }}"
+                                class="w-16 h-16 object-cover rounded-lg shadow-sm border border-slate-200">
+                            <input type="file" name="hero_image"
+                                class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-black file:uppercase file:text-[9px]">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Figure Caption</label>
+                        <input type="text" name="figure_caption"
+                            value="{{ old('figure_caption', $article->figure_caption) }}"
+                            class="w-full border-slate-200 rounded-xl text-sm mt-4">
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Lead Paragraph (Intro)
+                        *</label>
+                    <textarea name="lead_paragraph" rows="4" required
+                        class="w-full border-slate-200 rounded-[1.5rem] text-sm text-slate-600 focus:ring-indigo-500">{{ old('lead_paragraph', $article->lead_paragraph) }}</textarea>
+                </div>
+            </div>
+
+            {{-- Section 3: Body Content --}}
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 space-y-8">
+                <h3 class="font-black text-slate-400 uppercase tracking-widest text-[10px]">Article Body Sections</h3>
+
+                @foreach (['1', '2', '3'] as $num)
+                    <div class="p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Section
+                            {{ $num }} Title</label>
+                        <input type="text" name="section_{{ $num }}_title"
+                            value="{{ old('section_' . $num . '_title', $article->{"section_{$num}_title"}) }}"
+                            class="w-full border-slate-200 rounded-xl mb-4 font-bold">
+
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Section
+                            {{ $num }} Content</label>
+                        <textarea name="section_{{ $num }}_content" rows="5" class="w-full border-slate-200 rounded-xl text-sm">{{ old('section_' . $num . '_content', $article->{"section_{$num}_content"}) }}</textarea>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Section 4: Tech Specs & Quote --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{-- Tech Specs --}}
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8">
+                    <h3 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-6">Technical
+                        Specifications</h3>
+                    <div id="tech-specs-container" class="space-y-3 mb-4">
+                        @if ($article->tech_specs && is_array($article->tech_specs))
+                            @foreach ($article->tech_specs as $index => $spec)
+                                <div class="flex gap-2 spec-row">
+                                    <input type="text" name="tech_specs[{{ $index }}][key]"
+                                        value="{{ $spec['key'] ?? '' }}"
+                                        class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
+                                    <input type="text" name="tech_specs[{{ $index }}][value]"
+                                        value="{{ $spec['value'] ?? '' }}"
+                                        class="w-1/2 border-slate-200 rounded-xl text-xs">
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="flex gap-2">
+                                <input type="text" name="tech_specs[0][key]" placeholder="Label"
+                                    class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
+                                <input type="text" name="tech_specs[0][value]" placeholder="Value"
+                                    class="w-1/2 border-slate-200 rounded-xl text-xs">
+                            </div>
+                        @endif
+                    </div>
+                    <button type="button" onclick="addTechSpec()"
+                        class="text-[9px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800">+ Add
+                        Specification</button>
+
+                    <div class="mt-6">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Technical Note</label>
+                        <input type="text" name="tech_note" value="{{ old('tech_note', $article->tech_note) }}"
+                            class="w-full border-slate-200 rounded-xl text-xs">
+                    </div>
+                </div>
+
+                {{-- Quote Block --}}
+                <div class="bg-slate-900 rounded-[2rem] shadow-xl p-8 text-white">
+                    <h3 class="font-black text-slate-500 uppercase tracking-widest text-[10px] mb-6">Article Quote</h3>
+                    <div class="space-y-4">
+                        <textarea name="quote_text" rows="3"
+                            class="w-full bg-slate-800 border-none rounded-xl text-sm text-indigo-200 focus:ring-indigo-500">{{ old('quote_text', $article->quote_text) }}</textarea>
+                        <input type="text" name="quote_author"
+                            value="{{ old('quote_author', $article->quote_author) }}"
+                            class="w-full bg-slate-800 border-none rounded-xl text-xs font-bold">
+                        <input type="text" name="quote_author_title"
+                            value="{{ old('quote_author_title', $article->quote_author_title) }}"
+                            class="w-full bg-slate-800 border-none rounded-xl text-[10px] uppercase tracking-widest">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Final: Attribution & Settings --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-2 bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8">
+                    <div class="flex gap-4">
+                        <div class="w-20">
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Initials</label>
+                            <input type="text" name="author_initials"
+                                value="{{ old('author_initials', $article->author_initials) }}" maxlength="2" required
+                                class="w-full border-slate-200 rounded-xl text-center font-mono font-bold text-indigo-600 bg-slate-50"
+                                readonly>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Name</label>
+                            <input type="text" name="author_name"
+                                value="{{ old('author_name', $article->author_name) }}" required
+                                class="w-full border-slate-200 rounded-xl font-bold bg-slate-50" readonly>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Role</label>
+                        <input type="text" name="author_role" value="{{ old('author_role', $article->author_role) }}"
+                            required class="w-full border-slate-200 rounded-xl font-bold">
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 rounded-[2rem] p-8 flex flex-col justify-center">
+                    <label class="flex items-center cursor-pointer group">
+                        <input type="checkbox" name="is_published" value="1"
+                            {{ old('is_published', $article->is_published) ? 'checked' : '' }} class="sr-only">
+                        <div
+                            class="w-12 h-6 bg-slate-300 rounded-full p-1 transition-all group-has-[:checked]:bg-indigo-600">
+                            <div class="w-4 h-4 bg-white rounded-full transition-all group-has-[:checked]:translate-x-6">
+                            </div>
+                        </div>
+                        <span class="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-600">Article
+                            Published</span>
+                    </label>
+                    <p class="mt-4 text-[9px] text-indigo-400 leading-tight font-medium">Uncheck to revert to draft mode.
+                    </p>
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-indigo-600 text-white font-black py-6 rounded-[2rem] shadow-2xl hover:bg-slate-900 transition-all uppercase tracking-widest text-sm">Save
+                Changes</button>
+        </form>
     </div>
 
-    <form action="{{ route('admin.news.update', $article->slug) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
-        @csrf
-        @method('PUT')
+    <script>
+        // Count existing rows to prevent index collisions
+        let specIndex = {{ is_array($article->tech_specs) ? count($article->tech_specs) : 1 }};
 
-        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 space-y-6">
-            <div>
-                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Main Title</label>
-                <input type="text" name="title" value="{{ old('title', $article->title) }}" required class="w-full border-slate-200 rounded-xl font-bold text-slate-700">
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-2xl">
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Current Hero Image</p>
-                    <img src="{{ asset('storage/' . $article->hero_image) }}" class="h-20 rounded-lg shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Replace Image</label>
-                    <input type="file" name="hero_image" class="text-xs text-slate-500">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Role</label>
-                <input type="text" name="author_role" value="{{ old('author_role', $article->author_role) }}" required class="w-full border-slate-200 rounded-xl font-bold">
-            </div>
-        </div>
-
-        <button type="submit" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-slate-900 transition-all uppercase tracking-widest text-xs">Update Article</button>
-    </form>
-</div>
+        function addTechSpec() {
+            const container = document.getElementById('tech-specs-container');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+            <input type="text" name="tech_specs[${specIndex}][key]" placeholder="Label" class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
+            <input type="text" name="tech_specs[${specIndex}][value]" placeholder="Value" class="w-1/2 border-slate-200 rounded-xl text-xs">
+        `;
+            container.appendChild(div);
+            specIndex++;
+        }
+    </script>
 @endsection

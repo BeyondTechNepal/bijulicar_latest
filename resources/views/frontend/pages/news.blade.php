@@ -193,7 +193,7 @@
                                 <div class="md:col-span-8 flex flex-col justify-center">
                                     <div class="flex items-center gap-3 mb-2">
                                         <span class="text-[9px] font-black uppercase tracking-widest text-[#4ade80]">
-                                            {{ $item->author_role }}
+                                            {{ $item->author_name }}
                                         </span>
                                         <span class="text-slate-300 text-[9px]">•</span>
                                         <span class="text-slate-400 text-[9px] font-bold uppercase">

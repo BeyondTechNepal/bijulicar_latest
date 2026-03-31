@@ -3,10 +3,12 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Buyer\BuyerOrderController;
 use App\Http\Controllers\Buyer\BuyerPreOrderController;
-use App\Http\Controllers\Seller\SellerPreOrderController;
 use App\Http\Controllers\Buyer\BuyerPurchaseController;
 use App\Http\Controllers\Buyer\BuyerReviewController;
 use App\Http\Controllers\Seller\SellerVerificationController;
+use App\Http\Controllers\Seller\SellerCarController;
+use App\Http\Controllers\Seller\SellerOrderController;
+use App\Http\Controllers\Seller\SellerPreOrderController;
 use App\Http\Controllers\Business\BusinessVerificationController;
 use Illuminate\Support\Facades\Route;
 

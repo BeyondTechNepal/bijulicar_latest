@@ -60,7 +60,7 @@ Route::get('/dashboard', function () {
     }
     return view('dashboard');
 })
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
 // ── BUYER routes ───────────────────────────────────────────────────────

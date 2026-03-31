@@ -200,6 +200,9 @@ Route::middleware(['auth', 'role:seller', 'verified.account'])
         Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])
             ->name('preorders.show')
             ->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDepositForm'])
+            ->name('preorders.confirm_deposit.form')
+            ->middleware('permission:manage own orders');
         Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])
             ->name('preorders.confirm_deposit')
             ->middleware('permission:manage own orders');
@@ -266,6 +269,9 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
             ->middleware('permission:manage own orders');
         Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])
             ->name('preorders.show')
+            ->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDepositForm'])
+            ->name('preorders.confirm_deposit.form')
             ->middleware('permission:manage own orders');
         Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])
             ->name('preorders.confirm_deposit')

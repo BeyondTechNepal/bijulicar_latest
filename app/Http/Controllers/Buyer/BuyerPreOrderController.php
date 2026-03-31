@@ -41,13 +41,11 @@ class BuyerPreOrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'car_id'          => ['required', 'exists:cars,id'],
-            'buyer_name'      => ['required', 'string', 'max:100'],
-            'buyer_phone'     => ['required', 'string', 'max:20'],
-            'buyer_email'     => ['required', 'email', 'max:255'],
-            'payment_method'  => ['required', 'in:cash,bank_transfer,emi,other'],
-            'transaction_ref' => ['nullable', 'string', 'max:255'],
-            'notes'           => ['nullable', 'string', 'max:500'],
+            'car_id'      => ['required', 'exists:cars,id'],
+            'buyer_name'  => ['required', 'string', 'max:100'],
+            'buyer_phone' => ['required', 'string', 'max:20'],
+            'buyer_email' => ['required', 'email', 'max:255'],
+            'notes'       => ['nullable', 'string', 'max:500'],
         ]);
 
         $car     = Car::findOrFail($request->car_id);
@@ -64,21 +62,19 @@ class BuyerPreOrderController extends Controller
         abort_if($alreadyExists, 422, 'You already have an active pre-order for this car.');
 
         $preOrder = PreOrder::create([
-            'buyer_id'        => $buyerId,
-            'car_id'          => $car->id,
-            'deposit_amount'  => $car->preorder_deposit,
-            'payment_method'  => $request->payment_method,
-            'transaction_ref' => $request->transaction_ref,
-            'notes'           => $request->notes,
-            'buyer_name'      => $request->buyer_name,
-            'buyer_phone'     => $request->buyer_phone,
-            'buyer_email'     => $request->buyer_email,
-            'status'          => 'pending_deposit',
+            'buyer_id'    => $buyerId,
+            'car_id'      => $car->id,
+            'deposit_amount' => $car->preorder_deposit,
+            'buyer_name'  => $request->buyer_name,
+            'buyer_phone' => $request->buyer_phone,
+            'buyer_email' => $request->buyer_email,
+            'notes'       => $request->notes,
+            'status'      => 'pending_deposit',
         ]);
 
         return redirect()
             ->route('buyer.preorders.show', $preOrder)
-            ->with('success', 'Pre-order placed! The seller will confirm your deposit shortly.');
+            ->with('success', 'Pre-order placed! The seller will contact you to arrange the deposit.');
     }
 
     /** Show a single pre-order */

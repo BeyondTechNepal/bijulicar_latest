@@ -41,13 +41,33 @@ class SellerPreOrderController extends Controller
         return view('dashboard.seller.preorders.show', array_merge(compact('preOrder'), $ctx));
     }
 
+    /** Show the confirm-deposit form */
+    public function confirmDepositForm(PreOrder $preOrder)
+    {
+        abort_if($preOrder->car->seller_id != Auth::id(), 403);
+        abort_if($preOrder->status !== 'pending_deposit', 422, 'Deposit already confirmed.');
+        $ctx = $this->context();
+        $preOrder->load('car', 'buyer');
+        return view('dashboard.seller.preorders.confirm_deposit', array_merge(compact('preOrder'), $ctx));
+    }
+
     /** Seller confirms deposit was received */
-    public function confirmDeposit(PreOrder $preOrder)
+    public function confirmDeposit(Request $request, PreOrder $preOrder)
     {
         abort_if($preOrder->car->seller_id != Auth::id(), 403);
         abort_if($preOrder->status !== 'pending_deposit', 422, 'Deposit already confirmed.');
 
-        $preOrder->update(['status' => 'deposit_paid']);
+        $request->validate([
+            'payment_method'  => ['required', 'in:cash,bank_transfer,emi,other'],
+            'transaction_ref' => ['nullable', 'string', 'max:255'],
+            'remarks'         => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $preOrder->update([
+            'status'          => 'deposit_paid',
+            'payment_method'  => $request->payment_method,
+            'transaction_ref' => $request->transaction_ref,
+        ]);
 
         $ctx = $this->context();
         return redirect()

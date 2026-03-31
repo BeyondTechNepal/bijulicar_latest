@@ -99,6 +99,21 @@
                                 class="ml-auto text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingOrders }}</span>
                         @endif
                     </a>
+
+                    <a href="{{ route('seller.preorders.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                {{ request()->routeIs('seller.preorders*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Pre-Orders
+                        @php $pendingDeposits = \App\Models\PreOrder::whereHas('car', fn($q) => $q->where('seller_id', auth()->id()))->where('status', 'pending_deposit')->count(); @endphp
+                        @if ($pendingDeposits > 0)
+                            <span
+                                class="ml-auto text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingDeposits }}</span>
+                        @endif
+                    </a>
                 @endcan
 
 

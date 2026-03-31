@@ -6,13 +6,29 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\News;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class NewsArticleController extends Controller
 {
     public function index()
     {
-        $articles = News::orderBy('created_at', 'desc')->paginate(10);
+        // 1. Explicitly pull the admin from the 'admin' guard
+        $admin = Auth::guard('admin')->user();
+
+        // 2. Eager load 'admin' relationship (NOT 'user') to match your News model
+        $query = News::with('admin')->orderBy('created_at', 'desc');
+
+        /**
+         * 3. Role-Based Filtering
+         * We check if the admin HAS the 'super-admin' role (Spatie).
+         * If they DON'T have it, we filter the query so they only see their own work.
+         */
+        if (!$admin->hasRole('superadmin')) {
+            $query->where('admin_id', $admin->id);
+        }
+
+        $articles = $query->paginate(10);
+
         return view('admin.news.index', compact('articles'));
     }
 
@@ -25,13 +41,17 @@ class NewsArticleController extends Controller
     {
         $validatedData = $this->validateArticle($request);
 
-        // Handle Hero Image Upload
+        // Update to match migration column 'admin_id'
+        $validatedData['admin_id'] = Auth::guard('admin')->id();
+
+        if (!$validatedData['admin_id']) {
+            return back()->withErrors(['error' => 'Admin session expired. Please log in again.']);
+        }
+
         if ($request->hasFile('hero_image')) {
             $validatedData['hero_image'] = $request->file('hero_image')->store('news/heroes', 'public');
         }
 
-        // tech_specs is handled as an array (mapped in validateArticle or processed here)
-        // ensure is_published is boolean
         $validatedData['is_published'] = $request->boolean('is_published');
 
         News::create($validatedData);
@@ -41,12 +61,17 @@ class NewsArticleController extends Controller
 
     public function edit(News $news)
     {
-        // Parameter $news is automatically resolved via Slug because of getRouteKeyName() in Model
+        // 2. Security Check: Only allow owner or admin
+        $this->authorizeAccess($news);
+
         return view('admin.news.edit', ['article' => $news]);
     }
 
     public function update(Request $request, News $news)
     {
+        // 3. Security Check: Only allow owner or admin
+        $this->authorizeAccess($news);
+
         $validatedData = $this->validateArticle($request, $news->id);
 
         if ($request->hasFile('hero_image')) {
@@ -65,6 +90,9 @@ class NewsArticleController extends Controller
 
     public function destroy(News $news)
     {
+        // 4. Security Check: Only allow owner or admin
+        $this->authorizeAccess($news);
+
         if ($news->hero_image) {
             Storage::disk('public')->delete($news->hero_image);
         }
@@ -73,7 +101,18 @@ class NewsArticleController extends Controller
         return redirect()->route('admin.news.index')->with('success', 'Article deleted.');
     }
 
-    // ================= HELPERS & VALIDATION =================
+    /**
+     * Internal helper to prevent unauthorized modifications
+     */
+    protected function authorizeAccess(News $news)
+    {
+        $admin = Auth::guard('admin')->user();
+
+        // Check if the admin is NOT a super-admin AND doesn't own the article
+        if (!$admin->hasRole('super-admin') && $news->admin_id !== $admin->id) {
+            abort(403, 'Unauthorized action. You do not own this article.');
+        }
+    }
 
     protected function validateArticle(Request $request, $id = null)
     {
@@ -82,31 +121,21 @@ class NewsArticleController extends Controller
             'title_highlight' => 'nullable|string|max:255',
             'title_suffix' => 'nullable|string|max:255',
             'slug' => 'nullable|string|max:255|unique:news,slug,' . $id,
-
-            // Required per your DB (No Null)
             'author_initials' => 'required|string|max:2',
             'author_name' => 'required|string|max:255',
             'author_role' => 'required|string|max:255',
-
-            // Hero Image is "No Null" in DB, but nullable here to allow keeping old image on update
             'hero_image' => ($id ? 'nullable' : 'required') . '|image|max:4096',
             'figure_caption' => 'nullable|string|max:255',
             'lead_paragraph' => 'required|string',
-
             'section_1_title' => 'nullable|string|max:255',
             'section_1_content' => 'nullable|string',
-
-            // Fixed: tech_specs and tech_note match your DB column 14 and 15
             'tech_specs' => 'nullable|array',
             'tech_note' => 'nullable|string',
-
             'section_2_title' => 'nullable|string|max:255',
             'section_2_content' => 'nullable|string',
-
             'quote_text' => 'nullable|string',
             'quote_author' => 'nullable|string|max:255',
             'quote_author_title' => 'nullable|string|max:255',
-
             'section_3_title' => 'nullable|string|max:255',
             'section_3_content' => 'nullable|string',
             'is_published' => 'boolean',

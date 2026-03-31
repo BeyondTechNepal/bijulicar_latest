@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-
 class Admin extends Authenticatable
 {
     use HasRoles, Notifiable, Authorizable;
@@ -26,5 +25,10 @@ class Admin extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function news()
+    {
+        return $this->hasMany(News::class);
     }
 }

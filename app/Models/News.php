@@ -21,6 +21,7 @@ class News extends Model
      * Note: 'tech_notetext' is fixed here.
      */
     protected $fillable = [
+        'admin_id',
         'title',
         'title_highlight',
         'title_suffix',
@@ -44,6 +45,14 @@ class News extends Model
         'section_3_content',
         'is_published',
     ];
+
+    /**
+     * Get the admin that authored the news.
+     */
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
 
     /**
      * Casts for JSON and Boolean data types.

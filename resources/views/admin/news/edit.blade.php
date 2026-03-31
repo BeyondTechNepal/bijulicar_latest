@@ -1,231 +1,44 @@
 @extends('admin.layout')
 
-@section('title', 'Edit News: ' . $article->title)
+@section('title', 'Edit News Article')
 
 @section('content')
-    <div class="max-w-5xl mx-auto p-6">
-
-        {{-- Header --}}
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Edit News Article</h1>
-                <p class="text-sm text-gray-500 font-mono">RECORD_ID: #{{ $article->id }} | SLUG: {{ $article->slug }}</p>
-            </div>
-            <a href="{{ route('admin.news.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-                &larr; Back to Archive
-            </a>
+<div class="max-w-5xl mx-auto p-6">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Edit News Entry</h1>
+            <p class="text-[10px] text-slate-500 font-mono uppercase mt-1 tracking-widest">Modified by: {{ $article->admin->name }}</p>
         </div>
-
-        @if ($errors->any())
-            <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-400 text-red-700 text-sm">
-                <p class="font-bold">Update Failed:</p>
-                <ul class="list-disc ml-5 mt-1">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('admin.news.update', $article->slug) }}" method="POST" enctype="multipart/form-data"
-            class="space-y-8">
-            @csrf
-            @method('PUT')
-
-            {{-- 1. Primary Content Section --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="font-bold text-gray-700 uppercase tracking-wider text-xs">Primary Content</h3>
-                </div>
-                <div class="p-6 space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Main Title *</label>
-                            <input type="text" name="title" value="{{ old('title', $article->title) }}" required
-                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Slug</label>
-                            <input type="text" name="slug" value="{{ old('slug', $article->slug) }}"
-                                class="w-full border-gray-300 rounded-lg shadow-sm bg-gray-50">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Title Highlight (Prefix)</label>
-                            <input type="text" name="title_highlight"
-                                value="{{ old('title_highlight', $article->title_highlight) }}"
-                                class="w-full border-gray-300 rounded-lg shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Title Suffix</label>
-                            <input type="text" name="title_suffix"
-                                value="{{ old('title_suffix', $article->title_suffix) }}"
-                                class="w-full border-gray-300 rounded-lg shadow-sm">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Lead Paragraph (Main Body) *</label>
-                        <textarea name="lead_paragraph" rows="6" required
-                            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('lead_paragraph', $article->lead_paragraph) }}</textarea>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 2. Author & Media Section --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="font-bold text-gray-700 uppercase tracking-wider text-xs mb-4">Author Details</h3>
-                    <div class="space-y-4">
-                        <div class="flex gap-4">
-                            <div class="w-20">
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">Initials *</label>
-                                <input type="text" name="author_initials" maxlength="2"
-                                    value="{{ old('author_initials', $article->author_initials) }}" required
-                                    class="w-full border-gray-300 rounded-lg shadow-sm uppercase text-center font-mono">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">Author Full Name *</label>
-                                <input type="text" name="author_name"
-                                    value="{{ old('author_name', $article->author_name) }}" required
-                                    class="w-full border-gray-300 rounded-lg shadow-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Author Role *</label>
-                            <input type="text" name="author_role"
-                                value="{{ old('author_role', $article->author_role) }}" required
-                                class="w-full border-gray-300 rounded-lg shadow-sm">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="font-bold text-gray-700 uppercase tracking-wider text-xs mb-4">Visual Media</h3>
-                    <div class="space-y-4">
-                        {{-- Image Preview --}}
-                        @if ($article->hero_image)
-                            <div class="mb-2">
-                                <p class="text-[10px] text-gray-400 uppercase mb-1">Current Image:</p>
-                                <img src="{{ asset('storage/' . $article->hero_image) }}"
-                                    class="h-20 w-full object-cover rounded-lg border border-gray-200 shadow-sm">
-                            </div>
-                        @endif
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Update Hero Image</label>
-                            <input type="file" name="hero_image"
-                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Figure Caption</label>
-                            <input type="text" name="figure_caption"
-                                value="{{ old('figure_caption', $article->figure_caption) }}"
-                                class="w-full border-gray-300 rounded-lg shadow-sm">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 3. Dynamic Technical Specs --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-bold text-gray-700 uppercase tracking-wider text-xs">Technical Specifications</h3>
-                    <button type="button" onclick="addSpecRow()"
-                        class="text-xs bg-indigo-600 text-white px-3 py-1 rounded-md hover:bg-indigo-700 transition">
-                        + Add Spec
-                    </button>
-                </div>
-                <div id="tech-specs-container" class="space-y-3">
-                    @php $specs = old('tech_specs', $article->tech_specs ?? []); @endphp
-                    @forelse ($specs as $index => $spec)
-                        <div class="flex gap-3 spec-row">
-                            <input type="text" name="tech_specs[{{ $index }}][key]"
-                                value="{{ $spec['key'] ?? '' }}" placeholder="Label"
-                                class="flex-1 border-gray-300 rounded-lg shadow-sm text-sm">
-                            <input type="text" name="tech_specs[{{ $index }}][value]"
-                                value="{{ $spec['value'] ?? '' }}" placeholder="Value"
-                                class="flex-1 border-gray-300 rounded-lg shadow-sm text-sm">
-                            <button type="button" onclick="this.parentElement.remove()"
-                                class="text-red-400 hover:text-red-600">&times;</button>
-                        </div>
-                    @empty
-                        <div class="flex gap-3 spec-row">
-                            <input type="text" name="tech_specs[0][key]" placeholder="Label"
-                                class="flex-1 border-gray-300 rounded-lg shadow-sm text-sm">
-                            <input type="text" name="tech_specs[0][value]" placeholder="Value"
-                                class="flex-1 border-gray-300 rounded-lg shadow-sm text-sm">
-                            <button type="button" onclick="this.parentElement.remove()"
-                                class="text-red-400 hover:text-red-600">&times;</button>
-                        </div>
-                    @endforelse
-                </div>
-                <div class="mt-4">
-                    <label class="block text-xs font-semibold text-gray-500 mb-1">Technical Note (tech_note)</label>
-                    <textarea name="tech_note" rows="2" class="w-full border-gray-300 rounded-lg shadow-sm text-sm">{{ old('tech_note', $article->tech_note) }}</textarea>
-                </div>
-            </div>
-
-            {{-- 4. Sections & Quotes --}}
-            <div class="bg-gray-100 p-1 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-6 rounded-lg border border-gray-200">
-                    <h3 class="font-bold text-gray-700 uppercase tracking-wider text-xs mb-3 text-indigo-600">Section 1
-                        Extension</h3>
-                    <input type="text" name="section_1_title"
-                        value="{{ old('section_1_title', $article->section_1_title) }}" placeholder="Section 1 Title"
-                        class="w-full mb-3 border-gray-300 rounded-lg shadow-sm text-sm">
-                    <textarea name="section_1_content" rows="3" placeholder="Section 1 Content..."
-                        class="w-full border-gray-300 rounded-lg shadow-sm text-sm">{{ old('section_1_content', $article->section_1_content) }}</textarea>
-                </div>
-                <div class="bg-white p-6 rounded-lg border border-gray-200">
-                    <h3 class="font-bold text-gray-700 uppercase tracking-wider text-xs mb-3 text-indigo-600">Quote Block
-                    </h3>
-                    <textarea name="quote_text" rows="2" placeholder="Quote..."
-                        class="w-full mb-3 border-gray-300 rounded-lg shadow-sm text-sm italic">{{ old('quote_text', $article->quote_text) }}</textarea>
-                    <input type="text" name="quote_author" value="{{ old('quote_author', $article->quote_author) }}"
-                        placeholder="Author" class="w-full mb-2 border-gray-300 rounded-lg shadow-sm text-xs">
-                    <input type="text" name="quote_author_title"
-                        value="{{ old('quote_author_title', $article->quote_author_title) }}"
-                        placeholder="Title/Position" class="w-full border-gray-300 rounded-lg shadow-sm text-xs">
-                </div>
-            </div>
-
-            {{-- Submission --}}
-            <div class="flex items-center justify-between p-6 bg-white rounded-xl border border-gray-200 shadow-md">
-                <div class="flex items-center">
-                    <input type="hidden" name="is_published" value="0">
-                    <input type="checkbox" name="is_published" id="is_published" value="1"
-                        {{ old('is_published', $article->is_published) ? 'checked' : '' }}
-                        class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="is_published" class="ml-2 block text-sm text-gray-900 font-medium">
-                        Article is Live
-                    </label>
-                </div>
-                <div class="flex gap-4">
-                    <button type="submit"
-                        class="bg-slate-900 hover:bg-black text-white font-bold py-3 px-10 rounded-lg shadow-lg transition duration-200 uppercase tracking-widest text-xs">
-                        Update Article
-                    </button>
-                </div>
-            </div>
-        </form>
     </div>
 
-    <script>
-        let specCount = {{ count($specs) > 0 ? count($specs) : 1 }};
+    <form action="{{ route('admin.news.update', $article->slug) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+        @csrf
+        @method('PUT')
 
-        function addSpecRow() {
-            const container = document.getElementById('tech-specs-container');
-            const row = `
-            <div class="flex gap-3 spec-row">
-                <input type="text" name="tech_specs[${specCount}][key]" placeholder="Label" class="flex-1 border-gray-300 rounded-lg shadow-sm text-sm">
-                <input type="text" name="tech_specs[${specCount}][value]" placeholder="Value" class="flex-1 border-gray-300 rounded-lg shadow-sm text-sm">
-                <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600">&times;</button>
-            </div>`;
-            container.insertAdjacentHTML('beforeend', row);
-            specCount++;
-        }
-    </script>
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 space-y-6">
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Main Title</label>
+                <input type="text" name="title" value="{{ old('title', $article->title) }}" required class="w-full border-slate-200 rounded-xl font-bold text-slate-700">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-2xl">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Current Hero Image</p>
+                    <img src="{{ asset('storage/' . $article->hero_image) }}" class="h-20 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Replace Image</label>
+                    <input type="file" name="hero_image" class="text-xs text-slate-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Role</label>
+                <input type="text" name="author_role" value="{{ old('author_role', $article->author_role) }}" required class="w-full border-slate-200 rounded-xl font-bold">
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-slate-900 transition-all uppercase tracking-widest text-xs">Update Article</button>
+    </form>
+</div>
 @endsection

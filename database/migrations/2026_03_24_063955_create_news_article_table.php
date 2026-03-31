@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('author_name')->nullable();
             $table->string('author_role')->nullable();
             $table->string('author_image')->nullable();
-            $table->string('read_time')->nullable(); // e.g., "8 Min Read"
+            $table->string('read_time')->nullable(); // e.g., "8 Min Read" ->remove
             $table->string('badge_text')->nullable(); // e.g., "In-Depth Review"
             $table->date('published_at')->nullable();
 

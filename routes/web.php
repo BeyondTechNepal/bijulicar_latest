@@ -12,8 +12,9 @@ Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, '
 Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::class, 'search'])->name('marketplace.search');
 // Route::get('/news', fn() => view('frontend.pages.news'))->name('news');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
+Route::get('/news/{news:slug}', [App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
 // Route::get('/map_location', fn() => view('frontend.pages.map_location'))->name('map_location');
-Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
+// Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/map_location', [App\Http\Controllers\MapController::class, 'index'])->name('map_location');
 Route::get('/loan_calculator', fn() => view('frontend.pages.loan_calculator'))->name('loan_calculator');
 // Route::get('/contact', fn() => view('frontend.pages.contact'))->name('contact');

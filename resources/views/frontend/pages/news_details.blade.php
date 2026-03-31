@@ -80,304 +80,13 @@
         </div>
     </section>
 
-    <div class="bg-white font-sans antialiased text-slate-900">
-
-        <section class="max-w-7xl mx-auto px-6 py-6 pb-24">
-            <div class="grid lg:grid-cols-12 gap-12">
-
-                {{-- <div class="lg:col-span-8 space-y-10">
-                    <div class="flex items-center gap-4 mb-8">
-                        <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 whitespace-nowrap">
-                            Intelligence Stream</h3>
-                        <div class="h-px w-full bg-slate-100"></div>
-                    </div>
-
-                    @php
-                        $news = [
-                            [
-                                'cat' => 'Tech',
-                                'title' => 'Hydrogen Combustion: The Silent Rival to EV Dominance',
-                                'img' => 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=1000',
-                                'date' => 'MAR 30',
-                            ],
-                            [
-                                'cat' => 'Markets',
-                                'title' => 'European Lithium Mining Sees 200% Investment Surge',
-                                'img' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1000',
-                                'date' => 'MAR 29',
-                            ],
-                            [
-                                'cat' => 'Design',
-                                'title' => 'Retro-Futurism: Why Brands are Reviving 80s Silhouettes',
-                                'img' => 'https://images.unsplash.com/photo-1542362567-b0526162cd65?q=80&w=1000',
-                                'date' => 'MAR 29',
-                            ],
-                            [
-                                'cat' => 'Policy',
-                                'title' => 'New Urban Speed Limits: The Impact on Gearbox Longevity',
-                                'img' => 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1000',
-                                'date' => 'MAR 28',
-                            ],
-                            [
-                                'cat' => 'Performance',
-                                'title' => 'Track Test: The New Apex Predator Clocking Sub-7 Nürburgring',
-                                'img' => 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000',
-                                'date' => 'MAR 27',
-                            ],
-                            [
-                                'cat' => 'Supply',
-                                'title' => 'Magnesium Shortages Threaten Lightweight Chassis Production',
-                                'img' => 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1000',
-                                'date' => 'MAR 27',
-                            ],
-                            [
-                                'cat' => 'Innovation',
-                                'title' => 'Solar Glass Roofs: Finally a Viable Secondary Charge Source?',
-                                'img' => 'https://images.unsplash.com/photo-1508138221679-760a23a2285b?q=80&w=1000',
-                                'date' => 'MAR 26',
-                            ],
-                            [
-                                'cat' => 'Global',
-                                'title' => 'Tokyo Auto Show Highlights: The Rise of Modular City Cars',
-                                'img' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000',
-                                'date' => 'MAR 25',
-                            ],
-                        ];
-                    @endphp
-
-                    @foreach ($news as $item)
-                        <div class="group grid md:grid-cols-12 gap-6 pb-10 border-b border-slate-100 last:border-0">
-                            <div class="md:col-span-4 overflow-hidden rounded-2xl aspect-video bg-slate-100">
-                                <img src="{{ $item['img'] }}"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            </div>
-                            <div class="md:col-span-8 flex flex-col justify-center">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <span
-                                        class="text-[9px] font-black uppercase tracking-widest text-[#4ade80]">{{ $item['cat'] }}</span>
-                                    <span class="text-slate-300 text-[9px]">•</span>
-                                    <span class="text-slate-400 text-[9px] font-bold uppercase">{{ $item['date'] }},
-                                        2026</span>
-                                </div>
-                                <h4
-                                    class="text-xl font-black text-slate-900 mb-2 group-hover:text-slate-600 transition-colors uppercase italic leading-tight tracking-tight">
-                                    {{ $item['title'] }}
-                                </h4>
-                                <p class="text-slate-500 text-sm leading-relaxed line-clamp-2">
-                                    Deep dive into the architectural shifts and engineering milestones defining this
-                                    quarter's industry trajectory...
-                                </p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div> --}}
-
-                <div class="lg:col-span-8 space-y-10">
-                    <div class="flex items-center gap-4 mb-8">
-                        <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 whitespace-nowrap">
-                            Intelligence Stream
-                        </h3>
-                        <div class="h-px w-full bg-slate-100"></div>
-                    </div>
-
-                    @foreach ($newsItems as $item)
-                        <a href="{{ route('news.show', $item->slug) }}"
-                            class="group block border-b border-slate-100 last:border-0 pb-10">
-                            <div class="grid md:grid-cols-12 gap-6">
-                                <div class="md:col-span-4 overflow-hidden rounded-2xl aspect-video bg-slate-100">
-                                    <img src="{{ asset('storage/' . $item->hero_image) }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        alt="{{ $item->title }}">
-                                </div>
-
-                                <div class="md:col-span-8 flex flex-col justify-center">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="text-[9px] font-black uppercase tracking-widest text-[#4ade80]">
-                                            {{ $item->author_role }}
-                                        </span>
-                                        <span class="text-slate-300 text-[9px]">•</span>
-                                        <span class="text-slate-400 text-[9px] font-bold uppercase">
-                                            @if ($item->created_at)
-                                                {{ $item->created_at->format('M d, Y') }}
-                                            @endif
-                                        </span>
-                                    </div>
-
-                                    <h4
-                                        class="text-xl font-black text-slate-900 mb-2 group-hover:text-slate-600 transition-colors uppercase italic leading-tight tracking-tight">
-                                        {{ $item->title }} {{ $item->title_highlight }}
-                                    </h4>
-
-                                    <p class="text-slate-500 text-sm leading-relaxed line-clamp-2">
-                                        {{ strip_tags($item->lead_paragraph) }}
-                                    </p>
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-
-                <aside class="lg:col-span-4">
-                    <div class="sticky top-10 space-y-8">
-
-                        <div
-                            class="group relative rounded-3xl overflow-hidden bg-[#502915] aspect-[4/5] shadow-xl border border-slate-100">
-                            <img src="{{ asset('images/burgerking.jfif') }}"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
-                                alt="Burger King Whopper">
-
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#502915] via-transparent to-black/20"></div>
-
-                            <div class="absolute inset-0 p-8 flex flex-col justify-end items-center text-center">
-                                <div
-                                    class="bg-[#ed6906] text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-4 shadow-lg animate-pulse">
-                                    Flame Grilled
-                                </div>
-
-                                <h5
-                                    class="text-white text-3xl font-black uppercase italic leading-none mb-2 tracking-tighter drop-shadow-lg">
-                                    The <span class="text-[#ed6906]">Whopper</span>
-                                </h5>
-
-                                <p
-                                    class="text-[#f5ebdc] text-[11px] font-bold uppercase tracking-widest mb-6 drop-shadow-md">
-                                    100% Real Beef. No Fillers.
-                                </p>
-
-                                <a href="https://www.bk.com" target="_blank"
-                                    class="w-full py-4 bg-[#f5ebdc] text-[#502915] rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#ed6906] hover:text-white transition-all duration-300 shadow-xl">
-                                    Order Now
-                                </a>
-
-                                <p class="mt-4 text-[8px] text-white/40 uppercase tracking-widest font-medium">
-                                    Limited time at participating US restaurants.
-                                </p>
-                            </div>
-
-                            <div
-                                class="absolute top-4 right-4 w-10 h-10 bg-[#f5ebdc] rounded-full flex items-center justify-center shadow-lg border-2 border-[#ed6906]">
-                                <span class="text-[#502915] font-black text-[10px]">BK</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-50 rounded-3xl p-7 border border-slate-100">
-                            <div class="flex items-center gap-3 mb-8">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80]"></span>
-                                <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Current Topics
-                                </h4>
-                            </div>
-
-                            <div class="space-y-6">
-                                @php
-                                    $headlines = [
-                                        ['label' => 'Markets', 'title' => 'EU Battery Regulation Overhaul'],
-                                        ['label' => 'Tech', 'title' => 'Solid-State Breakthroughs'],
-                                        ['label' => 'Design', 'title' => 'The Decline of Interior Screens'],
-                                        ['label' => 'Logistics', 'title' => 'Port Congestion Impacts Q2'],
-                                        ['label' => 'Innovation', 'title' => 'AI-Driven Chassis Calibration'],
-                                        ['label' => 'Economy', 'title' => 'Global Steel Price Fluctuations'],
-                                    ];
-                                @endphp
-
-                                @foreach ($headlines as $item)
-                                    <a href="#"
-                                        class="group block border-l-2 border-slate-200 pl-4 hover:border-[#4ade80] transition-colors duration-300">
-                                        <span
-                                            class="block text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover:text-[#4ade80] transition-colors mb-1">
-                                            {{ $item['label'] }}
-                                        </span>
-                                        <h5
-                                            class="text-sm font-black text-slate-900 uppercase italic leading-tight group-hover:text-slate-600 transition-colors tracking-tight">
-                                            {{ $item['title'] }}
-                                        </h5>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="relative rounded-3xl aspect-square overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000"
-                                class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/40 p-8 flex flex-col justify-end">
-                                <span class="text-[#4ade80] text-[9px] font-black uppercase tracking-widest mb-2">Partner
-                                    Content</span>
-                                <p class="text-white font-black uppercase italic text-xl leading-none">
-                                    Experience<br>Unrivaled<br>Performance</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100">
-                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-5">Upcoming
-                                Summits</h4>
-                            <div class="space-y-4">
-                                <div class="group flex items-center justify-between cursor-pointer">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-slate-900 uppercase">Munich Mobility</p>
-                                        <p class="text-[9px] text-slate-400">APRIL 2026</p>
-                                    </div>
-                                    <span class="text-slate-300 group-hover:text-[#4ade80] transition-colors">→</span>
-                                </div>
-                                <div class="group flex items-center justify-between cursor-pointer">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-slate-900 uppercase">Detroit Auto Intel</p>
-                                        <p class="text-[9px] text-slate-400">MAY 2026</p>
-                                    </div>
-                                    <span class="text-slate-300 group-hover:text-[#4ade80] transition-colors">→</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="relative group rounded-3xl overflow-hidden bg-black aspect-[4/5] shadow-2xl border border-white/5">
-                            <img src="{{ asset('images/primeenergydrink.jfif') }}"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80"
-                                alt="Prime Energy Drink">
-
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-
-                            <div class="absolute inset-0 p-8 flex flex-col justify-end items-start text-left">
-                                <div
-                                    class="bg-white text-black px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-[0.3em] mb-4">
-                                    Official Partner
-                                </div>
-
-                                <h5
-                                    class="text-white text-4xl font-black uppercase italic leading-[0.85] mb-4 tracking-tighter">
-                                    Fuel Your<br><span class="text-white/50">Ambition</span>
-                                </h5>
-
-                                <p
-                                    class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6 leading-relaxed">
-                                    High-Performance Hydration<br>For the Modern Driver.
-                                </p>
-
-                                <a href="#"
-                                    class="w-full py-4 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-center hover:bg-[#4ade80] transition-all duration-300">
-                                    Shop Prime
-                                </a>
-                            </div>
-
-                            <div class="absolute -top-20 -right-20 w-48 h-48 bg-white/10 rounded-full blur-[80px]"></div>
-                        </div>
-
-                    </div>
-                </aside>
-
-            </div>
-        </section>
-    </div>
-
-
     {{-- below is the detailed news section, use it in another blade --}}
-    {{-- <div class="bg-white font-sans antialiased text-slate-900">
-        <div class="fixed top-0 left-0 w-full h-1.5 z-50 bg-slate-100">
-            <div class="bg-[#4ade80] h-full w-[45%] transition-all duration-300"></div>
-        </div>
+    <div class="bg-white font-sans antialiased text-slate-900">
 
         <section class="max-w-7xl mx-auto px-6 py-16">
             <div class="grid lg:grid-cols-12 gap-16">
 
-                <article class="lg:col-span-8">
+                {{-- <article class="lg:col-span-8">
 
                     <nav
                         class="flex items-center gap-4 mb-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
@@ -527,6 +236,151 @@
                             <a href="#" class="hover:text-black">LN</a>
                         </div>
                     </div>
+                </article> --}}
+
+                <article class="lg:col-span-8">
+
+                    {{-- Navigation - Dynamic Breadcrumb (if applicable) --}}
+                    <nav
+                        class="flex items-center gap-4 mb-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+                        <a href="#" class="hover:text-black transition-colors">Intelligence Hub</a>
+                        <span class="text-slate-200">/</span>
+                        <a href="#" class="text-[#4ade80]">Advanced Propulsion</a>
+                    </nav>
+
+                    {{-- Main Title Section --}}
+                    <h1 class="text-5xl md:text-7xl font-black uppercase italic leading-[0.85] tracking-tighter mb-10">
+                        {{ $news->title }}:<br>
+                        <span class="text-slate-400">{{ $news->title_highlight }}</span> <br>
+                        {{ $news->title_suffix }}
+                    </h1>
+
+                    {{-- Author & Metadata Section --}}
+                    <div class="flex flex-wrap items-center gap-8 py-8 mb-12 border-y border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white text-[11px] font-black italic">
+                                {{ $news->author_initials }}
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-tight">{{ $news->author_name }}</p>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase">{{ $news->author_role }}</p>
+                            </div>
+                        </div>
+                        <div class="hidden md:block h-10 w-px bg-slate-100"></div>
+                        <div class="flex gap-10">
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Read Time</p>
+                                <p class="text-xs font-bold uppercase italic">12 Minutes</p> {{-- Static --}}
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Complexity</p>
+                                <p class="text-xs font-bold uppercase italic text-[#4ade80]">Level 4/5</p>
+                                {{-- Static --}}
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Hero Figure --}}
+                    <figure class="mb-16">
+                        <div class="rounded-[3rem] overflow-hidden aspect-[21/9] bg-slate-100 shadow-2xl mb-4">
+                            <img src="{{ asset('storage/' . $news->hero_image) }}" class="w-full h-full object-cover"
+                                alt="{{ $news->title }}">
+                        </div>
+                        <figcaption class="text-[10px] text-slate-400 font-medium uppercase tracking-widest text-center">
+                            {{ $news->figure_caption }}
+                        </figcaption>
+                    </figure>
+
+                    <div class="prose prose-slate max-w-none">
+
+                        {{-- Lead Paragraph --}}
+                        <div
+                            class="text-2xl font-bold leading-snug text-slate-800 mb-10 italic border-l-4 border-[#4ade80] pl-8">
+                            {!! $news->lead_paragraph !!}
+                        </div>
+
+                        {{-- Section I --}}
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">
+                            {{ $news->section_1_title }}
+                        </h2>
+                        <div class="text-lg leading-relaxed text-slate-600 mb-8">
+                            {!! $news->section_1_content !!}
+                        </div>
+
+                        {{-- Technical Specs Box (Dynamic from JSON Array) --}}
+                        @if ($news->tech_specs)
+                            <div
+                                class="my-12 p-8 bg-slate-50 rounded-3xl border border-slate-100 grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-[10px] font-black uppercase tracking-widest text-[#4ade80] mb-4">
+                                        Comparative Energy Density
+                                    </h4>
+                                    <ul class="space-y-3">
+                                        @foreach ($news->tech_specs as $spec)
+                                            <li class="flex justify-between border-b border-slate-200 pb-2">
+                                                <span
+                                                    class="text-xs font-bold uppercase text-slate-500">{{ $spec['key'] }}</span>
+                                                <span class="text-xs font-black">{{ $spec['value'] }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <p class="text-[11px] leading-relaxed text-slate-500 italic">
+                                        <strong>Technical Note:</strong> {{ $news->tech_note }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Section II --}}
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">
+                            {{ $news->section_2_title }}
+                        </h2>
+                        <div class="text-lg leading-relaxed text-slate-600 mb-8">
+                            {!! $news->section_2_content !!}
+                        </div>
+
+                        {{-- Quote Section --}}
+                        <div class="my-16 text-center">
+                            <span class="inline-block w-12 h-1 bg-[#4ade80] mb-8"></span>
+                            <blockquote
+                                class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter leading-none text-slate-900 mb-8">
+                                "{{ $news->quote_text }}"
+                            </blockquote>
+                            <cite class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+                                — {{ $news->quote_author }}, {{ $news->quote_author_title }}
+                            </cite>
+                        </div>
+
+                        {{-- Section III --}}
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">
+                            {{ $news->section_3_title }}
+                        </h2>
+                        <div class="text-lg leading-relaxed text-slate-600 mb-12">
+                            {!! $news->section_3_content !!}
+                        </div>
+                    </div>
+
+                    {{-- Footer Actions --}}
+                    <div class="flex items-center justify-between py-10 border-t border-slate-100">
+                        <div class="flex gap-4">
+                            <button
+                                class="px-6 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#4ade80] hover:text-black transition-all">
+                                Save Report
+                            </button>
+                            <button
+                                class="px-6 py-3 border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-black transition-all">
+                                Print PDF
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-4 text-[10px] font-black uppercase text-slate-400">
+                            <span>Share:</span>
+                            <a href="#" class="hover:text-black">TW</a>
+                            <a href="#" class="hover:text-black">LN</a>
+                        </div>
+                    </div>
                 </article>
 
                 <aside class="lg:col-span-4">
@@ -585,11 +439,10 @@
                                 class="w-full py-4 bg-[#ed6906] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform relative z-10 shadow-xl">Order
                                 a Whopper</button>
                         </div>
-
                     </div>
                 </aside>
-
             </div>
         </section>
-    </div> --}}
+    </div>
+
 @endsection

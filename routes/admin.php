@@ -44,9 +44,6 @@ Route::prefix('admin')
                 Route::post('/contact-messages/{id}/undo', [App\Http\Controllers\Admin\ContactMessageController::class, 'undoRead'])->name('contact_messages.undo');
                 Route::delete('/contact-messages/{id}', [App\Http\Controllers\Admin\ContactMessageController::class, 'destroy'])->name('contact_messages.destroy');
 
-                // news
-                Route::resource('news', \App\Http\Controllers\Admin\NewsArticleController::class);
-
                 // contact banner
                 Route::resource('contact_banner', \App\Http\Controllers\Admin\ContactBannerController::class);
 
@@ -71,10 +68,23 @@ Route::prefix('admin')
 
                 // Delete role
                 Route::delete('/admin-roles/{role}', [\App\Http\Controllers\Admin\AdminRoleController::class, 'destroy'])->name('admin_roles.destroy');
+
+                // admin permissions CRUD
+                Route::get('/admin-permissions', [\App\Http\Controllers\Admin\AdminPermissionController::class, 'index'])->name('admin_permissions.index');
+                Route::get('/admin-permissions/create', [\App\Http\Controllers\Admin\AdminPermissionController::class, 'create'])->name('admin_permissions.create');
+                Route::post('/admin-permissions', [\App\Http\Controllers\Admin\AdminPermissionController::class, 'store'])->name('admin_permissions.store');
+                Route::get('/admin-permissions/{permission}/edit', [\App\Http\Controllers\Admin\AdminPermissionController::class, 'edit'])->name('admin_permissions.edit');
+                Route::put('/admin-permissions/{permission}', [\App\Http\Controllers\Admin\AdminPermissionController::class, 'update'])->name('admin_permissions.update');
+                Route::delete('/admin-permissions/{permission}', [\App\Http\Controllers\Admin\AdminPermissionController::class, 'destroy'])->name('admin_permissions.destroy');
+            });
+
+            Route::middleware(['role:superadmin|admin|newsadmin,admin'])->group(function () {
+                // news
+                Route::resource('news', \App\Http\Controllers\Admin\NewsArticleController::class);
             });
 
             // 4. Staff Management (Superadmin ONLY)
-            Route::middleware(['role:superadmin'])->group(function () {
+            Route::middleware(['role:superadmin,admin'])->group(function () {
                 Route::resource('admins', AdminManagementController::class)->except(['show']);
             });
         });

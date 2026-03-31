@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\NewsArticle;
+use App\Models\News;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class NewsArticleController extends Controller
 {
     public function index()
     {
-        
-        $articles = NewsArticle::orderBy('published_at', 'asc')->paginate(5);
+        $articles = News::orderBy('created_at', 'desc')->paginate(10);
         return view('admin.news.index', compact('articles'));
     }
 
@@ -23,144 +23,93 @@ class NewsArticleController extends Controller
 
     public function store(Request $request)
     {
-        $data = $this->validateArticle($request);
+        $validatedData = $this->validateArticle($request);
 
-        // Uploads
-        $data['author_image'] = $this->uploadImage($request, 'author_image');
-        $data['hero_image'] = $this->uploadImage($request, 'hero_image');
+        // Handle Hero Image Upload
+        if ($request->hasFile('hero_image')) {
+            $validatedData['hero_image'] = $request->file('hero_image')->store('news/heroes', 'public');
+        }
 
-        // Arrays
-        $data['vehicle_specs'] = $this->mapSpecs($request);
-        $data['related_articles'] = $this->mapRelated($request);
-        $data['content_images'] = $this->cleanSimpleArray($request->input('content_images'));
-        $data['content_images2'] = $this->cleanSimpleArray($request->input('content_images2'));
+        // tech_specs is handled as an array (mapped in validateArticle or processed here)
+        // ensure is_published is boolean
+        $validatedData['is_published'] = $request->boolean('is_published');
 
-        NewsArticle::create($data);
+        News::create($validatedData);
 
-        return redirect()->route('admin.news.index')->with('success', 'News article created successfully.');
+        return redirect()->route('admin.news.index')->with('success', 'Article published successfully.');
     }
 
-    public function edit(NewsArticle $news)
+    public function edit(News $news)
     {
+        // Parameter $news is automatically resolved via Slug because of getRouteKeyName() in Model
         return view('admin.news.edit', ['article' => $news]);
     }
 
-    public function update(Request $request, NewsArticle $news)
+    public function update(Request $request, News $news)
     {
-        $data = $this->validateArticle($request);
+        $validatedData = $this->validateArticle($request, $news->id);
 
-        // Uploads with cleanup
-        $data['author_image'] = $this->updateImage($request, $news, 'author_image');
-        $data['hero_image'] = $this->updateImage($request, $news, 'hero_image');
+        if ($request->hasFile('hero_image')) {
+            if ($news->hero_image) {
+                Storage::disk('public')->delete($news->hero_image);
+            }
+            $validatedData['hero_image'] = $request->file('hero_image')->store('news/heroes', 'public');
+        }
 
-        // Arrays
-        $data['vehicle_specs'] = $this->mapSpecs($request);
-        $data['related_articles'] = $this->mapRelated($request);
-        $data['content_images'] = $this->cleanSimpleArray($request->input('content_images'));
-        $data['content_images2'] = $this->cleanSimpleArray($request->input('content_images2'));
+        $validatedData['is_published'] = $request->boolean('is_published');
 
-        $news->update($data);
+        $news->update($validatedData);
 
-        return redirect()->route('admin.news.index')->with('success', 'News article updated successfully.');
+        return redirect()->route('admin.news.index')->with('success', 'Article updated successfully.');
     }
 
-    public function destroy(NewsArticle $news)
+    public function destroy(News $news)
     {
-        if ($news->author_image) Storage::disk('public')->delete($news->author_image);
-        if ($news->hero_image) Storage::disk('public')->delete($news->hero_image);
+        if ($news->hero_image) {
+            Storage::disk('public')->delete($news->hero_image);
+        }
 
         $news->delete();
-
-        return redirect()->route('admin.news.index')->with('success', 'News article deleted successfully.');
+        return redirect()->route('admin.news.index')->with('success', 'Article deleted.');
     }
 
-    // ================= VALIDATION =================
-    protected function validateArticle(Request $request)
+    // ================= HELPERS & VALIDATION =================
+
+    protected function validateArticle(Request $request, $id = null)
     {
         return $request->validate([
             'title' => 'required|string|max:255',
-            'subtitle' => 'nullable|string|max:255',
-            'author_name' => 'nullable|string|max:255',
-            'author_role' => 'nullable|string|max:255',
-            'read_time' => 'nullable|string|max:255',
-            'badge_text' => 'nullable|string|max:255',
-            'published_at' => 'nullable|date',
+            'title_highlight' => 'nullable|string|max:255',
+            'title_suffix' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:news,slug,' . $id,
 
-            'hero_caption' => 'nullable|string',
-            'content_html' => 'nullable|string',
-            'quote' => 'nullable|string',
+            // Required per your DB (No Null)
+            'author_initials' => 'required|string|max:2',
+            'author_name' => 'required|string|max:255',
+            'author_role' => 'required|string|max:255',
 
-            // Section 2
-            'title2' => 'nullable|string|max:255',
-            'content_html2' => 'nullable|string',
+            // Hero Image is "No Null" in DB, but nullable here to allow keeping old image on update
+            'hero_image' => ($id ? 'nullable' : 'required') . '|image|max:4096',
+            'figure_caption' => 'nullable|string|max:255',
+            'lead_paragraph' => 'required|string',
 
-            // Section 3
-            'title3' => 'nullable|string|max:255',
-            'content_html3' => 'nullable|string',
+            'section_1_title' => 'nullable|string|max:255',
+            'section_1_content' => 'nullable|string',
 
-            // Arrays
-            'vehicle_specs' => 'nullable|array',
-            'content_images' => 'nullable|array',
-            'content_images2' => 'nullable|array',
-            'related_articles' => 'nullable|array',
+            // Fixed: tech_specs and tech_note match your DB column 14 and 15
+            'tech_specs' => 'nullable|array',
+            'tech_note' => 'nullable|string',
 
-            // Images
-            'author_image' => 'nullable|image|max:2048',
-            'hero_image' => 'nullable|image|max:4096',
+            'section_2_title' => 'nullable|string|max:255',
+            'section_2_content' => 'nullable|string',
+
+            'quote_text' => 'nullable|string',
+            'quote_author' => 'nullable|string|max:255',
+            'quote_author_title' => 'nullable|string|max:255',
+
+            'section_3_title' => 'nullable|string|max:255',
+            'section_3_content' => 'nullable|string',
+            'is_published' => 'boolean',
         ]);
-    }
-
-    // ================= HELPERS =================
-
-    protected function uploadImage(Request $request, $field)
-    {
-        return $request->hasFile($field)
-            ? $request->file($field)->store('news_images', 'public')
-            : null;
-    }
-
-    protected function updateImage(Request $request, $model, $field)
-    {
-        if ($request->hasFile($field)) {
-            if ($model->$field) {
-                Storage::disk('public')->delete($model->$field);
-            }
-            return $request->file($field)->store('news_images', 'public');
-        }
-
-        return $model->$field;
-    }
-
-    protected function mapSpecs(Request $request)
-    {
-        return collect($request->input('vehicle_specs.key', []))
-            ->map(fn($key, $i) => [
-                'key' => $key,
-                'value' => $request->input('vehicle_specs.value')[$i] ?? ''
-            ])
-            ->filter(fn($item) => !empty($item['key']))
-            ->values()
-            ->toArray();
-    }
-
-    protected function mapRelated(Request $request)
-    {
-        return collect($request->input('related_articles.title', []))
-            ->map(fn($title, $i) => [
-                'title' => $title,
-                'category' => $request->input('related_articles.category')[$i] ?? '',
-                'image' => $request->input('related_articles.image')[$i] ?? '',
-            ])
-            ->filter(fn($item) => !empty($item['title']))
-            ->values()
-            ->toArray();
-    }
-
-    protected function cleanSimpleArray($array)
-    {
-        return collect($array ?? [])
-            ->filter(fn($item) => !empty($item))
-            ->values()
-            ->toArray();
     }
 }

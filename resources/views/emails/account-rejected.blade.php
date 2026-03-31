@@ -1,14 +1,78 @@
 <!DOCTYPE html>
 <html>
-<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 24px;">
-    <h2 style="color: #D85A30;">Application not approved</h2>
-    <p>Hi {{ $user->name }},</p>
-    <p>We reviewed your Bijulicar account application and unfortunately were unable to approve it at this time.</p>
-    <div style="background:#fff4f0; border-left:4px solid #D85A30; padding:12px 16px; margin:16px 0; border-radius:4px;">
-        <strong>Reason:</strong><br>
-        {{ $reason }}
+<body style="font-family: 'Inter', Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 32px 16px;">
+
+    <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
+
+        {{-- Top accent bar --}}
+        <div style="height: 4px; background: #dc2626;"></div>
+
+        {{-- Header --}}
+        <div style="padding: 32px 40px 24px; border-bottom: 1px solid #f1f5f9;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 32px; height: 32px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    ⚡
+                </div>
+                <span style="font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #0f172a;">
+                    Bijuli<span style="color: #16a34a;">Car</span>
+                </span>
+            </div>
+        </div>
+
+        {{-- Body --}}
+        <div style="padding: 36px 40px;">
+
+            <p style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #dc2626; margin: 0 0 8px;">
+                Application Update
+            </p>
+
+            <h1 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0 0 16px; font-style: italic; text-transform: uppercase; letter-spacing: -0.02em;">
+                Not approved
+            </h1>
+
+            <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 12px;">
+                Hi <strong style="color: #0f172a;">{{ $user->name }}</strong>,
+            </p>
+
+            <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
+                We reviewed your Bijulicar verification application and unfortunately were unable to approve it at this time. Please see the reason below.
+            </p>
+
+            {{-- Rejection reason box --}}
+            <div style="background: #fff5f5; border-left: 4px solid #dc2626; border-radius: 8px; padding: 16px 20px; margin: 0 0 24px;">
+                <p style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #dc2626; margin: 0 0 6px;">
+                    Reason
+                </p>
+                <p style="font-size: 14px; color: #7f1d1d; line-height: 1.6; margin: 0;">
+                    {{ $reason }}
+                </p>
+            </div>
+
+            <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
+                If you've corrected the issue or believe this was a mistake, you can log back in and resubmit your application.
+            </p>
+
+            {{-- CTA button --}}
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="{{ url('/login') }}"
+                   style="display: inline-block; background: #0f172a; color: #ffffff; padding: 14px 32px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; text-decoration: none; font-style: italic;">
+                    Resubmit Application →
+                </a>
+            </div>
+
+            <p style="font-size: 13px; color: #94a3b8; line-height: 1.7; margin: 0;">
+                Questions? Contact us at
+                <a href="mailto:support@bijulicar.com" style="color: #16a34a;">support@bijulicar.com</a>
+            </p>
+        </div>
+
+        {{-- Footer --}}
+        <div style="padding: 20px 40px; background: #f8fafc; border-top: 1px solid #f1f5f9;">
+            <p style="font-size: 11px; color: #cbd5e1; margin: 0; text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">
+                © {{ date('Y') }} Bijulicar
+            </p>
+        </div>
     </div>
-    <p>If you believe this is a mistake or have corrected the issue, you are welcome to re-apply.</p>
-    <p style="margin-top:32px; color:#888; font-size:13px;">Contact us at ...... if you need help.</p>
+
 </body>
 </html>

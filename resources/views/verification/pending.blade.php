@@ -164,6 +164,12 @@
                             </a>
                         @endif
                     </div>
+                
+                    @elseif ($status === 'approved')
+                    {{-- Fallback: approved users should be redirected by the route,
+                         but handle it here too in case they land directly --}}
+                    <div class="h-1.5 w-full bg-green-500"></div>
+                    <script>window.location.replace("{{ route('dashboard') }}");</script>
 
                 @else
                     {{-- Not submitted yet — shouldn't normally land here, but just in case --}}

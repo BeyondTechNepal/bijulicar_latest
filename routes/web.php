@@ -42,8 +42,17 @@ Route::middleware(['auth'])->group(function () {
         ->name('business.verify.store');
 
     // Waiting / pending approval screen
-    Route::get('/pending-approval', fn() => view('verification.pending'))
-        ->name('verification.pending');
+    Route::get('/pending-approval', function () {
+    $user         = auth()->user();
+    $verification = $user->verification();
+
+    // If already approved, send them straight to their dashboard
+    if ($verification && $verification->isApproved()) {
+        return redirect()->route('dashboard');
+    }
+
+    return view('verification.pending');
+    })->name('verification.pending');
 });
 
 // ── Dashboard — smart redirect based on role ───────────────────────────

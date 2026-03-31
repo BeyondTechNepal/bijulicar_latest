@@ -11,20 +11,17 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')
     ->name('admin.')
     ->group(function () {
-
         // ── 1. Guest routes ────────────────────────────────────────────
         Route::get('/login', [AdminAuthController::class, 'showForm'])->name('login');
         Route::post('/login', [AdminAuthController::class, 'login']);
 
         // ── 2. Authenticated admin routes ──────────────────────────────
         Route::middleware(['auth.admin'])->group(function () {
-
             Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
             // ── 3. Standard admin + superadmin ─────────────────────────
             Route::middleware(['role:superadmin|admin,admin'])->group(function () {
-
                 // Users
                 Route::get('/users', [AdminDashboardController::class, 'users'])->name('users');
                 Route::patch('/users/{user}/role', [AdminDashboardController::class, 'updateUserRole'])->name('users.updateRole');
@@ -48,8 +45,7 @@ Route::prefix('admin')
 
                 // Roles
                 Route::resource('roles', RoleController::class)->except(['show']);
-                Route::post('/roles/{role}/permissions', [RoleController::class, 'updatePermissions'])
-                    ->name('roles.permissions.update');
+                Route::post('/roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
 
                 // Locations
                 Route::resource('/locations', App\Http\Controllers\Admin\LocationController::class)->except(['show']);
@@ -83,6 +79,14 @@ Route::prefix('admin')
                 Route::get('/admin-permissions/{permission}/edit', [App\Http\Controllers\Admin\AdminPermissionController::class, 'edit'])->name('admin_permissions.edit');
                 Route::put('/admin-permissions/{permission}', [App\Http\Controllers\Admin\AdminPermissionController::class, 'update'])->name('admin_permissions.update');
                 Route::delete('/admin-permissions/{permission}', [App\Http\Controllers\Admin\AdminPermissionController::class, 'destroy'])->name('admin_permissions.destroy');
+
+                // News Categories
+                Route::get('/news-categories', [App\Http\Controllers\Admin\NewsCategoryController::class, 'index'])->name('admin.news_categories.index');
+                Route::get('/news-categories/create', [App\Http\Controllers\Admin\NewsCategoryController::class, 'create'])->name('admin.news_categories.create');
+                Route::post('/news-categories', [App\Http\Controllers\Admin\NewsCategoryController::class, 'store'])->name('admin.news_categories.store');
+                Route::get('/news-categories/{category}/edit', [App\Http\Controllers\Admin\NewsCategoryController::class, 'edit'])->name('admin.news_categories.edit');
+                Route::put('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'update'])->name('admin.news_categories.update');
+                Route::delete('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'destroy'])->name('admin.news_categories.destroy');
             });
 
             // ── News (separate role group) ─────────────────────────────
@@ -94,6 +98,5 @@ Route::prefix('admin')
             Route::middleware(['role:superadmin,admin'])->group(function () {
                 Route::resource('admins', AdminManagementController::class)->except(['show']);
             });
-
         });
     });

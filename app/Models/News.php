@@ -22,6 +22,7 @@ class News extends Model
      */
     protected $fillable = [
         'admin_id',
+        'category_id',
         'title',
         'title_highlight',
         'title_suffix',
@@ -52,6 +53,15 @@ class News extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class, 'admin_id');
+    }
+
+    public function newscategory()
+    {
+        /**
+         * A news article belongs to a single category.
+         * This allows you to call $article->category->name in your Blade views.
+         */
+        return $this->belongsTo(NewsCategory::class);
     }
 
     /**

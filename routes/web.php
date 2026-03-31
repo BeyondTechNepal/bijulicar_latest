@@ -100,6 +100,23 @@ Route::middleware(['auth', 'role:buyer'])
             ->name('purchases.index')
             ->middleware('permission:purchase vehicle');
 
+        // Pre-orders
+        Route::get('/preorders', [BuyerPreOrderController::class, 'index'])
+            ->name('preorders.index')
+            ->middleware('permission:manage own orders');
+        Route::get('/preorders/car/{car}', [BuyerPreOrderController::class, 'create'])
+            ->name('preorders.create')
+            ->middleware('permission:manage own orders');
+        Route::post('/preorders', [BuyerPreOrderController::class, 'store'])
+            ->name('preorders.store')
+            ->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}', [BuyerPreOrderController::class, 'show'])
+            ->name('preorders.show')
+            ->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/cancel', [BuyerPreOrderController::class, 'cancel'])
+            ->name('preorders.cancel')
+            ->middleware('permission:manage own orders');
+
         // Reviews
         Route::get('/reviews', [BuyerReviewController::class, 'index'])
             ->name('reviews.index')
@@ -170,6 +187,23 @@ Route::middleware(['auth', 'role:seller', 'verified.account'])
         Route::post('/orders/{order}/complete', [App\Http\Controllers\Seller\SellerOrderController::class, 'complete'])
             ->name('orders.complete')
             ->middleware('permission:manage own orders');
+
+        // Pre-orders
+        Route::get('/preorders', [SellerPreOrderController::class, 'index'])
+            ->name('preorders.index')
+            ->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])
+            ->name('preorders.show')
+            ->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])
+            ->name('preorders.confirm_deposit')
+            ->middleware('permission:manage own orders');
+        Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])
+            ->name('preorders.convert')
+            ->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])
+            ->name('preorders.cancel')
+            ->middleware('permission:manage own orders');
     });
 
 // ── BUSINESS routes ────────────────────────────────────────────────────
@@ -219,6 +253,23 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
             ->middleware('permission:manage own orders');
         Route::post('/orders/{order}/complete', [App\Http\Controllers\Seller\SellerOrderController::class, 'complete'])
             ->name('orders.complete')
+            ->middleware('permission:manage own orders');
+
+        // Pre-orders
+        Route::get('/preorders', [SellerPreOrderController::class, 'index'])
+            ->name('preorders.index')
+            ->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])
+            ->name('preorders.show')
+            ->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])
+            ->name('preorders.confirm_deposit')
+            ->middleware('permission:manage own orders');
+        Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])
+            ->name('preorders.convert')
+            ->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])
+            ->name('preorders.cancel')
             ->middleware('permission:manage own orders');
 
         // Analytics

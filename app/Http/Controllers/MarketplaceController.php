@@ -11,7 +11,7 @@ class MarketplaceController extends Controller
     public function search(Request $request)
     {
         $query = Car::with(['seller', 'primaryImage'])
-            ->where('status', 'available')
+            ->whereIn('status', ['available', 'upcoming'])
             ->latest();
 
         $this->applyFilters($query, $request);
@@ -24,19 +24,22 @@ class MarketplaceController extends Controller
                 : null;
 
             return [
-                'id'               => $car->id,
-                'name'             => $car->displayName(),
-                'location'         => $car->location,
-                'drivetrain'       => $car->drivetrain,
-                'condition'        => ucfirst($car->condition),
-                'mileage'          => number_format($car->mileage),
-                'range_km'         => $car->range_km,
-                'battery_kwh'      => $car->battery_kwh,
-                'price'            => number_format($car->price),
-                'price_negotiable' => $car->price_negotiable,
-                'primary_image'    => $img,
-                'url'              => route('cars.show', $car->id),
-                'seller_role'      => $car->seller?->getRoleNames()->first(),
+                'id'                    => $car->id,
+                'name'                  => $car->displayName(),
+                'location'              => $car->location,
+                'drivetrain'            => $car->drivetrain,
+                'condition'             => ucfirst($car->condition),
+                'mileage'               => number_format($car->mileage),
+                'range_km'              => $car->range_km,
+                'battery_kwh'           => $car->battery_kwh,
+                'price'                 => number_format($car->price),
+                'price_negotiable'      => $car->price_negotiable,
+                'primary_image'         => $img,
+                'url'                   => route('cars.show', $car->id),
+                'seller_role'           => $car->seller?->getRoleNames()->first(),
+                'is_preorder'           => (bool) $car->is_preorder,
+                'expected_arrival_date' => $car->expected_arrival_date?->format('M Y'),
+                'preorder_deposit'      => $car->preorder_deposit ? number_format($car->preorder_deposit) : null,
             ];
         });
 
@@ -67,8 +70,13 @@ class MarketplaceController extends Controller
         if ($request->filled('model_name')) { $query->where('model', 'like', '%' . $request->model_name . '%'); }
         if ($request->filled('year_from'))  { $query->where('year', '>=', $request->year_from); }
         if ($request->filled('year_to'))    { $query->where('year', '<=', $request->year_to); }
-        if ($request->filled('price_min'))  { $query->where('price', '>=', $request->price_min); }
-        if ($request->filled('price_max'))  { $query->where('price', '<=', $request->price_max); }
+        // Price filter excludes upcoming/preorder cars so they always show regardless of price range
+        if ($request->filled('price_min')) {
+            $query->where(fn($q) => $q->where('price', '>=', $request->price_min)->orWhere('status', 'upcoming'));
+        }
+        if ($request->filled('price_max')) {
+            $query->where(fn($q) => $q->where('price', '<=', $request->price_max)->orWhere('status', 'upcoming'));
+        }
         if ($request->boolean('only_available')) { $query->where('status', 'available'); }
         match ($request->sort) {
             'price_asc'  => $query->reorder()->orderBy('price', 'asc'),
@@ -79,25 +87,25 @@ class MarketplaceController extends Controller
 
     public function index(Request $request)
     {
+        $activeStatuses = ['available', 'upcoming'];
+
         $query = Car::with('seller')
-            ->where('status', 'available')
+            ->whereIn('status', $activeStatuses)
             ->latest();
 
         $this->applyFilters($query, $request);
 
-        $cars      = $query->paginate(9)->withQueryString();
-        $locations = Car::where('status', 'available')->distinct()->pluck('location')->sort()->values();
-        $totalActive = Car::where('status', 'available')->count();
+        $cars        = $query->paginate(9)->withQueryString();
+        $locations   = Car::whereIn('status', $activeStatuses)->distinct()->pluck('location')->sort()->values();
+        $totalActive = Car::whereIn('status', $activeStatuses)->count();
 
-        // Data for smart suggestions & range controls
-        $brands   = Car::where('status', 'available')->distinct()->orderBy('brand')->pluck('brand');
-        $models   = Car::where('status', 'available')->distinct()->orderBy('model')->pluck('model');
-        $minYear  = (int) (Car::where('status', 'available')->min('year') ?? date('Y'));
-        $maxYear  = (int) (Car::where('status', 'available')->max('year') ?? date('Y'));
-        $minPrice = (int) (Car::where('status', 'available')->min('price') ?? 0);
-        $maxPrice = (int) (Car::where('status', 'available')->max('price') ?? 10000000);
+        $brands   = Car::whereIn('status', $activeStatuses)->distinct()->orderBy('brand')->pluck('brand');
+        $models   = Car::whereIn('status', $activeStatuses)->distinct()->orderBy('model')->pluck('model');
+        $minYear  = (int) (Car::whereIn('status', $activeStatuses)->min('year') ?? date('Y'));
+        $maxYear  = (int) (Car::whereIn('status', $activeStatuses)->max('year') ?? date('Y'));
+        $minPrice = (int) (Car::whereIn('status', $activeStatuses)->min('price') ?? 0);
+        $maxPrice = (int) (Car::whereIn('status', $activeStatuses)->max('price') ?? 10000000);
 
-        // Active marketplace ads
         $marketplaceAds = \App\Models\Advertisement::with('car')
             ->where('placement', 'marketplace')
             ->where('is_active', true)

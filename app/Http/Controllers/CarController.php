@@ -9,7 +9,7 @@ class CarController extends Controller
     public function show(Car $car)
     {
         // Only show available cars to the public
-        abort_if($car->status === 'sold' || $car->status === 'inactive', 404);
+         abort_if(in_array($car->status, ['sold', 'inactive']), 404);
 
         $car->load([
             'seller',
@@ -38,6 +38,14 @@ class CarController extends Controller
                 ->exists();
         }
 
+        $alreadyPreOrdered = false;
+        if (auth()->check() && auth()->user()->hasRole('buyer')) {
+            $alreadyPreOrdered = \App\Models\PreOrder::where('buyer_id', auth()->id())
+                ->where('car_id', $car->id)
+                ->whereIn('status', ['pending_deposit', 'deposit_paid'])
+                ->exists();
+        }
+
         // Check if buyer already reviewed this car
         $alreadyReviewed = false;
         $hasPurchased = false;
@@ -56,7 +64,8 @@ class CarController extends Controller
             'reviewCount',
             'alreadyOrdered',
             'alreadyReviewed',
-            'hasPurchased'
+            'hasPurchased',
+            'alreadyPreOrdered'
         ));
     }
 }

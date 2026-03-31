@@ -192,6 +192,60 @@
                     @endif
                 </div>
 
+                {{-- Pre-Order --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <div class="flex items-start justify-between gap-4 mb-1">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pre-Order</p>
+                            <p class="text-xs text-slate-400 font-medium mt-1 leading-relaxed">
+                                Car not in stock yet? Let buyers reserve it with a deposit.
+                            </p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-0.5">
+                            <input type="checkbox" name="is_preorder" id="is_preorder" value="1"
+                                class="sr-only peer" {{ old('is_preorder') ? 'checked' : '' }}>
+                            <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-[#16a34a]
+                                after:content-[''] after:absolute after:top-0.5 after:left-[2px]
+                                after:bg-white after:rounded-full after:h-5 after:w-5
+                                after:transition-all peer-checked:after:translate-x-full"></div>
+                        </label>
+                    </div>
+                
+                    <div id="preorder-fields" class="{{ old('is_preorder') ? '' : 'hidden' }} space-y-4 mt-5 pt-5 border-t border-slate-100">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                Expected Arrival <span class="text-red-400">*</span>
+                            </label>
+                            <input type="date" name="expected_arrival_date"
+                                value="{{ old('expected_arrival_date') }}"
+                                min="{{ now()->addDay()->format('Y-m-d') }}"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('expected_arrival_date')
+                                <p class="text-red-500 text-xs font-bold">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                Deposit Amount (NRs) <span class="text-red-400">*</span>
+                            </label>
+                            <input type="number" name="preorder_deposit"
+                                value="{{ old('preorder_deposit') }}"
+                                placeholder="e.g. 50000"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                            @error('preorder_deposit')
+                                <p class="text-red-500 text-xs font-bold">{{ $message }}</p>
+                            @enderror
+                            <p class="text-[11px] text-slate-400 font-medium">Buyers pay this to secure their slot.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <script>
+                    document.getElementById('is_preorder').addEventListener('change', function () {
+                        document.getElementById('preorder-fields').classList.toggle('hidden', !this.checked);
+                    });
+                </script>
+
                 {{-- Location --}}
                 <div class="bg-white border border-slate-200 rounded-2xl p-6">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Location</p>

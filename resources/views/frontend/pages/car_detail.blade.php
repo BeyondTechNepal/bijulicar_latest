@@ -115,6 +115,12 @@
                                 @if ($car->stock_quantity > 1)
                                     <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-green-100 text-green-700">{{ $car->stock_quantity }} in stock</span>
                                 @endif
+                                @if ($car->isUpcoming())
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-violet-100 text-violet-700">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
+                                        Upcoming · Pre-Order Open
+                                    </span>
+                                @endif
                             </div>
                             <h1 class="text-3xl md:text-4xl font-black text-slate-900 uppercase italic tracking-tight leading-tight">
                                 {{ $car->displayName() }}
@@ -280,7 +286,42 @@
                     <div class="mt-5 pt-5 border-t border-slate-100 space-y-3">
                         @auth
                             @if (auth()->user()->hasRole('buyer'))
-                                @if ($alreadyOrdered)
+
+                                {{-- ── PRE-ORDER FLOW ── --}}
+                                @if ($car->isPreorderable())
+                                    @if ($alreadyPreOrdered)
+                                        <div class="w-full py-3.5 rounded-xl bg-violet-50 border border-violet-200 text-violet-700 text-[12px] font-black uppercase tracking-widest text-center">
+                                            ✔ Pre-Order Placed
+                                        </div>
+                                        <a href="{{ route('buyer.preorders.index') }}"
+                                            class="block w-full py-3.5 rounded-xl bg-slate-100 text-slate-700 text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-slate-200 transition-all">
+                                            View My Pre-Orders
+                                        </a>
+                                    @else
+                                        <a href="{{ route('buyer.preorders.create', $car) }}"
+                                            class="flex w-full items-center justify-center gap-2 py-4 rounded-xl bg-violet-600 text-white text-[13px] font-black uppercase italic tracking-widest hover:bg-violet-700 transition-all shadow-lg shadow-violet-900/20">
+                                            ⚡ Pre-Order Now
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                        </a>
+                                        <div class="bg-violet-50 border border-violet-100 rounded-xl p-3 space-y-1.5">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-[10px] font-black text-violet-500 uppercase tracking-widest">Deposit Required</span>
+                                                <span class="text-[13px] font-black text-violet-700">NRs {{ number_format($car->preorder_deposit) }}</span>
+                                            </div>
+                                            @if ($car->expected_arrival_date)
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-[10px] font-black text-violet-500 uppercase tracking-widest">Expected Arrival</span>
+                                                    <span class="text-[12px] font-black text-violet-700">{{ $car->expected_arrival_date->format('M Y') }}</span>
+                                                </div>
+                                            @endif
+                                            <p class="text-[10px] text-violet-400 font-medium pt-1 border-t border-violet-100">
+                                                Deposit secures your slot. Remaining balance due on delivery.
+                                            </p>
+                                        </div>
+                                    @endif
+
+                                {{-- ── REGULAR ORDER FLOW ── --}}
+                                @elseif ($alreadyOrdered)
                                     <div class="w-full py-3.5 rounded-xl bg-green-50 border border-green-200 text-green-700 text-[12px] font-black uppercase tracking-widest text-center">
                                         ✓ Already Ordered
                                     </div>
@@ -301,7 +342,6 @@
                                             <div class="mb-2.5">
                                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Full Name <span class="text-red-400">*</span></label>
                                                 <input type="text" name="buyer_name"
-                                                    
                                                     required
                                                     placeholder="Your full name"
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_name') border-red-400 @enderror">
@@ -327,7 +367,6 @@
                                             <div class="mb-0">
                                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Email Address <span class="text-red-400">*</span></label>
                                                 <input type="email" name="buyer_email"
-                                                    
                                                     required
                                                     placeholder="you@gmail.com"
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_email') border-red-400 @enderror">
@@ -359,6 +398,7 @@
                                         Out of Stock
                                     </div>
                                 @endif
+
                             @elseif (auth()->user()->id === $car->seller_id)
                                 <a href="{{ route('seller.cars.edit', $car) }}"
                                     class="block w-full py-3.5 rounded-xl bg-slate-900 text-white text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-[#16a34a] transition-all">
@@ -368,16 +408,27 @@
                                 <p class="text-center text-[12px] text-slate-400 font-bold">You can't order other seller's car!</p>
                             @endif
                         @else
-                            <a href="{{ route('login') }}"
-                                class="block w-full py-4 rounded-xl bg-slate-900 text-white text-[13px] font-black uppercase italic tracking-widest text-center hover:bg-[#16a34a] transition-all shadow-lg">
-                                Login to Order
-                            </a>
+                            @if ($car->isPreorderable())
+                                <a href="{{ route('login') }}"
+                                    class="flex w-full items-center justify-center gap-2 py-4 rounded-xl bg-violet-600 text-white text-[13px] font-black uppercase italic tracking-widest hover:bg-violet-700 transition-all shadow-lg">
+                                    ⚡ Login to Pre-Order
+                                </a>
+                                <p class="text-center text-[10px] text-violet-500 font-bold uppercase tracking-widest">
+                                    NRs {{ number_format($car->preorder_deposit) }} deposit · {{ $car->expected_arrival_date?->format('M Y') }}
+                                </p>
+                            @else
+                                <a href="{{ route('login') }}"
+                                    class="block w-full py-4 rounded-xl bg-slate-900 text-white text-[13px] font-black uppercase italic tracking-widest text-center hover:bg-[#16a34a] transition-all shadow-lg">
+                                    Login to Order
+                                </a>
+                            @endif
                             <a href="{{ route('register') }}"
                                 class="block w-full py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[12px] font-black uppercase tracking-widest text-center hover:bg-slate-50 transition-all">
                                 Create Free Account
                             </a>
                         @endauth
                     </div>
+
                 </div>
 
                 {{-- Seller card --}}

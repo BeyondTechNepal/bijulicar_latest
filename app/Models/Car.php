@@ -28,17 +28,23 @@ class Car extends Model
         'primary_image',
         'status',
         'stock_quantity',
+        'is_preorder',
+        'expected_arrival_date',
+        'preorder_deposit',
     ];
 
     protected function casts(): array
     {
         return [
-            'price_negotiable' => 'boolean',
-            'price'            => 'integer',
-            'mileage'          => 'integer',
-            'range_km'         => 'integer',
-            'battery_kwh'      => 'float',
-            'stock_quantity'   => 'integer',
+            'price_negotiable'       => 'boolean',
+            'price'                  => 'integer',
+            'mileage'                => 'integer',
+            'range_km'               => 'integer',
+            'battery_kwh'            => 'float',
+            'stock_quantity'         => 'integer',
+            'is_preorder'            => 'boolean',
+            'expected_arrival_date'  => 'date',
+            'preorder_deposit'       => 'integer',
         ];
     }
 
@@ -80,6 +86,16 @@ class Car extends Model
     public function isAvailable(): bool
     {
         return $this->status === 'available';
+    }
+
+    public function isUpcoming(): bool
+    {
+        return $this->status === 'upcoming' || $this->is_preorder;
+    }
+
+    public function isPreorderable(): bool
+    {
+        return $this->is_preorder && $this->status === 'upcoming' && $this->preorder_deposit > 0;
     }
 
     /** All images for this car */

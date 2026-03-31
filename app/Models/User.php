@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\SellerVerification;
 use App\Models\BusinessVerification;
+use App\Models\PreOrder;
 
 class User extends Authenticatable
 {
@@ -76,6 +77,11 @@ public function verification(): SellerVerification|BusinessVerification|null
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'buyer_id');
+    }
+
+    public function preOrders(): HasMany
+    {
+    return $this->hasMany(PreOrder::class, 'buyer_id');
     }
     
     /** Purchases made by this user */

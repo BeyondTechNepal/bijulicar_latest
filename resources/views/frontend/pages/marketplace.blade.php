@@ -404,12 +404,18 @@
             `<span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">${car.mileage} km</span>`,
             car.range_km    ? `<span class="text-[10px] font-black px-2 py-1 bg-[#4ade80]/10 text-[#16a34a] rounded-lg uppercase tracking-wider border border-[#4ade80]/20">${car.range_km} km range</span>` : '',
             car.battery_kwh ? `<span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">${car.battery_kwh} kWh</span>` : '',
+            car.is_preorder ? `<span class="inline-flex items-center gap-1 text-[10px] font-black px-2 py-1 bg-violet-100 text-violet-700 rounded-lg uppercase tracking-wider"><span class="w-1 h-1 rounded-full bg-violet-500 animate-pulse"></span>Upcoming</span>` : '',
         ].join('');
 
-        // Only buyers (and guests) see the Order Now button
-        // Sellers and business users are on the supply side — no ordering
+        // Only buyers (and guests) see the Order/Pre-Order button
         let actionHtml = '';
-        if (!IS_AUTH) {
+        if (car.is_preorder) {
+            // Pre-order button for all — clicking goes to detail page where login is handled
+            const preorderLabel = IS_AUTH && IS_BUYER ? 'Pre-Order' : 'Pre-Order';
+            actionHtml = `<a href="${car.url}" class="flex-1 flex items-center justify-center gap-2 bg-violet-600 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-violet-700 transition-all active:scale-95 shadow-lg">
+                ⚡ ${preorderLabel}
+            </a>`;
+        } else if (!IS_AUTH) {
             actionHtml = `<a href="${LOGIN_URL}" class="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all active:scale-95 shadow-lg">
                 Order Now
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -430,7 +436,10 @@
                     <span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest ${dtBadge}">${dtLabel}</span>
                 </div>
                 <div class="absolute top-4 right-4">
-                    <span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-black/60 text-white backdrop-blur-sm">${car.condition}</span>
+                    ${car.is_preorder
+                        ? `<span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-violet-600 text-white">Upcoming</span>`
+                        : `<span class="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-black/60 text-white backdrop-blur-sm">${car.condition}</span>`
+                    }
                 </div>
             </div>
             <div class="p-6 flex flex-col flex-1">
@@ -444,9 +453,12 @@
                 <div class="flex flex-wrap gap-2 mb-5">${specBadges}</div>
                 <div class="mt-auto pt-4 border-t border-slate-100">
                     <div class="mb-4">
-                        <span class="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">Price</span>
-                        <span class="text-xl font-black text-slate-900 italic tracking-tight whitespace-nowrap">NRs ${car.price}</span>
-                        ${car.price_negotiable ? '<span class="block text-[9px] font-black text-[#16a34a] uppercase tracking-widest mt-0.5">Negotiable</span>' : ''}
+                        <span class="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">${car.is_preorder ? 'Deposit' : 'Price'}</span>
+                        <span class="text-xl font-black italic tracking-tight whitespace-nowrap ${car.is_preorder ? 'text-violet-700' : 'text-slate-900'}">NRs ${car.is_preorder ? car.preorder_deposit : car.price}</span>
+                        ${car.is_preorder
+                            ? `<span class="block text-[9px] font-black text-violet-500 uppercase tracking-widest mt-0.5">Full price: NRs ${car.price} · ${car.expected_arrival_date ?? ''}</span>`
+                            : (car.price_negotiable ? '<span class="block text-[9px] font-black text-[#16a34a] uppercase tracking-widest mt-0.5">Negotiable</span>' : '')
+                        }
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="${car.url}" class="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-slate-200 transition-all shrink-0">

@@ -68,6 +68,9 @@ class SellerCarController extends Controller
             'stock_quantity'   => ['required', 'integer', 'min:1', 'max:1000'],
             'images'           => ['nullable', 'array', 'max:8'],
             'images.*'         => ['image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
+            'is_preorder'           => ['boolean'],
+            'expected_arrival_date' => ['nullable', 'required_if:is_preorder,1', 'date', 'after:today'],
+            'preorder_deposit'      => ['nullable', 'required_if:is_preorder,1', 'integer', 'min:1000'],
         ]);
 
         $car = Car::create([
@@ -86,8 +89,11 @@ class SellerCarController extends Controller
             'price_negotiable' => $request->boolean('price_negotiable'),
             'location'         => $request->location,
             'description'      => $request->description,
-            'status'           => 'available',
+            'status'           => $request->boolean('is_preorder') ? 'upcoming' : 'available',
             'stock_quantity'   => $request->stock_quantity,
+            'is_preorder'           => $request->boolean('is_preorder'),
+            'expected_arrival_date' => $request->boolean('is_preorder') ? $request->expected_arrival_date : null,
+            'preorder_deposit'      => $request->boolean('is_preorder') ? $request->preorder_deposit : null,
         ]);
 
         // Handle image uploads
@@ -150,17 +156,22 @@ class SellerCarController extends Controller
             'price_negotiable' => ['boolean'],
             'location'         => ['required', 'string', 'max:100'],
             'description'      => ['nullable', 'string', 'max:2000'],
-            'status'           => ['required', 'in:available,reserved,inactive'],
+            'status'           => ['required', 'in:available,reserved,inactive,upcoming'],
             'stock_quantity'   => ['required', 'integer', 'min:0', 'max:1000'],
             'new_images'       => ['nullable', 'array', 'max:8'],
             'new_images.*'     => ['image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
             'remove_images'    => ['nullable', 'array'],
             'remove_images.*'  => ['exists:car_images,id'],
+            'is_preorder'           => ['boolean'],
+            'expected_arrival_date' => ['nullable', 'required_if:is_preorder,1', 'date'],
+            'preorder_deposit'      => ['nullable', 'required_if:is_preorder,1', 'integer', 'min:1000'],
         ]);
 
-        // If seller sets stock back above 0 and status was sold, revert to available
+        // Determine correct status
         $newStatus = $request->status;
-        if ($request->stock_quantity > 0 && $car->status === 'sold') {
+        if ($request->boolean('is_preorder')) {
+            $newStatus = 'upcoming';
+        } elseif ($request->stock_quantity > 0 && $car->status === 'sold') {
             $newStatus = 'available';
         }
 
@@ -181,6 +192,9 @@ class SellerCarController extends Controller
             'description'      => $request->description,
             'status'           => $newStatus,
             'stock_quantity'   => $request->stock_quantity,
+            'is_preorder'           => $request->boolean('is_preorder'),
+            'expected_arrival_date' => $request->boolean('is_preorder') ? $request->expected_arrival_date : null,
+            'preorder_deposit'      => $request->boolean('is_preorder') ? $request->preorder_deposit : null,
         ]);
 
         // Remove selected images

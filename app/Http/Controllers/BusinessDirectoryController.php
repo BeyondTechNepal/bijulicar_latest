@@ -95,7 +95,11 @@ class BusinessDirectoryController extends Controller
         // Latest business news (from NewsArticle by sellers with business role)
         // Using existing News model (admin news) as fallback — news by businesses
         // is tied to cars/sellers. We fetch latest news for sidebar.
-        $latestNews = News::where('is_published', true)->latest()->take(4)->get();
+        $latestNews = \App\Models\BusinessNews::where('is_published', true)
+            ->with(['business.businessVerification', 'newscategory'])
+            ->latest()
+            ->take(6)
+            ->get();
 
         return view('frontend.pages.businesses', compact(
             'businesses',
@@ -115,15 +119,15 @@ class BusinessDirectoryController extends Controller
             ->with(['businessVerification', 'listedCars.primaryImage', 'listedCars.reviews'])
             ->whereHas('businessVerification', fn($q) => $q->where('status', 'approved'))
             ->findOrFail($id);
-
+ 
         $activeCars  = $user->listedCars->whereIn('status', ['available', 'upcoming'])->values();
         $allReviews  = Review::where('seller_id', $user->id)->with(['buyer', 'car'])->latest()->take(10)->get();
         $avgRating   = $allReviews->avg('rating') ?? 0;
         $reviewCount = $allReviews->count();
-
+ 
         $businessName = $user->businessVerification->business_name ?? $user->name;
         $contact      = $user->businessVerification->contact ?? null;
-
+ 
         // Specialization
         $drivetrains = $activeCars->pluck('drivetrain')->unique();
         if ($drivetrains->count() > 1) {
@@ -135,9 +139,16 @@ class BusinessDirectoryController extends Controller
         } else {
             $spec = 'Traditional';
         }
-
+ 
         $location = $activeCars->pluck('location')->filter()->first() ?? 'Nepal';
-
+ 
+        // ── NEW: fetch published news articles by this business ──────────
+        $businessNews = \App\Models\BusinessNews::where('user_id', $user->id)
+            ->where('is_published', true)
+            ->with('newscategory')
+            ->latest()
+            ->get();
+ 
         return view('frontend.pages.business_profile', compact(
             'user',
             'activeCars',
@@ -147,7 +158,8 @@ class BusinessDirectoryController extends Controller
             'businessName',
             'contact',
             'spec',
-            'location'
+            'location',
+            'businessNews',    
         ));
     }
 }

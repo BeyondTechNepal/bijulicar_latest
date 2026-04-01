@@ -118,6 +118,13 @@
                     {{ $reviewCount }}
                 </span>
             </button>
+            <button onclick="switchTab('news')" id="tab-news"
+            class="tab-btn px-6 py-4 text-sm font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-slate-700 transition-all">
+            News
+            <span class="ml-2 text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-black">
+                {{ $businessNews->count() }}
+            </span>
+        </button>
         </div>
     </div>
 </div>
@@ -304,6 +311,82 @@
                 @endforeach
             </div>
         @endif
+    </div>
+</section>
+<section id="pane-news" class="tab-pane hidden bg-slate-50 py-12">
+    <div class="max-w-7xl mx-auto px-6">
+ 
+        @if($businessNews->isNotEmpty())
+ 
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($businessNews as $article)
+                    <a href="{{ route('business.news.show', $article->slug) }}"
+                        class="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-md hover:border-slate-300 transition-all block">
+ 
+                        {{-- Thumbnail --}}
+                        <div class="aspect-video overflow-hidden bg-slate-100">
+                            @if($article->hero_image)
+                                <img src="{{ asset('storage/' . $article->hero_image) }}"
+                                    alt="{{ $article->title }}"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-slate-100">
+                                    <svg class="w-10 h-10 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+                                    </svg>
+                                </div>
+                            @endif
+                        </div>
+ 
+                        {{-- Content --}}
+                        <div class="p-5">
+                            <div class="flex items-center gap-2 mb-3 flex-wrap">
+                                @if($article->newscategory)
+                                    <span class="text-[9px] font-black uppercase tracking-widest text-purple-600 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full">
+                                        {{ $article->newscategory->name }}
+                                    </span>
+                                @endif
+                                <span class="text-[10px] text-slate-400 font-medium">
+                                    {{ $article->created_at->format('d M Y') }}
+                                </span>
+                            </div>
+ 
+                            <h3 class="text-base font-black text-slate-900 uppercase italic tracking-tight leading-tight mb-2 group-hover:text-slate-600 transition-colors line-clamp-2">
+                                {{ $article->title }}
+                            </h3>
+ 
+                            <p class="text-sm text-slate-500 font-medium leading-relaxed line-clamp-2">
+                                {{ strip_tags($article->lead_paragraph) }}
+                            </p>
+ 
+                            <div class="flex items-center gap-1.5 mt-4 text-[11px] font-black text-slate-400 uppercase tracking-wider">
+                                <span>Read more</span>
+                                <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+ 
+                    </a>
+                @endforeach
+            </div>
+ 
+        @else
+ 
+            {{-- Empty state --}}
+            <div class="text-center py-16">
+                <div class="w-14 h-14 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-7 h-7 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+                    </svg>
+                </div>
+                <p class="text-slate-400 font-medium text-sm">This business hasn't published any news yet.</p>
+            </div>
+ 
+        @endif
+ 
     </div>
 </section>
 

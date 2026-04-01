@@ -258,20 +258,28 @@
     </div>
 </section>
 
-{{-- ── Latest News Section ─────────────────────────────────────────────── --}}
+
+{{-- ── Business News Section ────────────────────────────────────────────── --}}
 @if($latestNews->isNotEmpty())
 <section class="bg-white py-16 border-t border-slate-100">
     <div class="max-w-7xl mx-auto px-6">
+
+        {{-- Section header --}}
         <div class="flex items-center justify-between mb-10">
             <div>
                 <div class="flex items-center gap-3 mb-2">
-                    <span class="w-6 h-[2px] bg-[#4ade80]"></span>
-                    <span class="text-[10px] uppercase tracking-[0.3em] text-[#16a34a] font-bold">Industry Updates</span>
+                    <span class="w-6 h-[2px] bg-[#a855f7]"></span>
+                    <span class="text-[10px] uppercase tracking-[0.3em] text-[#a855f7] font-bold">From the Network</span>
                 </div>
-                <h2 class="text-3xl font-black text-slate-900 tracking-tight">Latest EV News</h2>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight uppercase italic">
+                    Business <span class="text-slate-400">News</span>
+                </h2>
+                <p class="text-slate-400 text-sm font-medium mt-1">
+                    Latest updates published directly by verified businesses.
+                </p>
             </div>
             <a href="{{ route('news') }}"
-                class="hidden sm:flex items-center gap-2 text-sm font-black text-slate-500 hover:text-slate-900 transition-colors">
+                class="hidden sm:flex items-center gap-2 text-sm font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-wider">
                 All News
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
@@ -279,37 +287,127 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            @foreach($latestNews as $article)
-                <a href="{{ route('news.show', $article->slug) }}"
-                    class="group bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:border-[#4ade80]/40 hover:shadow-lg transition-all duration-300">
-                    @if($article->hero_image)
-                        <div class="h-40 overflow-hidden">
-                            <img src="{{ asset('storage/' . $article->hero_image) }}"
-                                alt="{{ $article->title }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                    @else
-                        <div class="h-40 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                            <svg class="w-10 h-10 text-[#4ade80]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                            </svg>
-                        </div>
-                    @endif
-                    <div class="p-4">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                            {{ $article->created_at->format('M d, Y') }}
-                        </p>
-                        <h4 class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#16a34a] transition-colors line-clamp-2">
-                            {{ $article->title }}{{ $article->title_highlight ? ' ' . $article->title_highlight : '' }}
-                        </h4>
-                        @if($article->lead_paragraph)
-                            <p class="text-xs text-slate-400 mt-2 line-clamp-2">{{ $article->lead_paragraph }}</p>
-                        @endif
+        {{-- Featured article (first one, large) + remaining grid --}}
+        @php $featured = $latestNews->first(); $rest = $latestNews->skip(1); @endphp
+
+        <div class="grid lg:grid-cols-12 gap-6">
+
+            {{-- ── Featured large card ──────────────────────────────── --}}
+            <a href="{{ route('business.news.show', $featured->slug) }}"
+                class="lg:col-span-5 group relative bg-slate-900 rounded-3xl overflow-hidden flex flex-col min-h-[360px] border border-slate-800 hover:border-[#a855f7]/40 hover:shadow-xl hover:shadow-purple-900/10 transition-all duration-300">
+
+                {{-- Background image --}}
+                @if($featured->hero_image)
+                    <div class="absolute inset-0">
+                        <img src="{{ asset('storage/' . $featured->hero_image) }}"
+                            alt="{{ $featured->title }}"
+                            class="w-full h-full object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
                     </div>
-                </a>
-            @endforeach
+                @else
+                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(168,85,247,0.15)_0%,_transparent_60%)]"></div>
+                @endif
+
+                {{-- Content --}}
+                <div class="relative mt-auto p-7">
+                    {{-- Business name badge --}}
+                    <a href="{{ route('businesses.show', $featured->business->id) }}"
+                        onclick="event.stopPropagation()"
+                        class="inline-flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[#a855f7] bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full hover:bg-purple-500/20 transition-colors">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>
+                        {{ $featured->business_name }}
+                    </a>
+
+                    <h3 class="text-xl font-black text-white uppercase italic tracking-tight leading-tight mb-3 group-hover:text-purple-200 transition-colors">
+                        {{ $featured->title }}
+                    </h3>
+
+                    <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                        {{ strip_tags($featured->lead_paragraph) }}
+                    </p>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 text-[11px] font-bold text-slate-500">
+                            @if($featured->newscategory)
+                                <span class="text-purple-400 uppercase tracking-wider">{{ $featured->newscategory->name }}</span>
+                                <span>·</span>
+                            @endif
+                            <span>{{ $featured->created_at->format('d M Y') }}</span>
+                        </div>
+                        <span class="text-[11px] font-black text-[#a855f7] uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+                            Read
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            {{-- ── Remaining articles grid ───────────────────────────── --}}
+            <div class="lg:col-span-7 grid sm:grid-cols-2 gap-5 content-start">
+                @foreach($rest as $article)
+                    <a href="{{ route('business.news.show', $article->slug) }}"
+                        class="group bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:border-[#a855f7]/30 hover:shadow-md transition-all duration-300 flex flex-col">
+
+                        {{-- Thumbnail --}}
+                        <div class="h-36 overflow-hidden bg-slate-100 shrink-0">
+                            @if($article->hero_image)
+                                <img src="{{ asset('storage/' . $article->hero_image) }}"
+                                    alt="{{ $article->title }}"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-purple-50 to-slate-100 flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+                                    </svg>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Content --}}
+                        <div class="p-4 flex flex-col flex-1">
+                            {{-- Business name --}}
+                            <a href="{{ route('businesses.show', $article->business->id) }}"
+                                onclick="event.stopPropagation()"
+                                class="inline-flex items-center gap-1.5 mb-2 text-[9px] font-black uppercase tracking-widest text-[#a855f7] hover:text-purple-700 transition-colors w-fit">
+                                <span class="w-1 h-1 rounded-full bg-[#a855f7]"></span>
+                                {{ $article->business_name }}
+                            </a>
+
+                            <h4 class="text-sm font-black text-slate-900 uppercase italic tracking-tight leading-tight line-clamp-2 group-hover:text-slate-600 transition-colors flex-1">
+                                {{ $article->title }}
+                            </h4>
+
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                                <span class="text-[10px] text-slate-400 font-medium">
+                                    {{ $article->created_at->format('d M Y') }}
+                                </span>
+                                @if($article->newscategory)
+                                    <span class="text-[9px] font-black uppercase tracking-wider text-purple-500 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full">
+                                        {{ $article->newscategory->name }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+
         </div>
+
+        {{-- View all link (mobile) --}}
+        <div class="mt-8 sm:hidden text-center">
+            <a href="{{ route('news') }}"
+                class="inline-flex items-center gap-2 text-sm font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-wider">
+                View All News
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+        </div>
+
     </div>
 </section>
 @endif

@@ -130,6 +130,21 @@
                     </a>
                 @endcan
 
+                {{-- Advertisements --}}
+                <a href="{{ route('business.news.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                {{ request()->routeIs('business.news*') ? 'bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6m-6-4h2" />
+                    </svg>
+                    My News
+                    @php $newsCount = \App\Models\BusinessNews::where('user_id', auth()->id())->count(); @endphp
+                    @if($newsCount > 0)
+                        <span class="ml-auto text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded-full font-black">{{ $newsCount }}</span>
+                    @endif
+                </a>
+
                 <!-- {{-- Bulk Operations — coming soon --}}
             <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-600 cursor-not-allowed select-none"
                  title="Coming soon">

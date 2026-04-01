@@ -51,7 +51,7 @@
                             </div>
                             <div>
                                 <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Hotline</p>
-                                @if ($contact_details->phone_no)
+                                @if ($contact_details)
                                     <p class="text-xs font-black text-white">{{ $contact_details->phone_no }}</p>
                                 @endif
                             </div>
@@ -67,7 +67,7 @@
                             </div>
                             <div>
                                 <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Operation</p>
-                                @if ($contact_details->working_hours)
+                                @if ($contact_details)
                                     <p class="text-xs font-black text-white">{{ $contact_details->working_hours }}</p>
                                 @endif
                             </div>
@@ -100,7 +100,7 @@
                                 <div class="pt-6 border-t border-white/10">
                                     <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">
                                         HeadQuaters</p>
-                                    @if ($contact_details->address)
+                                    @if ($contact_details)
                                         <p class="text-sm text-white font-medium">
                                             {{ $contact_details->address }}
                                         </p>
@@ -135,7 +135,7 @@
                         </svg>
                     </div>
                     <h3 class="text-slate-900 font-black uppercase italic tracking-wider mb-2">Email Us</h3>
-                    @if ($contact_details->email)
+                    @if ($contact_details)
                         <p class="text-[#16a34a] text-sm font-bold mb-4">{{ $contact_details->email }}</p>
                     @endif
                     <p class="text-slate-500 text-xs font-semibold leading-relaxed">Encrypted support line. We respond
@@ -153,11 +153,11 @@
                         </svg>
                     </div>
                     <h3 class="text-slate-900 font-black uppercase italic tracking-wider mb-2">Call Us</h3>
-                    @if ($contact_details->phone_no)
+                    @if ($contact_details)
                         <p class="text-slate-900 text-sm font-bold mb-4">{{ $contact_details->phone_no }}</p>
                     @endif
 
-                    @if ($contact_details->working_hours)
+                    @if ($contact_details)
                         <p class="text-slate-500 text-xs font-semibold leading-relaxed">
                             {{ $contact_details->working_hours }}</p>
                     @endif
@@ -174,7 +174,7 @@
                         </svg>
                     </div>
                     <h3 class="text-slate-900 font-black uppercase italic tracking-wider mb-2">Visit Us</h3>
-                    @if ($contact_details->address)
+                    @if ($contact_details)
                         <p class="text-slate-900 text-sm font-bold mb-4">{{ $contact_details->address }}</p>
                     @endif
                     <p class="text-slate-500 text-xs font-semibold leading-relaxed">Our headquarters in the heart of Silicon
@@ -192,7 +192,7 @@
                         </svg>
                     </div>
                     <h3 class="text-slate-900 font-black uppercase italic tracking-wider mb-2">Business Hours</h3>
-                    @if ($contact_details->working_hours)
+                    @if ($contact_details)
                         <p class="text-slate-900 text-sm font-bold mb-4">{{ $contact_details->working_hours }}</p>
                     @endif
                     <p class="text-slate-500 text-xs font-semibold leading-relaxed">Weekend support available via email.

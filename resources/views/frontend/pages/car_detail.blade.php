@@ -439,10 +439,21 @@
                             {{ strtoupper(substr($car->seller->name, 0, 2)) }}
                         </div>
                         <div>
-                            <p class="text-[14px] font-black text-slate-900">{{ $car->seller->name }}</p>
-                            <p class="text-[11px] font-bold text-green-600 uppercase tracking-wide">
-                                {{ ucfirst($car->seller->getRoleNames()->first() ?? 'seller') }}
-                            </p>
+                            @if($car->seller->hasRole('business') && $car->seller->businessVerification?->isApproved())
+                                @php $bizName = $car->seller->businessVerification->business_name ?? $car->seller->name; @endphp
+                                <p class="text-[14px] font-black text-slate-900">{{ $bizName }}</p>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <svg class="w-3 h-3 text-[#16a34a]" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <p class="text-[11px] font-bold text-green-600 uppercase tracking-wide">Verified Business</p>
+                                </div>
+                            @else
+                                <p class="text-[14px] font-black text-slate-900">{{ $car->seller->name }}</p>
+                                <p class="text-[11px] font-bold text-green-600 uppercase tracking-wide">
+                                    {{ ucfirst($car->seller->getRoleNames()->first() ?? 'seller') }}
+                                </p>
+                            @endif
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-[12px] font-bold text-slate-500">
@@ -455,6 +466,16 @@
                             {{ $car->seller->listedCars()->where('status','available')->count() }} active listing{{ $car->seller->listedCars()->where('status','available')->count() !== 1 ? 's' : '' }}
                         </div>
                     </div>
+                    @if($car->seller->hasRole('business') && $car->seller->businessVerification?->isApproved())
+                        <a href="{{ route('businesses.show', $car->seller->id) }}"
+                            class="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-[#4ade80] hover:text-black transition-all duration-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
+                            </svg>
+                            View Business Profile
+                        </a>
+                    @endif
                 </div>
 
                 {{-- Quick details --}}

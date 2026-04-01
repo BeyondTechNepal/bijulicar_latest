@@ -8,7 +8,7 @@
         <div class="absolute inset-0 z-0">
             {{-- <img src="{{ asset('images/news_header.jpg') }}"
                 class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background"> --}}
-            @if ($banner->image)
+            @if ($banner)
                 <img src="{{ asset('storage/' . $banner->image) }}"
                     class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background">
             @endif

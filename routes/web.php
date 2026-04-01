@@ -9,7 +9,9 @@ use App\Http\Controllers\Seller\SellerVerificationController;
 use App\Http\Controllers\Seller\SellerCarController;
 use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerPreOrderController;
+use App\Http\Controllers\BusinessDirectoryController;
 use App\Http\Controllers\Business\BusinessVerificationController;
+use App\Http\Controllers\Business\BusinessNewsController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes ─────────────────────────────────────────────
@@ -19,7 +21,6 @@ Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::c
 // Route::get('/news', fn() => view('frontend.pages.news'))->name('news');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/news/{news:slug}', [App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
-Route::get('/news-filter', [App\Http\Controllers\NewsFilterController::class, 'filter'])->name('news.filter');
 // Route::get('/map_location', fn() => view('frontend.pages.map_location'))->name('map_location');
 // Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/map_location', [App\Http\Controllers\MapController::class, 'index'])->name('map_location');
@@ -28,6 +29,10 @@ Route::get('/contact', [App\Http\Controllers\Frontend\ContactController::class, 
 Route::post('/contact', [App\Http\Controllers\ContactMessageController::class, 'store'])->name('contact.store');
 Route::get('/compare_cars', [App\Http\Controllers\CompareController::class, 'index'])->name('compare_cars');
 Route::get('/cars/{car}', [App\Http\Controllers\CarController::class, 'show'])->name('cars.show');
+
+// Public business directory
+Route::get('/businesses', [BusinessDirectoryController::class, 'index'])->name('businesses.index');
+Route::get('/businesses/{id}', [BusinessDirectoryController::class, 'show'])->name('businesses.show')->whereNumber('id');
 
 // ── Verification routes (auth required, no verified.account check here) ──
 // These must be OUTSIDE the verified.account middleware so unverified
@@ -287,6 +292,26 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
         Route::get('/analytics', [App\Http\Controllers\Business\BusinessAnalyticsController::class, 'index'])
             ->name('analytics')
             ->middleware('permission:view business analytics');
+
+         // ── Business News (CRUD) 
+        Route::get('/news', [BusinessNewsController::class, 'index'])
+            ->name('news.index');
+ 
+        Route::get('/news/create', [BusinessNewsController::class, 'create'])
+            ->name('news.create');
+ 
+        Route::post('/news', [BusinessNewsController::class, 'store'])
+            ->name('news.store');
+ 
+        Route::get('/news/{news:slug}/edit', [BusinessNewsController::class, 'edit'])
+            ->name('news.edit');
+ 
+        Route::patch('/news/{news:slug}', [BusinessNewsController::class, 'update'])
+            ->name('news.update');
+ 
+        Route::delete('/news/{news:slug}', [BusinessNewsController::class, 'destroy'])
+            ->name('news.destroy');
+ 
 
         // Advertisements (CRUD)
         Route::get('/advertisements', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'index'])

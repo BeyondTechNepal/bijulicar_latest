@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function index()
     {
         // Latest 6 available listings from sellers & businesses
-        $recentCars = Car::where('status', 'available')
+        $recentCars = Car::whereIn('status', ['available', 'upcoming'])
             ->with(['primaryImage', 'seller'])
             ->latest()
             ->take(10)

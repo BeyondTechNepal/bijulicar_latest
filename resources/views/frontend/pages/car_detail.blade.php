@@ -275,8 +275,8 @@
             {{-- ── RIGHT: order sidebar ─────────────────────────────── --}}
             <div class="xl:w-80 space-y-5 xl:sticky xl:top-24 xl:self-start">
 
-                {{-- Price card --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                {{-- Price + Order card --}}
+                <div id="place-order" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 scroll-mt-28">
                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Asking Price</p>
                     <p class="text-4xl font-black text-slate-900 italic tracking-tight">NRs {{ number_format($car->price) }}</p>
                     @if ($car->price_negotiable)
@@ -536,6 +536,20 @@
 
 {{-- ── JS: gallery + lightbox ─────────────────────────────────────── --}}
 <script>
+    // Smooth scroll for #place-order anchor from marketplace cards
+    if (window.location.hash === '#place-order') {
+        document.addEventListener('DOMContentLoaded', () => {
+            const el = document.getElementById('place-order');
+            if (el) {
+                setTimeout(() => {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    el.classList.add('ring-2', 'ring-violet-400', 'ring-offset-2');
+                    setTimeout(() => el.classList.remove('ring-2', 'ring-violet-400', 'ring-offset-2'), 2000);
+                }, 300);
+            }
+        });
+    }
+
     const imagePaths = @json($images->pluck('path')->map(fn($p) => Storage::url($p)));
     let currentIdx = 0;
 

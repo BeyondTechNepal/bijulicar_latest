@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Car;
+use App\Models\Order;
+use App\Models\PreOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MarketplaceController extends Controller
 {
@@ -18,7 +21,25 @@ class MarketplaceController extends Controller
 
         $paginator = $query->paginate(9)->withQueryString();
 
-        $cars = $paginator->map(function ($car) {
+        // Collect buyer order/preorder state for this page of results
+        $orderedCarIds    = collect();
+        $preOrderedCarIds = collect();
+
+        if (Auth::check() && Auth::user()->hasRole('buyer')) {
+            $carIds = $paginator->pluck('id');
+
+            $orderedCarIds = Order::where('buyer_id', Auth::id())
+                ->whereIn('car_id', $carIds)
+                ->whereIn('status', ['pending', 'confirmed', 'completed'])
+                ->pluck('car_id');
+
+            $preOrderedCarIds = PreOrder::where('buyer_id', Auth::id())
+                ->whereIn('car_id', $carIds)
+                ->whereIn('status', ['pending_deposit', 'deposit_paid'])
+                ->pluck('car_id');
+        }
+
+        $cars = $paginator->map(function ($car) use ($orderedCarIds, $preOrderedCarIds) {
             $img = $car->primary_image
                 ? asset('storage/' . $car->primary_image)
                 : null;
@@ -36,10 +57,13 @@ class MarketplaceController extends Controller
                 'price_negotiable'      => $car->price_negotiable,
                 'primary_image'         => $img,
                 'url'                   => route('cars.show', $car->id),
+                'order_url'             => route('cars.show', $car->id) . '#place-order',
                 'seller_role'           => $car->seller?->getRoleNames()->first(),
                 'is_preorder'           => (bool) $car->is_preorder,
                 'expected_arrival_date' => $car->expected_arrival_date?->format('M Y'),
                 'preorder_deposit'      => $car->preorder_deposit ? number_format($car->preorder_deposit) : null,
+                'already_ordered'       => $orderedCarIds->contains($car->id),
+                'already_pre_ordered'   => $preOrderedCarIds->contains($car->id),
             ];
         });
 
@@ -70,7 +94,6 @@ class MarketplaceController extends Controller
         if ($request->filled('model_name')) { $query->where('model', 'like', '%' . $request->model_name . '%'); }
         if ($request->filled('year_from'))  { $query->where('year', '>=', $request->year_from); }
         if ($request->filled('year_to'))    { $query->where('year', '<=', $request->year_to); }
-        // Price filter excludes upcoming/preorder cars so they always show regardless of price range
         if ($request->filled('price_min')) {
             $query->where(fn($q) => $q->where('price', '>=', $request->price_min)->orWhere('status', 'upcoming'));
         }
@@ -113,9 +136,28 @@ class MarketplaceController extends Controller
             ->where(fn($q) => $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', today()))
             ->get();
 
+        // Collect buyer order/preorder state for the initial server-rendered page
+        $orderedCarIds    = collect();
+        $preOrderedCarIds = collect();
+
+        if (Auth::check() && Auth::user()->hasRole('buyer')) {
+            $carIds = $cars->pluck('id');
+
+            $orderedCarIds = Order::where('buyer_id', Auth::id())
+                ->whereIn('car_id', $carIds)
+                ->whereIn('status', ['pending', 'confirmed', 'completed'])
+                ->pluck('car_id');
+
+            $preOrderedCarIds = PreOrder::where('buyer_id', Auth::id())
+                ->whereIn('car_id', $carIds)
+                ->whereIn('status', ['pending_deposit', 'deposit_paid'])
+                ->pluck('car_id');
+        }
+
         return view('frontend.pages.marketplace', compact(
             'cars', 'locations', 'totalActive', 'marketplaceAds',
-            'brands', 'models', 'minYear', 'maxYear', 'minPrice', 'maxPrice'
+            'brands', 'models', 'minYear', 'maxYear', 'minPrice', 'maxPrice',
+            'orderedCarIds', 'preOrderedCarIds'
         ));
     }
 }

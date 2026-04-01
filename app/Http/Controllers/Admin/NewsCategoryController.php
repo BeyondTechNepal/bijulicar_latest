@@ -23,7 +23,7 @@ class NewsCategoryController extends Controller
     {
         $request->validate(['name' => 'required|unique:news_categories,name|max:255']);
         NewsCategory::create($request->only('name'));
-        return redirect()->route('admin.news.news_categories.index')->with('success', 'Node Deployed.');
+        return redirect()->route('admin.news_categories.index')->with('success', 'Node Deployed.');
     }
 
     public function edit(NewsCategory $category)
@@ -35,7 +35,7 @@ class NewsCategoryController extends Controller
     {
         $request->validate(['name' => 'required|unique:news_categories,name,' . $category->id]);
         $category->update($request->only('name'));
-        return redirect()->route('admin.news.news_categories.index')->with('success', 'Node Updated.');
+        return redirect()->route('admin.news_categories.index')->with('success', 'Node Updated.');
     }
 
     public function destroy(NewsCategory $category)

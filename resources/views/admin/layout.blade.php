@@ -168,21 +168,21 @@
                     <!-- Children -->
                     <div x-show="open" x-collapse class="mt-1 ml-6 space-y-1">
 
+                        <a href="{{ route('admin.news_categories.index') }}"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news_categories.index') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            <span class="w-5 text-center">•</span>
+                            <span class="hide-on-collapse">News Categories</span>
+                        </a>    
+
                         <a href="{{ route('admin.news.index') }}"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
-            {{ request()->routeIs('admin.news.index')
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news.index') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                             <span class="w-5 text-center">•</span>
                             <span class="hide-on-collapse">News Articles</span>
                         </a>
 
                         @can('manage news banner')
                         <a href="{{ route('admin.news_banner.index') }}"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
-            {{ request()->routeIs('admin.news_banner*')
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news_banner*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                             <span class="w-5 text-center">•</span>
                             <span class="hide-on-collapse">News Banner</span>
                         </a>

@@ -34,7 +34,9 @@ class NewsArticleController extends Controller
 
     public function create()
     {
-        return view('admin.news.create');
+        $categories = \App\Models\NewsCategory::orderBy('name', 'asc')->get();
+
+        return view('admin.news.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -64,7 +66,9 @@ class NewsArticleController extends Controller
         // 2. Security Check: Only allow owner or admin
         $this->authorizeAccess($news);
 
-        return view('admin.news.edit', ['article' => $news]);
+        $categories = \App\Models\NewsCategory::orderBy('name', 'asc')->get();
+
+        return view('admin.news.edit', ['article' => $news, 'categories' => $categories]);
     }
 
     public function update(Request $request, News $news)
@@ -139,6 +143,8 @@ class NewsArticleController extends Controller
             'section_3_title' => 'nullable|string|max:255',
             'section_3_content' => 'nullable|string',
             'is_published' => 'boolean',
+
+            'category_id' => 'required|exists:news_categories,id', // CRITICAL: Ensures the ID is valid in the DB
         ]);
     }
 }

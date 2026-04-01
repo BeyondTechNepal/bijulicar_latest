@@ -52,25 +52,31 @@
                 </div>
             </div>
 
-            <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6">
+            {{-- <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6">
                 <button
                     class="px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-[#4ade80]/20 hover:scale-105 transition-transform">
-                    Discover
+                    All
+                </button>
+                <button
+                    class="px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-[#4ade80]/20 hover:scale-105 transition-transform">
+                    EV
                 </button>
                 <button
                     class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
-                    Electric
+                    Petrol
+                </button>
+                <button
+                    class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
+                    Diesel
                 </button>
                 <button
                     class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
                     Hybrid
                 </button>
-                <button
-                    class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
-                    Markets
-                </button>
-            </div>
+            </div> --}}
+            
         </div>
+
         <div
             class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Scroll</span>

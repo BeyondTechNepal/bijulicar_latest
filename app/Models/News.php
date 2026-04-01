@@ -61,7 +61,7 @@ class News extends Model
          * A news article belongs to a single category.
          * This allows you to call $article->category->name in your Blade views.
          */
-        return $this->belongsTo(NewsCategory::class);
+        return $this->belongsTo(NewsCategory::class, 'category_id');
     }
 
     /**

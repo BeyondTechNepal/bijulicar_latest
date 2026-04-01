@@ -15,6 +15,36 @@
     <form action="{{ route('admin.news.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
         @csrf
 
+        {{-- Section: Category Selection --}}
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 space-y-6">
+            <h3 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-2">Taxonomy Assignment</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Article Category *</label>
+                    <select name="category_id" required 
+                        class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-no-repeat bg-right pr-10"
+                        style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23cbd5e1%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E'); background-size: 1.2em;">
+                        <option value="" disabled {{ old('category_id', $news->category_id ?? '') == '' ? 'selected' : '' }}>Select Category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" 
+                                {{ old('category_id', $news->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                {{ strtoupper($category->name) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                        <p class="text-[9px] font-black text-red-500 uppercase mt-2 tracking-widest">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <div class="flex items-end pb-1">
+                    <p class="text-[9px] text-slate-400 font-mono uppercase leading-tight tracking-widest">
+                        Assigning a category links this article to a specific structural registry.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         {{-- Section 1: Titles & Slug --}}
         <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 space-y-6">
             <h3 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-2">Headline Configuration</h3>

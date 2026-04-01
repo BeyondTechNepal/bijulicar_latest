@@ -81,12 +81,12 @@ Route::prefix('admin')
                 Route::delete('/admin-permissions/{permission}', [App\Http\Controllers\Admin\AdminPermissionController::class, 'destroy'])->name('admin_permissions.destroy');
 
                 // News Categories
-                Route::get('/news-categories', [App\Http\Controllers\Admin\NewsCategoryController::class, 'index'])->name('admin.news_categories.index');
-                Route::get('/news-categories/create', [App\Http\Controllers\Admin\NewsCategoryController::class, 'create'])->name('admin.news_categories.create');
-                Route::post('/news-categories', [App\Http\Controllers\Admin\NewsCategoryController::class, 'store'])->name('admin.news_categories.store');
-                Route::get('/news-categories/{category}/edit', [App\Http\Controllers\Admin\NewsCategoryController::class, 'edit'])->name('admin.news_categories.edit');
-                Route::put('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'update'])->name('admin.news_categories.update');
-                Route::delete('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'destroy'])->name('admin.news_categories.destroy');
+                Route::get('/news-categories', [App\Http\Controllers\Admin\NewsCategoryController::class, 'index'])->name('news_categories.index');
+                Route::get('/news-categories/create', [App\Http\Controllers\Admin\NewsCategoryController::class, 'create'])->name('news_categories.create');
+                Route::post('/news-categories', [App\Http\Controllers\Admin\NewsCategoryController::class, 'store'])->name('news_categories.store');
+                Route::get('/news-categories/{category}/edit', [App\Http\Controllers\Admin\NewsCategoryController::class, 'edit'])->name('news_categories.edit');
+                Route::put('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'update'])->name('news_categories.update');
+                Route::delete('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'destroy'])->name('news_categories.destroy');
             });
 
             // ── News (separate role group) ─────────────────────────────

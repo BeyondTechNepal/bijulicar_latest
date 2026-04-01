@@ -11,7 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('news', function (Blueprint $table) {
-            $table->foreignId('category_id')->nullable()->after('admin_id')->constrained()->nullOnDelete();
+            $table->foreignId('category_id')->nullable()->after('admin_id')->constrained('news_categories') // ✅ FIX HERE
+->nullOnDelete();
         });
     }
 

@@ -8,7 +8,7 @@
         <div class="absolute inset-0 z-0">
             {{-- <img src="{{ asset('images/news_header.jpg') }}"
                 class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background"> --}}
-            @if ($banner->image)
+            @if ($banner)
                 <img src="{{ asset('storage/' . $banner->image) }}"
                     class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background">
             @endif
@@ -73,6 +73,23 @@
                     class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
                     Hybrid
                 </button>
+            </div> --}}
+
+            {{-- Filter Buttons --}}
+            <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6" id="filter-container">
+                <button data-category="all" class="filter-btn px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic active-btn">
+                    All
+                </button>
+                @foreach($categories as $category)
+                    <button data-category="{{ $category->slug }}" class="filter-btn px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
+                        {{ $category->name }}
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- The Target Container --}}
+            {{-- <div id="news-list-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 transition-opacity duration-300">
+                @include('frontend.news._list_partial', ['articles' => $newsItems])
             </div> --}}
             
         </div>
@@ -186,7 +203,7 @@
                         <div class="h-px w-full bg-slate-100"></div>
                     </div>
 
-                    @foreach ($newsItems as $item)
+                    {{-- @foreach ($newsItems as $item)
                         <a href="{{ route('news.show', $item->slug) }}"
                             class="group block border-b border-slate-100 last:border-0 pb-10">
                             <div class="grid md:grid-cols-12 gap-6">
@@ -220,7 +237,11 @@
                                 </div>
                             </div>
                         </a>
-                    @endforeach
+                    @endforeach --}}
+                    <div id="news-list-container" class="space-y-10 transition-opacity duration-300">
+                        {{-- On first load, we tell the partial to use your $newsItems variable --}}
+                        @include('frontend.news._list_partial', ['articles' => $newsItems])
+                    </div>
                 </div>
 
                 <aside class="lg:col-span-4">
@@ -598,4 +619,35 @@
             </div>
         </section>
     </div> --}}
+
+    <script>
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                const container = document.getElementById('news-list-container');
+                
+                // 1. Visual Feedback (Fade out)
+                container.style.opacity = '0.5';
+
+                // 2. Update Button Styles
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-[#4ade80]', 'text-black', 'active-btn');
+                    btn.classList.add('bg-white/5', 'text-slate-400');
+                });
+                this.classList.add('bg-[#4ade80]', 'text-black', 'active-btn');
+                this.classList.remove('bg-white/5', 'text-slate-400');
+
+                // 3. Fetch Data
+                fetch(`/news-filter?category=${category}`, {
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    container.style.opacity = '1';
+                })
+                .catch(error => console.error('Error fetching filtered news:', error));
+            });
+        });
+    </script>
 @endsection

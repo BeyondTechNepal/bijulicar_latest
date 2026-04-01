@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6">
+            {{-- <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6">
                 <button
                     class="px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-[#4ade80]/20 hover:scale-105 transition-transform">
                     Discover
@@ -69,7 +69,7 @@
                     class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
                     Markets
                 </button>
-            </div>
+            </div> --}}
         </div>
         <div
             class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
@@ -241,12 +241,23 @@
                 <article class="lg:col-span-8">
 
                     {{-- Navigation - Dynamic Breadcrumb (if applicable) --}}
-                    <nav
-                        class="flex items-center gap-4 mb-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-                        <a href="#" class="hover:text-black transition-colors">Intelligence Hub</a>
-                        <span class="text-slate-200">/</span>
-                        <a href="#" class="text-[#4ade80]">Advanced Propulsion</a>
-                    </nav>
+                    <nav class="flex items-center justify-between mb-8">
+    {{-- Left Side: Breadcrumbs --}}
+    <div class="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+        <a href="{{ route('news') }}" class="hover:text-black transition-colors">Intelligence Hub</a>
+        <span class="text-slate-200">/</span>
+        <a href="#" class="text-[#4ade80]">Advanced Propulsion</a>
+    </div>
+
+    {{-- Right Side: Go Back Button --}}
+    <a href="{{ url()->previous() }}" 
+       class="group flex items-center gap-2 px-4 py-2 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-black transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-1">
+            <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Go Back
+    </a>
+</nav>
 
                     {{-- Main Title Section --}}
                     <h1 class="text-5xl md:text-7xl font-black uppercase italic leading-[0.85] tracking-tighter mb-10">

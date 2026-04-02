@@ -1,459 +1,273 @@
 @extends('frontend.app')
 
-<title>News | BijuliCar</title>
+<title>{{ $news->title }} | BijuliCar</title>
 
 @section('content')
-    {{-- News Header --}}
-    <section class="relative pt-20 pb-10 lg:pt-32 lg:pb-16 overflow-hidden bg-[#0a0f1e] text-white">
-        <div class="absolute inset-0 z-0">
-            {{-- <img src="{{ asset('images/news_header.jpg') }}"
-                class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background"> --}}
-            @if ($banner)
-                <img src="{{ asset('storage/' . $banner->image) }}"
-                    class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background">
-            @endif
 
-            <div class="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/80 via-[#0a0f1e]/25 to-[#202638]"></div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-                <div class="max-w-3xl">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="w-12 h-[3px] bg-[#4ade80]"></span>
-                        <span class="text-[10px] lg:text-[12px] uppercase tracking-[0.5em] text-[#4ade80] font-bold">The
-                            Intelligence Hub</span>
-                    </div>
-
-                    <h1 class="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.8] mb-6">
-                        Auto<span class="text-slate-400 block lg:inline lg:ml-4">Intel</span>
-                    </h1>
-
-                    <p
-                        class="text-slate-400 text-sm lg:text-base font-medium max-w-xl leading-relaxed border-l-2 border-white/10 pl-6">
-                        Stay ahead of the curve with expert analysis on <span class="text-white">EV breakthroughs</span>,
-                        hybrid efficiency, and the evolving landscape of traditional precision engineering.
-                    </p>
-                </div>
-
-                <div class="hidden lg:flex flex-col items-end text-right space-y-4">
-                    <div class="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6">
-                        <div class="flex items-center justify-end gap-3 mb-1">
-                            <span class="relative flex h-2 w-2">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ade80] opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#4ade80]"></span>
-                            </span>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live
-                                Updates</span>
-                        </div>
-                        <p class="text-xs font-bold text-white uppercase italic">March 2026 Edition</p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6">
-                <button
-                    class="px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg shadow-[#4ade80]/20 hover:scale-105 transition-transform">
-                    Discover
-                </button>
-                <button
-                    class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
-                    Electric
-                </button>
-                <button
-                    class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
-                    Hybrid
-                </button>
-                <button
-                    class="px-8 py-3 bg-white/5 border border-white/10 hover:border-[#4ade80]/50 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
-                    Markets
-                </button>
-            </div> --}}
-        </div>
-        <div
-            class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
-            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Scroll</span>
-            <div class="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center p-1">
-                <div class="w-1 h-2 bg-[#4ade80] rounded-full"></div>
-            </div>
-        </div>
-    </section>
-
-    {{-- below is the detailed news section, use it in another blade --}}
-    <div class="bg-white font-sans antialiased text-slate-900">
-
-        <section class="max-w-7xl mx-auto px-6 py-16">
-            <div class="grid lg:grid-cols-12 gap-16">
-
-                {{-- <article class="lg:col-span-8">
-
-                    <nav
-                        class="flex items-center gap-4 mb-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-                        <a href="#" class="hover:text-black transition-colors">Intelligence Hub</a>
-                        <span class="text-slate-200">/</span>
-                        <a href="#" class="text-[#4ade80]">Advanced Propulsion</a>
-                    </nav>
-
-                    <h1 class="text-5xl md:text-7xl font-black uppercase italic leading-[0.85] tracking-tighter mb-10">
-                        Hydrogen Combustion:<br>
-                        <span class="text-slate-400">The Silent Rival</span> to <br>EV Dominance
-                    </h1>
-
-                    <div class="flex flex-wrap items-center gap-8 py-8 mb-12 border-y border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white text-[11px] font-black italic">
-                                AT</div>
-                            <div>
-                                <p class="text-[10px] font-black uppercase tracking-tight">Alex Thorne</p>
-                                <p class="text-[9px] text-slate-400 font-bold uppercase">Chief Technical Analyst</p>
-                            </div>
-                        </div>
-                        <div class="hidden md:block h-10 w-px bg-slate-100"></div>
-                        <div class="flex gap-10">
-                            <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Read Time</p>
-                                <p class="text-xs font-bold uppercase italic">12 Minutes</p>
-                            </div>
-                            <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Complexity</p>
-                                <p class="text-xs font-bold uppercase italic text-[#4ade80]">Level 4/5</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <figure class="mb-16">
-                        <div class="rounded-[3rem] overflow-hidden aspect-[21/9] bg-slate-100 shadow-2xl mb-4">
-                            <img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=2000"
-                                class="w-full h-full object-cover" alt="Hydrogen Engine Core">
-                        </div>
-                        <figcaption class="text-[10px] text-slate-400 font-medium uppercase tracking-widest text-center">
-                            Fig 1.0: Prototype H2-ICE Direct Injection Rail System (March 2026 Testing Phase)
-                        </figcaption>
-                    </figure>
-
-                    <div class="prose prose-slate max-w-none">
-
-                        <p
-                            class="text-2xl font-bold leading-snug text-slate-800 mb-10 italic border-l-4 border-[#4ade80] pl-8">
-                            The automotive industry is currently standing at a crossroads where the chemistry of the fuel
-                            tank is battling the energy density of the battery cell. While EVs have captured the public
-                            imagination, the engineering underground is betting on the return of the piston.
-                        </p>
-
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">I. Beyond the Fuel Cell
-                        </h2>
-                        <p class="text-lg leading-relaxed text-slate-600 mb-8">
-                            It is critical to distinguish between Hydrogen Fuel Cells (FCEV) and Hydrogen Internal
-                            Combustion Engines (H2-ICE). While the former uses hydrogen to generate electricity via a
-                            chemical reaction, H2-ICE utilizes the same mechanical principles that have powered vehicles for
-                            a century. The difference? The byproduct is largely water vapor, not CO2.
-                        </p>
-
-                        <div class="my-12 p-8 bg-slate-50 rounded-3xl border border-slate-100 grid md:grid-cols-2 gap-8">
-                            <div>
-                                <h4 class="text-[10px] font-black uppercase tracking-widest text-[#4ade80] mb-4">Comparative
-                                    Energy Density</h4>
-                                <ul class="space-y-3">
-                                    <li class="flex justify-between border-b border-slate-200 pb-2">
-                                        <span class="text-xs font-bold uppercase text-slate-500">Hydrogen (Gas)</span>
-                                        <span class="text-xs font-black">120 MJ/kg</span>
-                                    </li>
-                                    <li class="flex justify-between border-b border-slate-200 pb-2">
-                                        <span class="text-xs font-bold uppercase text-slate-500">Diesel</span>
-                                        <span class="text-xs font-black">45 MJ/kg</span>
-                                    </li>
-                                    <li class="flex justify-between border-b border-slate-200 pb-2">
-                                        <span class="text-xs font-bold uppercase text-slate-500">Li-ion Battery</span>
-                                        <span class="text-xs font-black">0.9 MJ/kg</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="flex flex-col justify-center">
-                                <p class="text-[11px] leading-relaxed text-slate-500 italic">
-                                    <strong>Technical Note:</strong> Despite the higher MJ/kg, hydrogen storage volume
-                                    remains the primary engineering challenge for passenger-sized chassis, necessitating
-                                    700-bar carbon-fiber tanks.
-                                </p>
-                            </div>
-                        </div>
-
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">II. Solving the NOx
-                            Problem</h2>
-                        <p class="text-lg leading-relaxed text-slate-600 mb-8">
-                            Critics of hydrogen combustion often point to Nitrogen Oxides (NOx) as the "dirty secret" of the
-                            technology. Since air is 78% nitrogen, burning any fuel at high temperatures in an atmospheric
-                            environment will produce NOx. However, the latest generation of <strong>Cryogenic
-                                Injection</strong> systems allows the engine to run "ultra-lean."
-                        </p>
-                        <p class="text-lg leading-relaxed text-slate-600 mb-8">
-                            By injecting liquid hydrogen at near-absolute zero temperatures directly into the chamber,
-                            engineers can control the flame front with surgical precision. This cooling effect suppresses
-                            the formation of NOx to levels that are actually cleaner than the ambient air in many major
-                            cities.
-                        </p>
-
-                        <div class="my-16 text-center">
-                            <span class="inline-block w-12 h-1 bg-[#4ade80] mb-8"></span>
-                            <blockquote
-                                class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter leading-none text-slate-900 mb-8">
-                                "The infrastructure for ICE exists in every corner of the globe. If we change the fuel, we
-                                don't have to rebuild the world."
-                            </blockquote>
-                            <cite class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">— Dr. Helena
-                                Vane, Propulsion Lead</cite>
-                        </div>
-
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">III. The Industrial
-                            Pivot</h2>
-                        <p class="text-lg leading-relaxed text-slate-600 mb-8">
-                            The most compelling argument for H2-ICE is not ecological—it's economic. A total shift to EVs
-                            requires trillions in new battery gigafactories and a complete overhaul of the power grid.
-                            Conversely, H2-ICE allows giants like Cummins, Toyota, and JCB to utilize 90% of their existing
-                            supply chains.
-                        </p>
-                        <p class="text-lg leading-relaxed text-slate-600 mb-12">
-                            For the consumer, this means the return of the lightweight, high-revving sports car. For the
-                            logistics manager, it means a 40-ton truck that refuels in 10 minutes rather than charging for
-                            10 hours. As we move into the second half of the decade, the "Silent Rival" is becoming
-                            increasingly loud.
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between py-10 border-t border-slate-100">
-                        <div class="flex gap-4">
-                            <button
-                                class="px-6 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#4ade80] hover:text-black transition-all">Save
-                                Report</button>
-                            <button
-                                class="px-6 py-3 border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-black transition-all">Print
-                                PDF</button>
-                        </div>
-                        <div class="flex items-center gap-4 text-[10px] font-black uppercase text-slate-400">
-                            <span>Share:</span>
-                            <a href="#" class="hover:text-black">TW</a>
-                            <a href="#" class="hover:text-black">LN</a>
-                        </div>
-                    </div>
-                </article> --}}
-
-                <article class="lg:col-span-8">
-
-                    {{-- Navigation - Dynamic Breadcrumb (if applicable) --}}
-                    <nav class="flex items-center justify-between mb-8">
-    {{-- Left Side: Breadcrumbs --}}
-    <div class="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-        <a href="{{ route('news') }}" class="hover:text-black transition-colors">Intelligence Hub</a>
-        <span class="text-slate-200">/</span>
-        <a href="#" class="text-[#4ade80]">Advanced Propulsion</a>
+{{-- ── Hero Banner ───────────────────────────────────────────────────────── --}}
+<section class="relative pt-20 pb-10 lg:pt-32 lg:pb-16 overflow-hidden bg-[#0a0f1e] text-white">
+    <div class="absolute inset-0 z-0">
+        @if($news->hero_image)
+            <img src="{{ asset('storage/' . $news->hero_image) }}"
+                class="w-full h-full object-cover opacity-30 scale-105 blur-[2px]" alt="{{ $news->title }}">
+        @elseif($banner?->image)
+            <img src="{{ asset('storage/' . $banner->image) }}"
+                class="w-full h-full object-cover opacity-30 scale-105 blur-[2px]" alt="Banner">
+        @endif
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/70 via-[#0a0f1e]/40 to-[#0a0f1e]"></div>
     </div>
 
-    {{-- Right Side: Go Back Button --}}
-    <a href="{{ url()->previous() }}" 
-       class="group flex items-center gap-2 px-4 py-2 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-black transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-1">
-            <path d="m15 18-6-6 6-6"/>
-        </svg>
-        Go Back
-    </a>
-</nav>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        {{-- Breadcrumb --}}
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-500 mb-8">
+            <a href="{{ route('home') }}" class="hover:text-slate-300 transition-colors">Home</a>
+            <span>/</span>
+            <a href="{{ route('news') }}" class="hover:text-slate-300 transition-colors">News</a>
+            <span>/</span>
+            <span class="text-slate-400">{{ Str::limit($news->title, 40) }}</span>
+        </div>
 
-                    {{-- Main Title Section --}}
-                    <h1 class="text-5xl md:text-7xl font-black uppercase italic leading-[0.85] tracking-tighter mb-10">
-                        {{ $news->title }}:<br>
-                        <span class="text-slate-400">{{ $news->title_highlight }}</span> <br>
-                        {{ $news->title_suffix }}
-                    </h1>
+        {{-- Author / source badge --}}
+        <div class="flex items-center gap-3 mb-5">
+            <span class="w-10 h-[2px] bg-[#4ade80]"></span>
+            <span class="text-[11px] font-black uppercase tracking-widest text-[#4ade80]">
+                {{ $news->author_name }}
+            </span>
+            @if($news->newscategory)
+                <span class="text-[10px] font-black uppercase tracking-widest text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-0.5 rounded-full">
+                    {{ $news->newscategory->name }}
+                </span>
+            @endif
+        </div>
 
-                    {{-- Author & Metadata Section --}}
-                    <div class="flex flex-wrap items-center gap-8 py-8 mb-12 border-y border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white text-[11px] font-black italic">
-                                {{ $news->author_initials }}
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-black uppercase tracking-tight">{{ $news->author_name }}</p>
-                                <p class="text-[9px] text-slate-400 font-bold uppercase">{{ $news->author_role }}</p>
-                            </div>
-                        </div>
-                        <div class="hidden md:block h-10 w-px bg-slate-100"></div>
-                        <div class="flex gap-10">
-                            <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Read Time</p>
-                                <p class="text-xs font-bold uppercase italic">12 Minutes</p> {{-- Static --}}
-                            </div>
-                            <div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Complexity</p>
-                                <p class="text-xs font-bold uppercase italic text-[#4ade80]">Level 4/5</p>
-                                {{-- Static --}}
-                            </div>
-                        </div>
-                    </div>
+        {{-- Title --}}
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9] mb-6 max-w-4xl">
+            {{ $news->title }}
+            @if($news->title_highlight)
+                <span class="text-slate-400"> {{ $news->title_highlight }}</span>
+            @endif
+            @if($news->title_suffix)
+                <span class="block text-slate-500 text-3xl md:text-4xl mt-2">{{ $news->title_suffix }}</span>
+            @endif
+        </h1>
 
-                    {{-- Hero Figure --}}
-                    <figure class="mb-16">
-                        <div class="rounded-[3rem] overflow-hidden aspect-[21/9] bg-slate-100 shadow-2xl mb-4">
-                            <img src="{{ asset('storage/' . $news->hero_image) }}" class="w-full h-full object-cover"
-                                alt="{{ $news->title }}">
-                        </div>
-                        <figcaption class="text-[10px] text-slate-400 font-medium uppercase tracking-widest text-center">
-                            {{ $news->figure_caption }}
-                        </figcaption>
+        {{-- Meta row --}}
+        <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-400">
+            <span class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-[10px] font-black text-green-400 uppercase">
+                    {{ $news->author_initials ?: strtoupper(substr($news->author_name, 0, 2)) }}
+                </span>
+                {{ $news->author_name }}
+                @if($news->author_role)
+                    <span class="text-slate-600">·</span>
+                    <span class="text-slate-500">{{ $news->author_role }}</span>
+                @endif
+            </span>
+            <span class="text-slate-600">·</span>
+            <span>{{ $news->created_at->format('d M Y') }}</span>
+        </div>
+    </div>
+</section>
+
+{{-- ── Article Body ──────────────────────────────────────────────────────── --}}
+<section class="bg-white py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-12 gap-12 lg:gap-16">
+
+            {{-- ── Main column ──────────────────────────────────────────── --}}
+            <article class="lg:col-span-8">
+
+                {{-- Hero image --}}
+                @if($news->hero_image)
+                    <figure class="mb-10 -mx-6 lg:mx-0">
+                        <img src="{{ asset('storage/' . $news->hero_image) }}"
+                            alt="{{ $news->title }}"
+                            class="w-full max-h-[480px] object-cover rounded-none lg:rounded-2xl">
+                        @if($news->figure_caption)
+                            <figcaption class="text-xs text-slate-400 font-medium text-center mt-3 px-6 lg:px-0">
+                                {{ $news->figure_caption }}
+                            </figcaption>
+                        @endif
                     </figure>
+                @endif
 
-                    <div class="prose prose-slate max-w-none">
+                {{-- Lead paragraph --}}
+                @if($news->lead_paragraph)
+                    <p class="text-lg lg:text-xl font-medium text-slate-700 leading-relaxed border-l-4 border-[#4ade80] pl-6 mb-10">
+                        {{ strip_tags($news->lead_paragraph) }}
+                    </p>
+                @endif
 
-                        {{-- Lead Paragraph --}}
-                        <div
-                            class="text-2xl font-bold leading-snug text-slate-800 mb-10 italic border-l-4 border-[#4ade80] pl-8">
-                            {!! $news->lead_paragraph !!}
-                        </div>
-
-                        {{-- Section I --}}
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">
-                            {{ $news->section_1_title }}
-                        </h2>
-                        <div class="text-lg leading-relaxed text-slate-600 mb-8">
-                            {!! $news->section_1_content !!}
-                        </div>
-
-                        {{-- Technical Specs Box (Dynamic from JSON Array) --}}
-                        @if ($news->tech_specs)
-                            <div
-                                class="my-12 p-8 bg-slate-50 rounded-3xl border border-slate-100 grid md:grid-cols-2 gap-8">
-                                <div>
-                                    <h4 class="text-[10px] font-black uppercase tracking-widest text-[#4ade80] mb-4">
-                                        Comparative Energy Density
-                                    </h4>
-                                    <ul class="space-y-3">
-                                        @foreach ($news->tech_specs as $spec)
-                                            <li class="flex justify-between border-b border-slate-200 pb-2">
-                                                <span
-                                                    class="text-xs font-bold uppercase text-slate-500">{{ $spec['key'] }}</span>
-                                                <span class="text-xs font-black">{{ $spec['value'] }}</span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                                <div class="flex flex-col justify-center">
-                                    <p class="text-[11px] leading-relaxed text-slate-500 italic">
-                                        <strong>Technical Note:</strong> {{ $news->tech_note }}
-                                    </p>
-                                </div>
+                {{-- Section 1 --}}
+                @if($news->section_1_title || $news->section_1_content)
+                    <div class="mb-10">
+                        @if($news->section_1_title)
+                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
+                                {{ $news->section_1_title }}
+                            </h2>
+                        @endif
+                        @if($news->section_1_content)
+                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
+                                @foreach(explode("\n", strip_tags($news->section_1_content)) as $para)
+                                    @if(trim($para))
+                                        <p>{{ $para }}</p>
+                                    @endif
+                                @endforeach
                             </div>
                         @endif
+                    </div>
+                @endif
 
-                        {{-- Section II --}}
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">
-                            {{ $news->section_2_title }}
-                        </h2>
-                        <div class="text-lg leading-relaxed text-slate-600 mb-8">
-                            {!! $news->section_2_content !!}
-                        </div>
+                {{-- Tech specs --}}
+                @if($news->tech_specs)
+                    <div class="my-10 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-[#4ade80] mb-4">
+                            Technical Specifications
+                        </h4>
+                        <ul class="space-y-3">
+                            @foreach($news->tech_specs as $spec)
+                                <li class="flex justify-between border-b border-slate-200 pb-2">
+                                    <span class="text-xs font-bold uppercase text-slate-500">{{ $spec['key'] }}</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $spec['value'] }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                        @if($news->tech_note)
+                            <p class="text-[11px] leading-relaxed text-slate-500 italic mt-4">
+                                <strong>Note:</strong> {{ $news->tech_note }}
+                            </p>
+                        @endif
+                    </div>
+                @endif
 
-                        {{-- Quote Section --}}
-                        <div class="my-16 text-center">
-                            <span class="inline-block w-12 h-1 bg-[#4ade80] mb-8"></span>
-                            <blockquote
-                                class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter leading-none text-slate-900 mb-8">
-                                "{{ $news->quote_text }}"
-                            </blockquote>
-                            <cite class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-                                — {{ $news->quote_author }}, {{ $news->quote_author_title }}
+                {{-- Pull quote --}}
+                @if($news->quote_text)
+                    <blockquote class="my-12 border-l-4 border-[#4ade80] pl-8 py-2">
+                        <p class="text-2xl font-black italic text-slate-800 leading-snug tracking-tight">
+                            "{{ $news->quote_text }}"
+                        </p>
+                        @if($news->quote_author)
+                            <cite class="block mt-4 text-sm font-black text-[#4ade80] uppercase tracking-widest not-italic">
+                                — {{ $news->quote_author }}{{ $news->quote_author_title ? ', ' . $news->quote_author_title : '' }}
                             </cite>
-                        </div>
+                        @endif
+                    </blockquote>
+                @endif
 
-                        {{-- Section III --}}
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">
-                            {{ $news->section_3_title }}
-                        </h2>
-                        <div class="text-lg leading-relaxed text-slate-600 mb-12">
-                            {!! $news->section_3_content !!}
-                        </div>
-                    </div>
-
-                    {{-- Footer Actions --}}
-                    <div class="flex items-center justify-between py-10 border-t border-slate-100">
-                        <div class="flex gap-4">
-                            <button
-                                class="px-6 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#4ade80] hover:text-black transition-all">
-                                Save Report
-                            </button>
-                            <button
-                                class="px-6 py-3 border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-black transition-all">
-                                Print PDF
-                            </button>
-                        </div>
-                        <div class="flex items-center gap-4 text-[10px] font-black uppercase text-slate-400">
-                            <span>Share:</span>
-                            <a href="#" class="hover:text-black">TW</a>
-                            <a href="#" class="hover:text-black">LN</a>
-                        </div>
-                    </div>
-                </article>
-
-                <aside class="lg:col-span-4">
-                    <div class="sticky top-12 space-y-12">
-
-                        <div class="bg-slate-50 rounded-[2rem] p-8 border border-slate-100">
-                            <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Market
-                                Sentiment</h4>
-                            <div class="space-y-6">
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <span class="text-[10px] font-bold uppercase">H2 Adoption Rate</span>
-                                        <span class="text-[10px] font-black">74%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-[#4ade80] h-full w-[74%]"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between mb-2">
-                                        <span class="text-[10px] font-bold uppercase">Investor Confidence</span>
-                                        <span class="text-[10px] font-black">58%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
-                                        <div class="bg-slate-900 h-full w-[58%]"></div>
-                                    </div>
-                                </div>
+                {{-- Section 2 --}}
+                @if($news->section_2_title || $news->section_2_content)
+                    <div class="mb-10">
+                        @if($news->section_2_title)
+                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
+                                {{ $news->section_2_title }}
+                            </h2>
+                        @endif
+                        @if($news->section_2_content)
+                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
+                                @foreach(explode("\n", strip_tags($news->section_2_content)) as $para)
+                                    @if(trim($para))
+                                        <p>{{ $para }}</p>
+                                    @endif
+                                @endforeach
                             </div>
-                        </div>
+                        @endif
+                    </div>
+                @endif
 
-                        <div>
-                            <h3
-                                class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-8 flex items-center gap-4">
-                                Linked Intel <span class="h-px flex-grow bg-slate-100"></span>
-                            </h3>
-                            <div class="space-y-10">
-                                <div class="group cursor-pointer">
-                                    <p class="text-[9px] font-black text-[#4ade80] uppercase mb-2">Policy</p>
-                                    <h5
-                                        class="text-lg font-black uppercase italic leading-tight group-hover:text-slate-500 transition-colors">
-                                        US Tax Credits for Non-Electric Zero Emission?</h5>
-                                </div>
-                                <div class="group cursor-pointer">
-                                    <p class="text-[9px] font-black text-[#4ade80] uppercase mb-2">Supply</p>
-                                    <h5
-                                        class="text-lg font-black uppercase italic leading-tight group-hover:text-slate-500 transition-colors">
-                                        The Green Hydrogen Pipeline Bottleneck</h5>
-                                </div>
+                {{-- Section 3 --}}
+                @if($news->section_3_title || $news->section_3_content)
+                    <div class="mb-10">
+                        @if($news->section_3_title)
+                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
+                                {{ $news->section_3_title }}
+                            </h2>
+                        @endif
+                        @if($news->section_3_content)
+                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
+                                @foreach(explode("\n", strip_tags($news->section_3_content)) as $para)
+                                    @if(trim($para))
+                                        <p>{{ $para }}</p>
+                                    @endif
+                                @endforeach
                             </div>
-                        </div>
+                        @endif
+                    </div>
+                @endif
 
-                        <div class="bg-[#502915] rounded-[2rem] p-8 text-center relative overflow-hidden">
-                            <h5 class="text-white text-xl font-black uppercase italic mb-4 relative z-10">Hungry for more?
-                            </h5>
-                            <button
-                                class="w-full py-4 bg-[#ed6906] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform relative z-10 shadow-xl">Order
-                                a Whopper</button>
+                {{-- Footer actions --}}
+                <div class="mt-12 flex items-center justify-between py-8 border-t border-slate-100">
+                    <div class="flex gap-3">
+                        <button class="px-5 py-2.5 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#4ade80] hover:text-black transition-all">
+                            Save Report
+                        </button>
+                        <button class="px-5 py-2.5 border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-black transition-all">
+                            Print PDF
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-4 text-[10px] font-black uppercase text-slate-400">
+                        <span>Share:</span>
+                        <a href="#" class="hover:text-black">TW</a>
+                        <a href="#" class="hover:text-black">LN</a>
+                    </div>
+                </div>
+
+            </article>
+
+            {{-- ── Sidebar ───────────────────────────────────────────────── --}}
+            <aside class="lg:col-span-4">
+                <div class="sticky top-24 space-y-8">
+
+                    {{-- Recent articles --}}
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-3">
+                            Recent Articles
+                        </p>
+                        <div class="space-y-4">
+                            @foreach($recentArticles as $item)
+                                <a href="{{ route($item['route'], $item['slug']) }}"
+                                    class="flex items-start gap-3 group">
+                                    @if($item['hero_image'])
+                                        <img src="{{ asset('storage/' . $item['hero_image']) }}"
+                                            class="w-14 h-12 rounded-xl object-cover shrink-0 border border-slate-100 group-hover:opacity-80 transition-opacity"
+                                            alt="">
+                                    @else
+                                        <div class="w-14 h-12 rounded-xl bg-slate-100 shrink-0 flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <div class="flex-1 min-w-0">
+                                        @if($item['type'] === 'business')
+                                            <span class="text-[9px] font-black uppercase tracking-widest text-purple-500 block mb-0.5">Business</span>
+                                        @endif
+                                        <p class="text-sm font-black text-slate-800 leading-tight line-clamp-2 group-hover:text-slate-600 transition-colors uppercase italic tracking-tight">
+                                            {{ $item['title'] }}
+                                        </p>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-1">
+                                            {{ \Carbon\Carbon::parse($item['created_at'])->format('d M Y') }}
+                                        </p>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
                     </div>
-                </aside>
-            </div>
-        </section>
+
+                    {{-- Back to news --}}
+                    <a href="{{ route('news') }}"
+                        class="flex items-center justify-center gap-2 w-full border-2 border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 rounded-xl py-3 text-[11px] font-black uppercase tracking-widest transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        All News
+                    </a>
+
+                </div>
+            </aside>
+
+        </div>
     </div>
+</section>
 
 @endsection

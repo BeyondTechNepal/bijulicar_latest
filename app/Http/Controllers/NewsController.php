@@ -94,14 +94,42 @@ class NewsController extends Controller
 
     public function show(News $news)
     {
-        $banner = NewsBanner::where('is_active', true)->latest()->first();
+    $news->load('newscategory');
 
-        $relatedNews = News::where('is_published', true)
-            ->where('id', '!=', $news->id)
-            ->latest()
-            ->take(5)
-            ->get();
+    $banner = NewsBanner::where('is_active', true)->latest()->first();
 
-        return view('frontend.pages.news_details', compact('news', 'banner', 'relatedNews'));
+    $relatedAdminNews = News::where('is_published', true)
+        ->where('id', '!=', $news->id)
+        ->latest()
+        ->take(3)
+        ->get()
+        ->map(fn($n) => [
+            'title'      => trim($n->title . ' ' . $n->title_highlight),
+            'slug'       => $n->slug,
+            'route'      => 'news.show',
+            'created_at' => $n->created_at,
+            'hero_image' => $n->hero_image,
+            'type'       => 'admin',
+        ]);
+
+    $relatedBusinessNews = BusinessNews::where('is_published', true)
+        ->latest()
+        ->take(3)
+        ->get()
+        ->map(fn($n) => [
+            'title'      => $n->title,
+            'slug'       => $n->slug,
+            'route'      => 'business.news.show',
+            'created_at' => $n->created_at,
+            'hero_image' => $n->hero_image,
+            'type'       => 'business',
+        ]);
+
+    $recentArticles = $relatedAdminNews->concat($relatedBusinessNews)
+        ->sortByDesc('created_at')
+        ->take(5)
+        ->values();
+
+    return view('frontend.pages.news_details', compact('news', 'banner', 'recentArticles'));
     }
 }

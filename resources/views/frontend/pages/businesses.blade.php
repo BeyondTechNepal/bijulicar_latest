@@ -287,16 +287,14 @@
             </a>
         </div>
 
-        {{-- Featured article (first one, large) + remaining grid --}}
         @php $featured = $latestNews->first(); $rest = $latestNews->skip(1); @endphp
 
         <div class="grid lg:grid-cols-12 gap-6">
 
-            {{-- ── Featured large card ──────────────────────────────── --}}
+            {{-- Featured card --}}
             <a href="{{ route('business.news.show', $featured->slug) }}"
                 class="lg:col-span-5 group relative bg-slate-900 rounded-3xl overflow-hidden flex flex-col min-h-[360px] border border-slate-800 hover:border-[#a855f7]/40 hover:shadow-xl hover:shadow-purple-900/10 transition-all duration-300">
 
-                {{-- Background image --}}
                 @if($featured->hero_image)
                     <div class="absolute inset-0">
                         <img src="{{ asset('storage/' . $featured->hero_image) }}"
@@ -308,15 +306,15 @@
                     <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(168,85,247,0.15)_0%,_transparent_60%)]"></div>
                 @endif
 
-                {{-- Content --}}
                 <div class="relative mt-auto p-7">
-                    {{-- Business name badge --}}
-                    <a href="{{ route('businesses.show', $featured->business->id) }}"
-                        onclick="event.stopPropagation()"
-                        class="inline-flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[#a855f7] bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full hover:bg-purple-500/20 transition-colors">
+
+                    {{-- FIXED: removed nested <a> --}}
+                    <span
+                        onclick="event.stopPropagation(); window.location='{{ route('businesses.show', $featured->business->id) }}'"
+                        class="inline-flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[#a855f7] bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full hover:bg-purple-500/20 transition-colors cursor-pointer">
                         <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>
                         {{ $featured->business_name }}
-                    </a>
+                    </span>
 
                     <h3 class="text-xl font-black text-white uppercase italic tracking-tight leading-tight mb-3 group-hover:text-purple-200 transition-colors">
                         {{ $featured->title }}
@@ -344,37 +342,31 @@
                 </div>
             </a>
 
-            {{-- ── Remaining articles grid ───────────────────────────── --}}
-            <div class="lg:col-span-7 grid sm:grid-cols-2 gap-5 content-start">
+            {{-- Small cards --}}
+            <div class="lg:col-span-7 grid sm:grid-cols-2 gap-5">
                 @foreach($rest as $article)
                     <a href="{{ route('business.news.show', $article->slug) }}"
                         class="group bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:border-[#a855f7]/30 hover:shadow-md transition-all duration-300 flex flex-col">
 
-                        {{-- Thumbnail --}}
-                        <div class="h-36 overflow-hidden bg-slate-100 shrink-0">
+                        <div class="h-36 overflow-hidden bg-slate-100">
                             @if($article->hero_image)
                                 <img src="{{ asset('storage/' . $article->hero_image) }}"
                                     alt="{{ $article->title }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             @else
-                                <div class="w-full h-full bg-gradient-to-br from-purple-50 to-slate-100 flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
-                                    </svg>
-                                </div>
+                                <div class="w-full h-full bg-gradient-to-br from-purple-50 to-slate-100 flex items-center justify-center"></div>
                             @endif
                         </div>
 
-                        {{-- Content --}}
                         <div class="p-4 flex flex-col flex-1">
-                            {{-- Business name --}}
-                            <a href="{{ route('businesses.show', $article->business->id) }}"
-                                onclick="event.stopPropagation()"
-                                class="inline-flex items-center gap-1.5 mb-2 text-[9px] font-black uppercase tracking-widest text-[#a855f7] hover:text-purple-700 transition-colors w-fit">
+
+                            {{-- FIXED: removed nested <a> --}}
+                            <span
+                                onclick="event.stopPropagation(); window.location='{{ route('businesses.show', $article->business->id) }}'"
+                                class="inline-flex items-center gap-1.5 mb-2 text-[9px] font-black uppercase tracking-widest text-[#a855f7] hover:text-purple-700 transition-colors w-fit cursor-pointer">
                                 <span class="w-1 h-1 rounded-full bg-[#a855f7]"></span>
                                 {{ $article->business_name }}
-                            </a>
+                            </span>
 
                             <h4 class="text-sm font-black text-slate-900 uppercase italic tracking-tight leading-tight line-clamp-2 group-hover:text-slate-600 transition-colors flex-1">
                                 {{ $article->title }}
@@ -397,14 +389,10 @@
 
         </div>
 
-        {{-- View all link (mobile) --}}
         <div class="mt-8 sm:hidden text-center">
             <a href="{{ route('news') }}"
                 class="inline-flex items-center gap-2 text-sm font-black text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-wider">
                 View All News
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                </svg>
             </a>
         </div>
 

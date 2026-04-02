@@ -151,6 +151,28 @@
                     placeholder="Section body..."
                     class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder-slate-300 resize-y">{{ old('section_2_content') }}</textarea>
             </div>
+
+            {{-- Section 3 --}}
+            <div class="border-t border-slate-100 pt-5">
+                <label class="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">Section 3 Title</label>
+                <input type="text" name="section_2_title" value="{{ old('section_2_title') }}"
+                    placeholder="e.g. What's Next For Us"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder-slate-300 mb-3">
+                <textarea name="section_2_content" rows="5"
+                    placeholder="Section body..."
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder-slate-300 resize-y">{{ old('section_2_content') }}</textarea>
+            </div>
+
+            {{-- Section 4 --}}
+            <div class="border-t border-slate-100 pt-5">
+                <label class="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">Section 4 Title</label>
+                <input type="text" name="section_2_title" value="{{ old('section_2_title') }}"
+                    placeholder="e.g. What's Next For Us"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder-slate-300 mb-3">
+                <textarea name="section_2_content" rows="5"
+                    placeholder="Section body..."
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder-slate-300 resize-y">{{ old('section_2_content') }}</textarea>
+            </div>
         </div>
 
         {{-- ── Publish ──────────────────────────────────────────────────── --}}

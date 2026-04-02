@@ -101,12 +101,22 @@ class BusinessDirectoryController extends Controller
             ->take(6)
             ->get();
 
+        // City suggestions for autocomplete
+        $cities = Car::whereIn('status', ['available', 'upcoming'])
+            ->pluck('location')
+            ->map(fn($l) => trim(explode(',', $l)[0]))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
         return view('frontend.pages.businesses', compact(
             'businesses',
             'totalBusinesses',
             'totalListings',
             'totalCities',
-            'latestNews'
+            'latestNews',
+            'cities'
         ));
     }
 

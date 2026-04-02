@@ -77,17 +77,21 @@
         <form method="GET" action="{{ route('businesses.index') }}"
             class="flex flex-wrap items-center gap-3">
 
-            {{-- Location --}}
-            <div class="relative flex-1 min-w-[160px]">
-                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-300">
+            {{-- Location with autocomplete --}}
+            <div class="relative flex-1 min-w-[160px]" id="city-autocomplete-wrap">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-300 z-10">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
                 </div>
-                <input type="text" name="location" value="{{ request('location') }}"
+                <input type="text" name="location" id="city-input" value="{{ request('location') }}"
                     placeholder="Filter by city..."
+                    autocomplete="off"
                     class="w-full bg-slate-100 border-none rounded-xl py-2.5 pl-10 pr-4 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/30 outline-none transition-all">
+                <ul id="city-suggestions"
+                    class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden max-h-56 overflow-y-auto">
+                </ul>
             </div>
 
             {{-- Specialization --}}
@@ -287,106 +291,57 @@
             </a>
         </div>
 
-        @php $featured = $latestNews->first(); $rest = $latestNews->skip(1); @endphp
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($latestNews as $article)
+                <a href="{{ route('business.news.show', $article->slug) }}"
+                    class="group relative bg-slate-900 rounded-3xl overflow-hidden flex flex-col min-h-[360px] border border-slate-800 hover:border-[#a855f7]/40 hover:shadow-xl hover:shadow-purple-900/10 transition-all duration-300">
 
-        <div class="grid lg:grid-cols-12 gap-6">
-
-            {{-- Featured card --}}
-            <a href="{{ route('business.news.show', $featured->slug) }}"
-                class="lg:col-span-5 group relative bg-slate-900 rounded-3xl overflow-hidden flex flex-col min-h-[360px] border border-slate-800 hover:border-[#a855f7]/40 hover:shadow-xl hover:shadow-purple-900/10 transition-all duration-300">
-
-                @if($featured->hero_image)
-                    <div class="absolute inset-0">
-                        <img src="{{ asset('storage/' . $featured->hero_image) }}"
-                            alt="{{ $featured->title }}"
-                            class="w-full h-full object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
-                    </div>
-                @else
-                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(168,85,247,0.15)_0%,_transparent_60%)]"></div>
-                @endif
-
-                <div class="relative mt-auto p-7">
-
-                    {{-- FIXED: removed nested <a> --}}
-                    <span
-                        onclick="event.stopPropagation(); window.location='{{ route('businesses.show', $featured->business->id) }}'"
-                        class="inline-flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[#a855f7] bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full hover:bg-purple-500/20 transition-colors cursor-pointer">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>
-                        {{ $featured->business_name }}
-                    </span>
-
-                    <h3 class="text-xl font-black text-white uppercase italic tracking-tight leading-tight mb-3 group-hover:text-purple-200 transition-colors">
-                        {{ $featured->title }}
-                    </h3>
-
-                    <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4">
-                        {{ strip_tags($featured->lead_paragraph) }}
-                    </p>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 text-[11px] font-bold text-slate-500">
-                            @if($featured->newscategory)
-                                <span class="text-purple-400 uppercase tracking-wider">{{ $featured->newscategory->name }}</span>
-                                <span>·</span>
-                            @endif
-                            <span>{{ $featured->created_at->format('d M Y') }}</span>
+                    @if($article->hero_image)
+                        <div class="absolute inset-0">
+                            <img src="{{ asset('storage/' . $article->hero_image) }}"
+                                alt="{{ $article->title }}"
+                                class="w-full h-full object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
                         </div>
-                        <span class="text-[11px] font-black text-[#a855f7] uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
-                            Read
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                            </svg>
+                    @else
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(168,85,247,0.15)_0%,_transparent_60%)]"></div>
+                    @endif
+
+                    <div class="relative mt-auto p-7">
+
+                        <span
+                            onclick="event.preventDefault(); event.stopPropagation(); window.location='{{ route('businesses.show', $article->business->id) }}'"
+                            class="inline-flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[#a855f7] bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full hover:bg-purple-500/20 transition-colors cursor-pointer">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>
+                            {{ $article->business_name }}
                         </span>
-                    </div>
-                </div>
-            </a>
 
-            {{-- Small cards --}}
-            <div class="lg:col-span-7 grid sm:grid-cols-2 gap-5">
-                @foreach($rest as $article)
-                    <a href="{{ route('business.news.show', $article->slug) }}"
-                        class="group bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:border-[#a855f7]/30 hover:shadow-md transition-all duration-300 flex flex-col">
+                        <h3 class="text-xl font-black text-white uppercase italic tracking-tight leading-tight mb-3 group-hover:text-purple-200 transition-colors">
+                            {{ $article->title }}
+                        </h3>
 
-                        <div class="h-36 overflow-hidden bg-slate-100">
-                            @if($article->hero_image)
-                                <img src="{{ asset('storage/' . $article->hero_image) }}"
-                                    alt="{{ $article->title }}"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            @else
-                                <div class="w-full h-full bg-gradient-to-br from-purple-50 to-slate-100 flex items-center justify-center"></div>
-                            @endif
-                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                            {{ strip_tags($article->lead_paragraph) }}
+                        </p>
 
-                        <div class="p-4 flex flex-col flex-1">
-
-                            {{-- FIXED: removed nested <a> --}}
-                            <span
-                                onclick="event.stopPropagation(); window.location='{{ route('businesses.show', $article->business->id) }}'"
-                                class="inline-flex items-center gap-1.5 mb-2 text-[9px] font-black uppercase tracking-widest text-[#a855f7] hover:text-purple-700 transition-colors w-fit cursor-pointer">
-                                <span class="w-1 h-1 rounded-full bg-[#a855f7]"></span>
-                                {{ $article->business_name }}
-                            </span>
-
-                            <h4 class="text-sm font-black text-slate-900 uppercase italic tracking-tight leading-tight line-clamp-2 group-hover:text-slate-600 transition-colors flex-1">
-                                {{ $article->title }}
-                            </h4>
-
-                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                                <span class="text-[10px] text-slate-400 font-medium">
-                                    {{ $article->created_at->format('d M Y') }}
-                                </span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 text-[11px] font-bold text-slate-500">
                                 @if($article->newscategory)
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-purple-500 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full">
-                                        {{ $article->newscategory->name }}
-                                    </span>
+                                    <span class="text-purple-400 uppercase tracking-wider">{{ $article->newscategory->name }}</span>
+                                    <span>·</span>
                                 @endif
+                                <span>{{ $article->created_at->format('d M Y') }}</span>
                             </div>
+                            <span class="text-[11px] font-black text-[#a855f7] uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+                                Read
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </span>
                         </div>
-                    </a>
-                @endforeach
-            </div>
-
+                    </div>
+                </a>
+            @endforeach
         </div>
 
         <div class="mt-8 sm:hidden text-center">
@@ -427,5 +382,56 @@
     </div>
 </section>
 @endguest
+<script>
+    const ALL_CITIES = @json($cities->values());
+
+    function makeTypeahead(inputId, listId, dataArr) {
+        const input = document.getElementById(inputId);
+        const list  = document.getElementById(listId);
+        if (!input || !list) return;
+
+        const itemCls = 'px-5 py-3 cursor-pointer text-sm font-bold text-slate-800 hover:bg-[#4ade80]/10 hover:text-[#16a34a] transition-colors flex items-center gap-2';
+
+        function render(matches) {
+            list.innerHTML = '';
+            if (!matches.length) { list.classList.add('hidden'); return; }
+            matches.forEach(val => {
+                const li = document.createElement('li');
+                li.className = itemCls;
+                li.innerHTML = `
+                    <svg class="w-3.5 h-3.5 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    </svg>
+                    <span>${val}</span>`;
+                li.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    input.value = val;
+                    list.classList.add('hidden');
+                    input.closest('form').submit();
+                });
+                list.appendChild(li);
+            });
+            list.classList.remove('hidden');
+        }
+
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            render(q ? dataArr.filter(v => v.toLowerCase().startsWith(q)).slice(0, 8) : []);
+        });
+        input.addEventListener('focus', () => {
+            if (!input.value.trim()) render(dataArr.slice(0, 8));
+        });
+        document.addEventListener('click', e => {
+            if (!input.closest('#city-autocomplete-wrap').contains(e.target)) {
+                list.classList.add('hidden');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        makeTypeahead('city-input', 'city-suggestions', ALL_CITIES);
+    });
+</script>
 
 @endsection

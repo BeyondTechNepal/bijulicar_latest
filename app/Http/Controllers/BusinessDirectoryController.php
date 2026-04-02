@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advertisement;
 use App\Models\User;
 use App\Models\Car;
-use App\Models\News;
 use App\Models\Review;
 use Illuminate\Http\Request;
 
@@ -36,15 +36,13 @@ class BusinessDirectoryController extends Controller
             );
         }
 
-        // Sort
-        $sort = $request->get('sort', 'listings');
+        $sort       = $request->get('sort', 'listings');
         $businesses = $query->get()->map(function ($user) {
-            $activeCars    = $user->listedCars->whereIn('status', ['available', 'upcoming']);
-            $allReviews    = Review::where('seller_id', $user->id)->get();
-            $avgRating     = $allReviews->avg('rating') ?? 0;
-            $reviewCount   = $allReviews->count();
+            $activeCars  = $user->listedCars->whereIn('status', ['available', 'upcoming']);
+            $allReviews  = Review::where('seller_id', $user->id)->get();
+            $avgRating   = $allReviews->avg('rating') ?? 0;
+            $reviewCount = $allReviews->count();
 
-            // Determine specialization label from listings
             $drivetrains = $activeCars->pluck('drivetrain')->unique();
             if ($drivetrains->count() > 1) {
                 $spec = 'Multi-Brand';
@@ -56,25 +54,23 @@ class BusinessDirectoryController extends Controller
                 $spec = 'Traditional';
             }
 
-            // Determine a representative location from their listings
             $location = $activeCars->pluck('location')->filter()->first() ?? 'Nepal';
 
             return [
-                'id'           => $user->id,
-                'name'         => $user->businessVerification->business_name ?? $user->name,
-                'contact'      => $user->businessVerification->contact ?? null,
-                'initials'     => strtoupper(substr($user->businessVerification->business_name ?? $user->name, 0, 2)),
+                'id'              => $user->id,
+                'name'            => $user->businessVerification->business_name ?? $user->name,
+                'contact'         => $user->businessVerification->contact ?? null,
+                'initials'        => strtoupper(substr($user->businessVerification->business_name ?? $user->name, 0, 2)),
                 'active_listings' => $activeCars->count(),
-                'avg_rating'   => round($avgRating, 1),
-                'review_count' => $reviewCount,
-                'specialization' => $spec,
-                'location'     => $location,
-                'profile_url'  => route('businesses.show', $user->id),
-                'user'         => $user,
+                'avg_rating'      => round($avgRating, 1),
+                'review_count'    => $reviewCount,
+                'specialization'  => $spec,
+                'location'        => $location,
+                'profile_url'     => route('businesses.show', $user->id),
+                'user'            => $user,
             ];
         });
 
-        // Apply sort after map
         if ($sort === 'rating') {
             $businesses = $businesses->sortByDesc('avg_rating');
         } elseif ($sort === 'reviews') {
@@ -83,7 +79,6 @@ class BusinessDirectoryController extends Controller
             $businesses = $businesses->sortByDesc('active_listings');
         }
 
-        // Stats bar
         $totalBusinesses = $businesses->count();
         $totalListings   = $businesses->sum('active_listings');
         $totalCities     = Car::whereIn('status', ['available', 'upcoming'])
@@ -92,16 +87,12 @@ class BusinessDirectoryController extends Controller
                               ->unique()
                               ->count();
 
-        // Latest business news (from NewsArticle by sellers with business role)
-        // Using existing News model (admin news) as fallback — news by businesses
-        // is tied to cars/sellers. We fetch latest news for sidebar.
         $latestNews = \App\Models\BusinessNews::where('is_published', true)
             ->with(['business.businessVerification', 'newscategory'])
             ->latest()
             ->take(6)
             ->get();
 
-        // City suggestions for autocomplete
         $cities = Car::whereIn('status', ['available', 'upcoming'])
             ->pluck('location')
             ->map(fn($l) => trim(explode(',', $l)[0]))
@@ -110,13 +101,17 @@ class BusinessDirectoryController extends Controller
             ->sort()
             ->values();
 
+        // ── Horizontal banner ads for the business directory (priority DESC)
+        $businessBannerAds = Advertisement::liveForPlacement('business_banner')->get();
+
         return view('frontend.pages.businesses', compact(
             'businesses',
             'totalBusinesses',
             'totalListings',
             'totalCities',
             'latestNews',
-            'cities'
+            'cities',
+            'businessBannerAds'
         ));
     }
 
@@ -129,16 +124,15 @@ class BusinessDirectoryController extends Controller
             ->with(['businessVerification', 'listedCars.primaryImage', 'listedCars.reviews'])
             ->whereHas('businessVerification', fn($q) => $q->where('status', 'approved'))
             ->findOrFail($id);
- 
+
         $activeCars  = $user->listedCars->whereIn('status', ['available', 'upcoming'])->values();
         $allReviews  = Review::where('seller_id', $user->id)->with(['buyer', 'car'])->latest()->take(10)->get();
         $avgRating   = $allReviews->avg('rating') ?? 0;
         $reviewCount = $allReviews->count();
- 
+
         $businessName = $user->businessVerification->business_name ?? $user->name;
         $contact      = $user->businessVerification->contact ?? null;
- 
-        // Specialization
+
         $drivetrains = $activeCars->pluck('drivetrain')->unique();
         if ($drivetrains->count() > 1) {
             $spec = 'Multi-Brand';
@@ -149,16 +143,18 @@ class BusinessDirectoryController extends Controller
         } else {
             $spec = 'Traditional';
         }
- 
+
         $location = $activeCars->pluck('location')->filter()->first() ?? 'Nepal';
- 
-        // ── NEW: fetch published news articles by this business ──────────
+
         $businessNews = \App\Models\BusinessNews::where('user_id', $user->id)
             ->where('is_published', true)
             ->with('newscategory')
             ->latest()
             ->get();
- 
+
+        // ── Banner ads between car grid and reviews (priority DESC) ──────
+        $businessProfileAds = Advertisement::liveForPlacement('business_profile')->get();
+
         return view('frontend.pages.business_profile', compact(
             'user',
             'activeCars',
@@ -169,7 +165,8 @@ class BusinessDirectoryController extends Controller
             'contact',
             'spec',
             'location',
-            'businessNews',    
+            'businessNews',
+            'businessProfileAds'
         ));
     }
 }

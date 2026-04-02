@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advertisement;
 use App\Models\Car;
 
 class CarController extends Controller
@@ -9,7 +10,7 @@ class CarController extends Controller
     public function show(Car $car)
     {
         // Only show available cars to the public
-         abort_if(in_array($car->status, ['sold', 'inactive']), 404);
+        abort_if(in_array($car->status, ['sold', 'inactive']), 404);
 
         $car->load([
             'seller',
@@ -26,7 +27,7 @@ class CarController extends Controller
             ->take(3)
             ->get();
 
-        $avgRating = $car->reviews->avg('rating');
+        $avgRating   = $car->reviews->avg('rating');
         $reviewCount = $car->reviews->count();
 
         // Check if logged-in buyer already ordered this car
@@ -48,14 +49,17 @@ class CarController extends Controller
 
         // Check if buyer already reviewed this car
         $alreadyReviewed = false;
-        $hasPurchased = false;
+        $hasPurchased    = false;
         if (auth()->check() && auth()->user()->hasRole('buyer')) {
-            $hasPurchased = auth()->user()->orders()
+            $hasPurchased    = auth()->user()->orders()
                 ->where('car_id', $car->id)
                 ->where('status', 'completed')
                 ->exists();
             $alreadyReviewed = $car->reviews->contains('buyer_id', auth()->id());
         }
+
+        // ── Sidebar ads for the car detail page (priority DESC) ──────────
+        $carDetailAds = Advertisement::liveForPlacement('car_detail_sidebar')->get();
 
         return view('frontend.pages.car_detail', compact(
             'car',
@@ -65,7 +69,8 @@ class CarController extends Controller
             'alreadyOrdered',
             'alreadyReviewed',
             'hasPurchased',
-            'alreadyPreOrdered'
+            'alreadyPreOrdered',
+            'carDetailAds'
         ));
     }
 }

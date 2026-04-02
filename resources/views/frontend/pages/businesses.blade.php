@@ -140,6 +140,15 @@
     </div>
 </section>
 
+{{-- ── Business Directory Banner Ads ─────────────────────────────────── --}}
+@if(isset($businessBannerAds) && $businessBannerAds->isNotEmpty())
+<section class="bg-slate-50 pt-8 pb-0">
+    <div class="max-w-7xl mx-auto px-6">
+        <x-ads.horizontal-banner :ads="$businessBannerAds" />
+    </div>
+</section>
+@endif
+
 {{-- ── Main Content ────────────────────────────────────────────────────── --}}
 <section class="bg-slate-50 py-14">
     <div class="max-w-7xl mx-auto px-6">

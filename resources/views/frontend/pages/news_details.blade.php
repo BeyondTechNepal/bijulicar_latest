@@ -217,6 +217,11 @@
             <aside class="lg:col-span-4">
                 <div class="sticky top-24 space-y-8">
 
+                    {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
+                    @if(isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
+                        <x-ads.vertical-sidebar :ads="$newsDetailAds" />
+                    @endif
+
                     {{-- Recent articles --}}
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-3">

@@ -247,6 +247,11 @@
                 <aside class="lg:col-span-4">
                     <div class="sticky top-10 space-y-8">
 
+                        {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
+                        @if(isset($newsSidebarAds) && $newsSidebarAds->isNotEmpty())
+                            <x-ads.vertical-sidebar :ads="$newsSidebarAds" />
+                        @endif
+
                         <div
                             class="group relative rounded-3xl overflow-hidden bg-[#502915] aspect-[4/5] shadow-xl border border-slate-100">
                             <img src="{{ asset('images/burgerking.jfif') }}"

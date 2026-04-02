@@ -221,6 +221,15 @@
     </div>
 </section>
 
+{{-- ── Business Profile Ads (between listings and reviews) ───────────── --}}
+@if(isset($businessProfileAds) && $businessProfileAds->isNotEmpty())
+<section class="bg-slate-50 py-6 border-t border-slate-100">
+    <div class="max-w-7xl mx-auto px-6">
+        <x-ads.horizontal-banner :ads="$businessProfileAds" />
+    </div>
+</section>
+@endif
+
 {{-- ── Reviews Tab ─────────────────────────────────────────────────────── --}}
 <section id="pane-reviews" class="tab-pane hidden bg-slate-50 py-12">
     <div class="max-w-7xl mx-auto px-6">

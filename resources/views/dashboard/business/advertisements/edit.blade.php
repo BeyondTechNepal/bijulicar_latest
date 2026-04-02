@@ -20,7 +20,9 @@
 
                 {{-- Title --}}
                 <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Title <span class="text-red-400">*</span></label>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                        Title <span class="text-red-400">*</span>
+                    </label>
                     <input type="text" name="title" value="{{ old('title', $advertisement->title) }}"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all">
                     @error('title')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
@@ -32,6 +34,54 @@
                     <textarea name="description" rows="3"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all resize-none">{{ old('description', $advertisement->description) }}</textarea>
                     @error('description')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- Placement --}}
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                        Placement <span class="text-red-400">*</span>
+                    </label>
+                    <select name="placement" id="placement-select"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all appearance-none">
+                        @foreach($placements as $value => $label)
+                            <option value="{{ $value }}"
+                                {{ old('placement', $advertisement->placement) === $value ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p id="image-hint" class="text-[11px] text-slate-400 font-medium mt-1.5">
+                        Recommended image: <span id="image-hint-size" class="font-bold text-slate-600">1200×400 px</span>
+                    </p>
+                    @error('placement')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- Priority --}}
+                <div>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                        Priority Tier <span class="text-red-400">*</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        @foreach($priorities as $value => $label)
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="priority" value="{{ $value }}"
+                                {{ old('priority', $advertisement->priority) == $value ? 'checked' : '' }}
+                                class="peer sr-only">
+                            <div class="w-full text-center px-3 py-3 rounded-xl border-2 transition-all
+                                peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white
+                                border-slate-200 bg-slate-50 hover:border-slate-300
+                                {{ $value === 2 ? 'peer-checked:border-amber-500 peer-checked:bg-amber-500' : ($value === 1 ? 'peer-checked:border-purple-600 peer-checked:bg-purple-600' : '') }}">
+                                <p class="text-[11px] font-black uppercase tracking-wider">
+                                    {{ $value === 2 ? '★ ' : ($value === 1 ? '◆ ' : '') }}{{ $label }}
+                                </p>
+                                <p class="text-[9px] mt-0.5 opacity-70">
+                                    {{ $value === 2 ? 'Shown first always' : ($value === 1 ? 'Shown after Premium' : 'Shown after Featured') }}
+                                </p>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                    @error('priority')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 {{-- Current banner + replace --}}
@@ -51,12 +101,16 @@
 
                 {{-- Linked car --}}
                 <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Link to One of Your Listings <span class="text-slate-400 font-medium normal-case tracking-normal">(optional)</span></label>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                        Link to One of Your Listings
+                        <span class="text-slate-400 font-medium normal-case tracking-normal">(optional)</span>
+                    </label>
                     <select name="car_id"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all appearance-none">
                         <option value="">— No specific car —</option>
                         @foreach($cars as $car)
-                            <option value="{{ $car->id }}" {{ old('car_id', $advertisement->car_id) == $car->id ? 'selected' : '' }}>
+                            <option value="{{ $car->id }}"
+                                {{ old('car_id', $advertisement->car_id) == $car->id ? 'selected' : '' }}>
                                 {{ $car->displayName() }} — NRs {{ number_format($car->price) }}
                             </option>
                         @endforeach
@@ -66,36 +120,29 @@
 
                 {{-- External URL --}}
                 <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">External Link URL <span class="text-slate-400 font-medium normal-case tracking-normal">(optional)</span></label>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                        External Link URL
+                        <span class="text-slate-400 font-medium normal-case tracking-normal">(optional)</span>
+                    </label>
                     <input type="url" name="link_url" value="{{ old('link_url', $advertisement->link_url) }}"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all"
                         placeholder="https://...">
                     @error('link_url')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                 </div>
 
-                {{-- Placement --}}
-                <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Placement <span class="text-red-400">*</span></label>
-                    <select name="placement"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all appearance-none">
-                        <option value="marketplace" {{ old('placement', $advertisement->placement) === 'marketplace' ? 'selected' : '' }}>Marketplace</option>
-                        <option value="home"        {{ old('placement', $advertisement->placement) === 'home'        ? 'selected' : '' }}>Home Page</option>
-                        
-                    </select>
-                    @error('placement')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
-                </div>
-
                 {{-- Schedule --}}
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Start Date</label>
-                        <input type="date" name="starts_at" value="{{ old('starts_at', $advertisement->starts_at?->format('Y-m-d')) }}"
+                        <input type="date" name="starts_at"
+                            value="{{ old('starts_at', $advertisement->starts_at?->format('Y-m-d')) }}"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all">
                         @error('starts_at')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">End Date</label>
-                        <input type="date" name="ends_at" value="{{ old('ends_at', $advertisement->ends_at?->format('Y-m-d')) }}"
+                        <input type="date" name="ends_at"
+                            value="{{ old('ends_at', $advertisement->ends_at?->format('Y-m-d')) }}"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all">
                         @error('ends_at')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                     </div>
@@ -128,5 +175,19 @@
 
         </form>
     </div>
+
+    <script>
+        const verticalPlacements = ['news_sidebar', 'news_detail_sidebar', 'car_detail_sidebar'];
+        const select = document.getElementById('placement-select');
+        const hintSize = document.getElementById('image-hint-size');
+
+        function updateHint() {
+            const isVertical = verticalPlacements.includes(select.value);
+            hintSize.textContent = isVertical ? '600×800 px (vertical)' : '1200×400 px (horizontal)';
+        }
+
+        select.addEventListener('change', updateHint);
+        updateHint();
+    </script>
 
 @endsection

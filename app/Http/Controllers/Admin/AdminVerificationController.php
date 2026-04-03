@@ -152,10 +152,7 @@ class AdminVerificationController extends Controller
         ]);
 
         // Clear rejection reason and notify the user
-        $this->sendMail(
-            new AccountApprovedMail($verification->user), 
-            $verification->user->email
-        );
+        $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
 
         return back()->with('success', "Garage '{$verification->garage_name}' has been approved successfully.");
     }
@@ -175,25 +172,21 @@ class AdminVerificationController extends Controller
         ]);
 
         // Send the rejection mail with the specific reason provided by the admin
-        $this->sendMail(
-            new AccountRejectedMail($verification->user, $request->reason), 
-            $verification->user->email
-        );
+        $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
         return back()->with('success', "Garage '{$verification->garage_name}' has been rejected.");
     }
-
-
 
     // ── Secure document viewer ────────────────────────────────────────
 
     public function viewDocument($type, $id)
     {
-        // 1. Find the record based on type
+        // 1. Find the record based on type (Matched to web.php strings)
         $record = match ($type) {
             'seller' => SellerVerification::findOrFail($id),
             'business' => BusinessVerification::findOrFail($id),
-            'ev_station' => StationVerification::findOrFail($id), // Ensure this model exists
+            'ev' => StationVerification::findOrFail($id), // Changed from 'ev_station' to 'ev'
+            'garage' => GarageVerification::findOrFail($id), // Added garage
             default => abort(404),
         };
 
@@ -201,12 +194,15 @@ class AdminVerificationController extends Controller
         $path = match ($type) {
             'seller' => $record->national_id_path,
             'business' => $record->registration_doc_path,
-            'ev_station' => $record->license_path, // Double check this column name in your EV table!
+            'ev' => $record->license_path,
+            'garage' => $record->license_path, // Ensure this matches your Garage migration column!
             default => null,
         };
 
-        // 3. Use your existing Storage logic
-        abort_unless($path && Storage::disk('private')->exists($path), 404);
+        // 3. Validation
+        // if (!$path || !Storage::disk('private')->exists($path)) {
+        //     abort(404, 'File not found on private disk.');
+        // }
 
         return response()->file(Storage::disk('private')->path($path));
     }

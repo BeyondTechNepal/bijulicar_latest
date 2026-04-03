@@ -13,16 +13,14 @@ class NewsController extends Controller
 {
     public function index(Request $request)
     {
-        $banner     = NewsBanner::where('is_active', true)->latest()->first();
+        $banner = NewsBanner::where('is_active', true)->latest()->first();
         $categories = NewsCategory::orderBy('name', 'asc')->get(['id', 'name', 'slug']);
 
         // ── Admin news ───────────────────────────────────────────────────
-        $adminQuery = News::with('newscategory')
-            ->where('is_published', true);
+        $adminQuery = News::with('newscategory')->where('is_published', true);
 
         // ── Business news ────────────────────────────────────────────────
-        $businessQuery = BusinessNews::with(['newscategory', 'business.businessVerification'])
-            ->where('is_published', true);
+        $businessQuery = BusinessNews::with(['newscategory', 'business.businessVerification'])->where('is_published', true);
 
         // ── Category filter (applied to both sources) ────────────────────
         if ($request->filled('category')) {
@@ -32,65 +30,65 @@ class NewsController extends Controller
         }
 
         // ── Fetch & normalise ────────────────────────────────────────────
-        $adminNews = $adminQuery->latest()->get()->map(function ($item) {
-            return [
-                'id'             => 'admin_' . $item->id,
-                'title'          => $item->title . ($item->title_highlight ? ' ' . $item->title_highlight : ''),
-                'slug'           => $item->slug,
-                'route'          => 'news.show',
-                'hero_image'     => $item->hero_image,
-                'lead_paragraph' => $item->lead_paragraph,
-                'author_name'    => $item->author_name,
-                'category'       => $item->newscategory?->name,
-                'created_at'     => $item->created_at,
-                'type'           => 'admin',
-                'business_name'  => null,
-                'business_id'    => null,
-                '_original'      => $item,
-            ];
-        });
+        $adminNews = $adminQuery
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => 'admin_' . $item->id,
+                    'title' => $item->title . ($item->title_highlight ? ' ' . $item->title_highlight : ''),
+                    'slug' => $item->slug,
+                    'route' => 'news.show',
+                    'hero_image' => $item->hero_image,
+                    'lead_paragraph' => $item->lead_paragraph,
+                    'author_name' => $item->author_name,
+                    'category' => $item->newscategory?->name,
+                    'created_at' => $item->created_at,
+                    'type' => 'admin',
+                    'business_name' => null,
+                    'business_id' => null,
+                    '_original' => $item,
+                ];
+            });
 
-        $businessNews = $businessQuery->latest()->get()->map(function ($item) {
-            return [
-                'id'             => 'biz_' . $item->id,
-                'title'          => $item->title,
-                'slug'           => $item->slug,
-                'route'          => 'business.news.show',
-                'hero_image'     => $item->hero_image,
-                'lead_paragraph' => $item->lead_paragraph,
-                'author_name'    => $item->author_name,
-                'category'       => $item->newscategory?->name,
-                'created_at'     => $item->created_at,
-                'type'           => 'business',
-                'business_name'  => $item->business_name,
-                'business_id'    => $item->user_id,
-                '_original'      => $item,
-            ];
-        });
+        $businessNews = $businessQuery
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => 'biz_' . $item->id,
+                    'title' => $item->title,
+                    'slug' => $item->slug,
+                    'route' => 'business.news.show',
+                    'hero_image' => $item->hero_image,
+                    'lead_paragraph' => $item->lead_paragraph,
+                    'author_name' => $item->author_name,
+                    'category' => $item->newscategory?->name,
+                    'created_at' => $item->created_at,
+                    'type' => 'business',
+                    'business_name' => $item->business_name,
+                    'business_id' => $item->user_id,
+                    '_original' => $item,
+                ];
+            });
 
         // ── Merge, sort newest-first, paginate manually ──────────────────
         $merged = $adminNews->concat($businessNews)->sortByDesc('created_at')->values();
 
-        $perPage     = 12;
+        $perPage = 12;
         $currentPage = $request->get('page', 1);
-        $total       = $merged->count();
-        $newsItems   = $merged->forPage($currentPage, $perPage);
+        $total = $merged->count();
+        $newsItems = $merged->forPage($currentPage, $perPage);
 
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            $newsItems,
-            $total,
-            $perPage,
-            $currentPage,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($newsItems, $total, $perPage, $currentPage, ['path' => $request->url(), 'query' => $request->query()]);
 
         // ── Sidebar ads for the news list page (priority DESC) ───────────
         $newsSidebarAds = Advertisement::liveForPlacement('news_sidebar')->get();
 
         return view('frontend.pages.news', [
-            'newsItems'      => $paginator,
-            'banner'         => $banner,
-            'categories'     => $categories,
+            'newsItems' => $paginator,
+            'banner' => $banner,
+            'categories' => $categories,
             'newsSidebarAds' => $newsSidebarAds,
         ]);
     }
@@ -101,43 +99,33 @@ class NewsController extends Controller
 
         $banner = NewsBanner::where('is_active', true)->latest()->first();
 
-        $relatedAdminNews = News::where('is_published', true)
-            ->where('id', '!=', $news->id)
-            ->latest()
-            ->take(3)
-            ->get()
-            ->map(fn($n) => [
-                'title'      => trim($n->title . ' ' . $n->title_highlight),
-                'slug'       => $n->slug,
-                'route'      => 'news.show',
+        $relatedAdminNews = News::where('is_published', true)->where('id', '!=', $news->id)->latest()->take(3)->get()->map(
+            fn($n) => [
+                'title' => trim($n->title . ' ' . $n->title_highlight),
+                'slug' => $n->slug,
+                'route' => 'news.show',
                 'created_at' => $n->created_at,
                 'hero_image' => $n->hero_image,
-                'type'       => 'admin',
-            ]);
+                'type' => 'admin',
+            ],
+        );
 
-        $relatedBusinessNews = BusinessNews::where('is_published', true)
-            ->latest()
-            ->take(3)
-            ->get()
-            ->map(fn($n) => [
-                'title'      => $n->title,
-                'slug'       => $n->slug,
-                'route'      => 'business.news.show',
+        $relatedBusinessNews = BusinessNews::where('is_published', true)->latest()->take(3)->get()->map(
+            fn($n) => [
+                'title' => $n->title,
+                'slug' => $n->slug,
+                'route' => 'business.news.show',
                 'created_at' => $n->created_at,
                 'hero_image' => $n->hero_image,
-                'type'       => 'business',
-            ]);
+                'type' => 'business',
+            ],
+        );
 
-        $recentArticles = $relatedAdminNews->concat($relatedBusinessNews)
-            ->sortByDesc('created_at')
-            ->take(5)
-            ->values();
+        $recentArticles = $relatedAdminNews->concat($relatedBusinessNews)->sortByDesc('created_at')->take(5)->values();
 
         // ── Sidebar ads for the news detail page (priority DESC) ─────────
         $newsDetailAds = Advertisement::liveForPlacement('news_detail_sidebar')->get();
 
-        return view('frontend.pages.news_details', compact(
-            'news', 'banner', 'recentArticles', 'newsDetailAds'
-        ));
+        return view('frontend.pages.news_details', compact('news', 'banner', 'recentArticles', 'newsDetailAds'));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advertisement;
 use App\Models\BusinessNews;
 use App\Models\NewsBanner;
 use App\Models\News;
@@ -57,6 +58,8 @@ class BusinessNewsPublicController extends Controller
             ->take(5)
             ->values();
 
-        return view('frontend.pages.business_news_detail', compact('news', 'banner', 'recentArticles'));
+        $newsDetailAds = Advertisement::liveForPlacement('news_detail_sidebar')->get();
+
+        return view('frontend.pages.business_news_detail', compact('news', 'banner', 'recentArticles', 'newsDetailAds'));
     }
 }

@@ -218,9 +218,9 @@
                 <div class="sticky top-24 space-y-8">
 
                     {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
-                    @if(isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
-                        <x-ads.vertical-sidebar :ads="$newsDetailAds" />
-                    @endif
+                        @if(isset($newsDetailAds) && $newsDetailsAds->isNotEmpty())
+                            <x-ads.vertical-sidebar :ads="$newsDrtailsAds" />
+                        @endif
 
                     {{-- Recent articles --}}
                     <div>
@@ -258,6 +258,17 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <!-- <aside class="lg:col-span-4">
+                    <div class="sticky top-10 space-y-8">
+
+                        {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
+                        @if(isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
+                            <x-ads.vertical-sidebar :ads="$newsDetailAds" />
+                        @endif
+
+                    </div>
+                </aside> -->
 
                     {{-- Back to news --}}
                     <a href="{{ route('news') }}"

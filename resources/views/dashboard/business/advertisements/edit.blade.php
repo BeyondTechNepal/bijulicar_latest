@@ -177,7 +177,7 @@
     </div>
 
     <script>
-        const verticalPlacements = ['news_sidebar', 'news_detail_sidebar', 'car_detail_sidebar'];
+        const verticalPlacements = ['news_sidebar', 'news_detail_sidebar', 'car_detail_horizontal'];
         const select = document.getElementById('placement-select');
         const hintSize = document.getElementById('image-hint-size');
 

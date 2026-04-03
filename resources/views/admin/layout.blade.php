@@ -204,6 +204,26 @@
                     <span class="hide-on-collapse">Map Location</span>
                 </a>
 
+                {{-- Advertisements --}}
+                <a href="{{ route('admin.advertisements.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
+                       {{ request()->routeIs('admin.advertisements*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    <span class="font-bold w-5 text-center">A</span>
+                    <span class="hide-on-collapse flex-1">Advertisements</span>
+                    @php $pendingAds = \App\Models\Advertisement::where('status', 'pending_review')->count(); @endphp
+                    @if ($pendingAds > 0)
+                        <span class="hide-on-collapse text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-black">{{ $pendingAds }}</span>
+                    @endif
+                </a>
+
+                {{-- Ad Pricing --}}
+                <a href="{{ route('admin.ad-pricing.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
+                       {{ request()->routeIs('admin.ad-pricing*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    <span class="font-bold w-5 text-center">$</span>
+                    <span class="hide-on-collapse">Ad Pricing</span>
+                </a>
+
                 @can('contact control')
                     <div x-data="{ open: {{ request()->routeIs('admin.contact_*') ? 'true' : 'false' }} }">
 

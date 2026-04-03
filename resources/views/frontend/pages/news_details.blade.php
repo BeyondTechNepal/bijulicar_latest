@@ -218,8 +218,8 @@
                 <div class="sticky top-24 space-y-8">
 
                     {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
-                        @if(isset($newsDetailAds) && $newsDetailsAds->isNotEmpty())
-                            <x-ads.vertical-sidebar :ads="$newsDrtailsAds" />
+                        @if(isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
+                            <x-ads.vertical-sidebar :ads="$newsDetailAds" />
                         @endif
 
                     {{-- Recent articles --}}

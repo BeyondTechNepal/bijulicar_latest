@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminVerificationController;
+use App\Http\Controllers\Admin\AdminAdvertisementController;
+use App\Http\Controllers\Admin\AdminAdPricingController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +96,21 @@ Route::prefix('admin')
                 Route::get('/news-categories/{category}/edit', [App\Http\Controllers\Admin\NewsCategoryController::class, 'edit'])->name('news_categories.edit');
                 Route::put('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'update'])->name('news_categories.update');
                 Route::delete('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'destroy'])->name('news_categories.destroy');
+
+                // ── Advertisements review ──────────────────────────────
+                Route::prefix('advertisements')->name('advertisements.')->group(function () {
+                    Route::get('/',                                 [AdminAdvertisementController::class, 'index'])->name('index');
+                    Route::get('/{advertisement}',                  [AdminAdvertisementController::class, 'show'])->name('show');
+                    Route::post('/{advertisement}/approve',         [AdminAdvertisementController::class, 'approve'])->name('approve');
+                    Route::post('/{advertisement}/reject',          [AdminAdvertisementController::class, 'reject'])->name('reject');
+                    Route::post('/{advertisement}/confirm-payment', [AdminAdvertisementController::class, 'confirmPayment'])->name('confirm-payment');
+                });
+
+                // ── Ad pricing matrix ──────────────────────────────────
+                Route::prefix('ad-pricing')->name('ad-pricing.')->group(function () {
+                    Route::get('/',                    [AdminAdPricingController::class, 'index'])->name('index');
+                    Route::patch('/{adPricingRule}',   [AdminAdPricingController::class, 'update'])->name('update');
+                });
             });
 
             // ── News (separate role group) ─────────────────────────────

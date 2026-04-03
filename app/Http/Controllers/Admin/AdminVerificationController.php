@@ -8,6 +8,7 @@ use App\Mail\AccountRejectedMail;
 use App\Models\BusinessVerification;
 use App\Models\SellerVerification;
 use App\Models\StationVerification;
+use App\Models\GarageVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -24,6 +25,8 @@ class AdminVerificationController extends Controller
 
         $evStationsPending = StationVerification::with('user')->where('status', 'pending')->latest()->get();
 
+        $garagePending = GarageVerification::with('user')->where('status', 'pending')->latest()->get();
+
         $sellersAll = SellerVerification::with('user')
             ->whereIn('status', ['approved', 'rejected'])
             ->latest()
@@ -39,7 +42,12 @@ class AdminVerificationController extends Controller
             ->latest()
             ->get();
 
-        return view('admin.verifications.index', compact('sellersPending', 'businessesPending', 'evStationsPending', 'sellersAll', 'businessesAll', 'evStationsAll'));
+        $garageAll = GarageVerification::with('user')
+            ->whereIn('status', ['approved', 'rejected'])
+            ->latest()
+            ->get();
+
+        return view('admin.verifications.index', compact('sellersPending', 'businessesPending', 'evStationsPending', 'garagePending', 'sellersAll', 'businessesAll', 'evStationsAll', 'garageAll'));
     }
 
     // ── Seller ────────────────────────────────────────────────────────
@@ -132,6 +140,51 @@ class AdminVerificationController extends Controller
 
         return back()->with('success', "EV Station '{$verification->station_name}' has been rejected.");
     }
+
+    /**
+     * Approve a garage verification request.
+     */
+    public function approveGarage(GarageVerification $verification)
+    {
+        $verification->update([
+            'status' => 'approved',
+            'rejection_reason' => null,
+        ]);
+
+        // Clear rejection reason and notify the user
+        $this->sendMail(
+            new AccountApprovedMail($verification->user), 
+            $verification->user->email
+        );
+
+        return back()->with('success', "Garage '{$verification->garage_name}' has been approved successfully.");
+    }
+
+    /**
+     * Reject a garage verification request with a reason.
+     */
+    public function rejectGarage(Request $request, GarageVerification $verification)
+    {
+        $request->validate([
+            'reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $verification->update([
+            'status' => 'rejected',
+            'rejection_reason' => $request->reason,
+        ]);
+
+        // Send the rejection mail with the specific reason provided by the admin
+        $this->sendMail(
+            new AccountRejectedMail($verification->user, $request->reason), 
+            $verification->user->email
+        );
+
+        return back()->with('success', "Garage '{$verification->garage_name}' has been rejected.");
+    }
+
+
+
     // ── Secure document viewer ────────────────────────────────────────
 
     public function viewDocument($type, $id)

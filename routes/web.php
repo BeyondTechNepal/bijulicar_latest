@@ -13,6 +13,7 @@ use App\Http\Controllers\BusinessDirectoryController;
 use App\Http\Controllers\Business\BusinessVerificationController;
 use App\Http\Controllers\Business\BusinessNewsController;
 use App\Http\Controllers\Evstation\EVStationVerificationController;
+use App\Http\Controllers\Garage\GarageVerificationController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes ─────────────────────────────────────────────
@@ -58,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ev-station/verify', [EvstationVerificationController::class, 'create'])->name('station.verify.create');
     Route::post('/ev-station/verify', [EvstationVerificationController::class, 'store'])->name('station.verify.store');
 
+    // 4. Garage Verification
+    Route::get('/garage/verify', [GarageVerificationController::class, 'create'])->name('garage.verify.create');
+    Route::post('/garage/verify', [GarageVerificationController::class, 'store'])->name('garage.verify.store');
+
     // Waiting / pending approval screen
     // 4. Shared Pending Approval Screen
     Route::get('/pending-approval', function () {
@@ -70,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
             $user->hasRole('seller')     => $user->sellerVerification,
             $user->hasRole('business')   => $user->businessVerification,
             $user->hasRole('ev-station') => $user->stationVerification,
+            $user->hasRole('garage')     => $user->garageVerification,
             default                      => null
         };
 
@@ -84,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
                 $user->hasRole('seller')     => redirect()->route('seller.verify.create'),
                 $user->hasRole('business')   => redirect()->route('business.verify.create'),
                 $user->hasRole('ev-station') => redirect()->route('station.verify.create'),
+                $user->hasRole('garage')     => redirect()->route('garage.verify.create'),
                 default                      => redirect()->route('dashboard')
             };
         }
@@ -106,6 +113,9 @@ Route::get('/dashboard', function () {
     }
     if ($user->hasRole('ev-station')) {
         return redirect()->route('station.dashboard');
+    }
+    if ($user->hasRole('garage')) {
+        return redirect()->route('garage.dashboard');
     }
     return view('dashboard');
 })
@@ -419,6 +429,22 @@ Route::middleware(['auth', 'role:ev-station', 'verified.account'])
         // // For stations to promote "Happy Hour" pricing or lounge amenities.
         // Route::resource('promotions', App\Http\Controllers\EVStation\StationPromotionController::class)
         //     ->middleware('permission:create advertisements');
+    });
+
+    // ── EV STATION routes ──────────────────────────────────────────────────
+// Only verified EV Station owners can access these management tools.
+Route::middleware(['auth', 'role:garage', 'verified.account'])
+    ->prefix('garage')
+    ->name('garage.')
+    ->group(function () {
+        
+        // 1. Station Dashboard
+        // Shows real-time status of chargers, total energy delivered, and revenue.
+        Route::get('/dashboard', function() {
+            return view('dashboard.garage', ['user' => auth()->user()]);
+        })->name('dashboard');
+
+
     });
 
 // ── Profile ────────────────────────────────────────────────────────────

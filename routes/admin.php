@@ -39,9 +39,13 @@ Route::prefix('admin')
                 Route::post('/verifications/ev/{verification}/approve', [AdminVerificationController::class, 'approveEV'])->name('verifications.ev.approve');
                 Route::post('/verifications/ev/{verification}/reject', [AdminVerificationController::class, 'rejectEV'])->name('verifications.ev.reject');
 
+                // Garage Verification Routes
+                Route::post('/verifications/garage/{verification}/approve', [AdminVerificationController::class, 'approveGarage'])->name('verifications.garage.approve');
+                Route::post('/verifications/garage/{verification}/reject', [AdminVerificationController::class, 'rejectGarage'])->name('verifications.garage.reject');
+
                 Route::get('/verifications/document/{type}/{id}', [AdminVerificationController::class, 'viewDocument'])
                     ->name('verifications.document')
-                    ->where('type', 'seller|business|ev');
+                    ->where('type', 'seller|business|ev|garage');
 
                 // Permissions
                 Route::resource('permissions', PermissionController::class)->except(['show']);

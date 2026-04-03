@@ -64,12 +64,18 @@ class User extends Authenticatable
         return $this->hasOne(StationVerification::class);
     }
 
+    public function garageVerification(): HasOne
+    {
+        return $this->hasOne(GarageVerification::class);
+    }
+
     // helper — works for both roles
-    public function verification(): SellerVerification|BusinessVerification|StationVerification|null
+    public function verification(): SellerVerification|BusinessVerification|StationVerification|GarageVerification|null
     {
         return $this->sellerVerification 
             ?? $this->businessVerification 
-            ?? $this->stationVerification;
+            ?? $this->stationVerification
+            ?? $this->garageVerification;
     }
     // Seller / Business relationships
 

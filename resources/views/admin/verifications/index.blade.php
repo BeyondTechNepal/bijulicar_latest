@@ -313,6 +313,94 @@
     @endif
 </div>
 
+
+{{-- ── PENDING GARAGE ─────────────────────────────────────────── --}}
+<div class="mb-10">
+    <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Pending Garages</h2>
+        @if ($garagePending->count() > 0)
+            <span class="text-[10px] font-black bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full">
+                {{ $garagePending->count() }} pending
+            </span>
+        @endif
+    </div>
+
+    @if ($garagePending->isEmpty())
+        <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <p class="text-sm font-bold text-gray-400">No pending garage verifications</p>
+        </div>
+    @else
+        <div class="space-y-3">
+            @foreach ($garagePending as $v)
+                <div class="bg-white border border-gray-200 rounded-2xl p-5" id="garage-{{ $v->id }}">
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+
+                        {{-- Info --}}
+                        <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Owner</p>
+                                <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->user->name }}</p>
+                                <p class="text-xs text-gray-400">{{ $v->user->email }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Garage Name</p>
+                                <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->garage_name }}</p>
+                                <p class="text-xs text-gray-400">{{ $v->garage_location }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Specialization</p>
+                                <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->specialization }}</p>
+                                <p class="text-xs text-gray-400">Contact: {{ $v->contact }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Submitted</p>
+                                <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->created_at->format('M d, Y') }}</p>
+                                <p class="text-xs text-gray-400">{{ $v->created_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Actions --}}
+                        <div class="flex items-center gap-2 shrink-0">
+                            <a href="{{ route('admin.verifications.document', ['type' => 'garage', 'id' => $v->id]) }}"
+                                target="_blank"
+                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 transition-all">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                View License
+                            </a>
+
+                            <form method="POST" action="{{ route('admin.verifications.garage.approve', $v->id) }}">
+                                @csrf
+                                <button type="submit"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all">
+                                    Approve
+                                </button>
+                            </form>
+
+                            <button onclick="toggleRejectForm('reject-garage-{{ $v->id }}')"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 rounded-lg text-xs font-black uppercase tracking-wider transition-all">
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Reject reason form --}}
+                    <div id="reject-garage-{{ $v->id }}" class="hidden mt-4 pt-4 border-t border-gray-100">
+                        <form method="POST" action="{{ route('admin.verifications.garage.reject', $v->id) }}" class="flex gap-3">
+                            @csrf
+                            <input type="text" name="reason" required placeholder="Reason for garage rejection..."
+                                class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-red-400 transition-all">
+                            <button type="submit" class="px-5 py-2.5 bg-red-600 text-white rounded-lg text-xs font-black uppercase">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
+
 {{-- ── REVIEWED HISTORY ─────────────────────────────────────────────── --}}
 @if ($sellersAll->count() > 0 || $businessesAll->count() > 0)
 <div>

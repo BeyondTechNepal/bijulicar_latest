@@ -12,6 +12,7 @@ use App\Http\Controllers\Seller\SellerPreOrderController;
 use App\Http\Controllers\BusinessDirectoryController;
 use App\Http\Controllers\Business\BusinessVerificationController;
 use App\Http\Controllers\Business\BusinessNewsController;
+use App\Http\Controllers\Evstation\EVStationVerificationController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes ─────────────────────────────────────────────
@@ -53,17 +54,41 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/business/verify', [BusinessVerificationController::class, 'store'])
         ->name('business.verify.store');
 
+        // 3. EV-Station Verification (New)
+    Route::get('/ev-station/verify', [EvstationVerificationController::class, 'create'])->name('station.verify.create');
+    Route::post('/ev-station/verify', [EvstationVerificationController::class, 'store'])->name('station.verify.store');
+
     // Waiting / pending approval screen
+    // 4. Shared Pending Approval Screen
     Route::get('/pending-approval', function () {
-    $user         = auth()->user();
-    $verification = $user->verification();
+        $user = auth()->user();
+        
+        /** * We find the correct verification record based on the User's Role.
+         * This replaces the generic $user->verification() call.
+         */
+        $verification = match(true) {
+            $user->hasRole('seller')     => $user->sellerVerification,
+            $user->hasRole('business')   => $user->businessVerification,
+            $user->hasRole('ev-station') => $user->stationVerification,
+            default                      => null
+        };
 
-    // If already approved, send them straight to their dashboard
-    if ($verification && $verification->isApproved()) {
-        return redirect()->route('dashboard');
-    }
+        // If the admin has already clicked "Approve" in the backend
+        if ($verification && $verification->isApproved()) {
+            return redirect()->route('dashboard');
+        }
 
-    return view('verification.pending');
+        // If they landed here but haven't even filled the form yet, send them to the right form
+        if (!$verification) {
+            return match(true) {
+                $user->hasRole('seller')     => redirect()->route('seller.verify.create'),
+                $user->hasRole('business')   => redirect()->route('business.verify.create'),
+                $user->hasRole('ev-station') => redirect()->route('station.verify.create'),
+                default                      => redirect()->route('dashboard')
+            };
+        }
+
+        return view('verification.pending', compact('verification'));
     })->name('verification.pending');
 });
 
@@ -78,6 +103,9 @@ Route::get('/dashboard', function () {
     }
     if ($user->hasRole('business')) {
         return redirect()->route('business.dashboard');
+    }
+    if ($user->hasRole('ev-station')) {
+        return redirect()->route('station.dashboard');
     }
     return view('dashboard');
 })
@@ -334,6 +362,63 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
         Route::delete('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'destroy'])
             ->name('advertisements.destroy')
             ->middleware('permission:create advertisements');
+    });
+
+// ── EV STATION routes ──────────────────────────────────────────────────
+// Only verified EV Station owners can access these management tools.
+Route::middleware(['auth', 'role:ev-station', 'verified.account'])
+    ->prefix('ev-station')
+    ->name('station.')
+    ->group(function () {
+        
+        // 1. Station Dashboard
+        // Shows real-time status of chargers, total energy delivered, and revenue.
+        Route::get('/dashboard', function() {
+            return view('dashboard.ev-station', ['user' => auth()->user()]);
+        })->name('dashboard');
+
+        // 2. Station Profile & Management
+        // Update station location, opening hours, and pricing per kWh.
+        // Route::get('/manage', [App\Http\Controllers\EVStation\EVStationController::class, 'edit'])
+        //     ->name('manage')
+        //     ->middleware('permission:manage own stations');
+        // Route::patch('/update', [App\Http\Controllers\EVStation\EVStationController::class, 'update'])
+        //     ->name('update')
+        //     ->middleware('permission:manage own stations');
+
+        // // 3. Charger CRUD (Individual charging points at the station)
+        // Route::get('/chargers', [App\Http\Controllers\EVStation\ChargerController::class, 'index'])
+        //     ->name('chargers.index')
+        //     ->middleware('permission:manage own stations');
+        // Route::post('/chargers', [App\Http\Controllers\EVStation\ChargerController::class, 'store'])
+        //     ->name('chargers.store')
+        //     ->middleware('permission:manage own stations');
+        // Route::delete('/chargers/{charger}', [App\Http\Controllers\EVStation\ChargerController::class, 'destroy'])
+        //     ->name('chargers.destroy')
+        //     ->middleware('permission:manage own stations');
+
+        // // 4. Charging Sessions / Orders
+        // // Tracks active and historical charging sessions.
+        // Route::get('/sessions', [App\Http\Controllers\EVStation\StationSessionController::class, 'index'])
+        //     ->name('sessions.index')
+        //     ->middleware('permission:manage own orders');
+        // Route::get('/sessions/{session}', [App\Http\Controllers\EVStation\StationSessionController::class, 'show'])
+        //     ->name('sessions.show')
+        //     ->middleware('permission:manage own orders');
+        // Route::patch('/sessions/{session}/terminate', [App\Http\Controllers\EVStation\StationSessionController::class, 'terminate'])
+        //     ->name('sessions.terminate')
+        //     ->middleware('permission:manage own orders');
+
+        // // 5. Infrastructure Analytics
+        // // Energy consumption charts and peak-hour data.
+        // Route::get('/analytics', [App\Http\Controllers\EVStation\StationAnalyticsController::class, 'index'])
+        //     ->name('analytics')
+        //     ->middleware('permission:view business analytics');
+
+        // // 6. Promotions & Advertisements
+        // // For stations to promote "Happy Hour" pricing or lounge amenities.
+        // Route::resource('promotions', App\Http\Controllers\EVStation\StationPromotionController::class)
+        //     ->middleware('permission:create advertisements');
     });
 
 // ── Profile ────────────────────────────────────────────────────────────

@@ -84,70 +84,10 @@
                     </span>
                 </div>
             </div>
-            {{-- @php
-                $locations = [
-                    (object) [
-                        'id' => 1,
-                        'name' => 'Central Station Alpha',
-                        'type' => 'station',
-                        'latitude' => 27.7172,
-                        'longitude' => 85.324,
-                        'address' => 'Durbar Marg, Kathmandu',
-                    ],
-                    (object) [
-                        'id' => 2,
-                        'name' => 'Electric Hub Beta',
-                        'type' => 'station',
-                        'latitude' => 27.671,
-                        'longitude' => 85.321,
-                        'address' => 'Pulchowk, Lalitpur',
-                    ],
-                    (object) [
-                        'id' => 3,
-                        'name' => 'Scooter #402',
-                        'type' => 'vehicle',
-                        'latitude' => 27.7,
-                        'longitude' => 85.3,
-                        'address' => 'Basantapur Square',
-                    ],
-                    (object) [
-                        'id' => 4,
-                        'name' => 'Delivery Bike #12',
-                        'type' => 'vehicle',
-                        'latitude' => 27.685,
-                        'longitude' => 85.345,
-                        'address' => 'Koteshwor Junction',
-                    ],
-                ];
-            @endphp --}}
 
-            <div
+            {{-- <div
                 class="bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3 h-[550px]">
                 <div class="lg:w-72 flex flex-col gap-3 h-full">
-                    <div class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100">
-                        <label
-                            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block italic">Focus
-                            Navigation</label>
-                        <div class="relative group">
-                            <select id="asset-selector" onchange="focusLocation(this.value)"
-                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-3 text-[11px] font-bold text-slate-700 outline-none transition-all appearance-none cursor-pointer shadow-sm">
-                                <option value="">Select Asset...</option>
-                                @foreach ($locations as $loc)
-                                    <option value="{{ $loc->latitude }},{{ $loc->longitude }}"
-                                        data-address="{{ $loc->address }}">
-                                        {{ $loc->type == 'station' ? '⚡' : '🚲' }} {{ $loc->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 space-y-2">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Filters</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -165,6 +105,29 @@
                             </label>
                         </div>
                     </div>
+                    <div class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100">
+                        <label
+                            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block italic">Focus
+                            Navigation</label>
+                        <div class="relative group">
+                            <select id="asset-selector" onchange="focusLocation(this.value)"
+                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-3 text-[11px] font-bold text-slate-700 outline-none transition-all appearance-none cursor-pointer shadow-sm">
+                                <option value="">Select Asset...</option>
+                                @foreach ($locations as $loc)
+                                    <option value="{{ $loc->latitude }},{{ $loc->longitude }}"
+                                        data-address="{{ $loc->address }}">
+                                        {{ $loc->type == 'station' ? '⚡' : '🚲' }} {{ $loc->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">   
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
 
                     <button onclick="resetView()"
                         class="mt-auto w-full border border-slate-200 text-slate-500 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-indigo-600 transition-all">
@@ -180,7 +143,109 @@
                         <p class="text-[10px] font-mono font-bold text-white tracking-tighter" id="coords-display">READY</p>
                     </div>
                 </div>
+            </div> --}}
+
+            <div
+                class="bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3 h-[600px]">
+                <div class="lg:w-80 flex flex-col gap-3 h-full">
+
+                    <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex gap-1">
+                        <button onclick="switchCategory('station')" id="tab-station"
+                            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-white text-emerald-600 shadow-sm border border-slate-200">
+                            EV Stations
+                        </button>
+                        <button onclick="switchCategory('garage')" id="tab-garage"
+                            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-700">
+                            Garages
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Visibility
+                            Toggle</label>
+                        <div class="flex flex-col gap-2">
+                            <label
+                                class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-emerald-500 transition-colors">
+                                <span class="text-[10px] font-bold text-slate-600 uppercase">Show Active Nodes</span>
+                                <input type="checkbox" id="show-markers" checked onchange="filterMarkers()"
+                                    class="rounded border-slate-300 text-emerald-600 w-4 h-4">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100">
+                        <label
+                            class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 block italic">Focus
+                            Navigation</label>
+                        <div class="relative">
+                            <select id="asset-selector" onchange="focusLocation(this.value)"
+                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-[11px] font-bold text-slate-700 outline-none appearance-none cursor-pointer shadow-sm focus:border-indigo-500 transition-all">
+                                <option value="">Select Asset...</option>
+                                {{-- Options are injected by JS --}}
+                            </select>
+                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="resetView()"
+                        class="mt-auto w-full border border-slate-200 text-slate-400 py-4 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] hover:bg-slate-900 hover:text-[#4ade80] hover:border-slate-900 transition-all duration-300">
+                        Reset Tactical View
+                    </button>
+                </div>
+
+                <div
+                    class="flex-1 relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-slate-100 shadow-inner">
+                    <div id="map" class="absolute inset-0 z-0"></div>
+                </div>
             </div>
+
+            <script>
+                // 1. Prepare Data from PHP
+                const allLocations = @json($locations);
+
+                function switchCategory(type) {
+                    const selector = document.getElementById('asset-selector');
+                    const tabStation = document.getElementById('tab-station');
+                    const tabGarage = document.getElementById('tab-garage');
+
+                    // Clear current options
+                    selector.innerHTML = '<option value="">Select Asset...</option>';
+
+                    // Filter and Append new options
+                    allLocations.filter(loc => loc.type === type).forEach(loc => {
+                        const option = document.createElement('option');
+                        option.value = `${loc.latitude},${loc.longitude}`;
+                        option.textContent = (type === 'station' ? '⚡ ' : '🔧 ') + loc.name;
+                        selector.appendChild(option);
+                    });
+
+                    // Update UI Tabs Styling
+                    if (type === 'station') {
+                        tabStation.className =
+                            "flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-white text-emerald-600 shadow-sm border border-slate-200";
+                        tabGarage.className =
+                            "flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-700";
+                    } else {
+                        tabGarage.className =
+                            "flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-white text-blue-600 shadow-sm border border-slate-200";
+                        tabStation.className =
+                            "flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-700";
+                    }
+
+                    // Trigger map marker visibility if needed
+                    if (typeof filterMarkersByTab === 'function') {
+                        filterMarkersByTab(type);
+                    }
+                }
+
+                // Initialize with 'station' on load
+                document.addEventListener('DOMContentLoaded', () => switchCategory('station'));
+            </script>
         </div>
     </section>
 

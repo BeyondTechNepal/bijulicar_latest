@@ -115,7 +115,21 @@
                                 <span class="text-xs font-bold text-slate-500">Registration doc</span>
                                 <span class="text-xs font-bold text-blue-600">Uploaded ✔</span>
                             </div>
+                        @elseif ($user->hasRole('ev-station') && $user->stationVerification)
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">Station Name</span>
+                                <span class="text-xs font-bold text-slate-900">{{ $user->stationVerification->station_name }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">Location</span>
+                                <span class="text-xs font-bold text-slate-900 truncate ml-4">{{ $user->stationVerification->location_details }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">License Doc</span>
+                                <span class="text-xs font-bold text-cyan-600">Uploaded ✔</span>
+                            </div>
                         @endif
+
                         <div class="flex items-center justify-between border-t border-slate-200 pt-3">
                             <span class="text-xs font-bold text-slate-500">Submitted at</span>
                             <span class="text-xs font-bold text-slate-900">{{ $verification->created_at->format('M d, Y — h:i A') }}</span>
@@ -145,25 +159,24 @@
 
                     {{-- Re-apply button --}}
                     <div class="mt-6">
-                        @if ($user->hasRole('seller'))
-                            {{-- We need a re-apply route — for now link to verify again --}}
-                            <a href="{{ route('seller.verify.create') }}"
-                                class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-red-600 transition-all shadow-lg">
-                                Resubmit Application
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </a>
-                        @else
-                            <a href="{{ route('business.verify.create') }}"
-                                class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-red-600 transition-all shadow-lg">
-                                Resubmit Application
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </a>
-                        @endif
-                    </div>
+    @php
+        // This ensures every role goes to their specific form
+        $resubmitRoute = match(true) {
+            $user->hasRole('seller')     => route('seller.verify.create'),
+            $user->hasRole('business')   => route('business.verify.create'),
+            $user->hasRole('ev-station') => route('station.verify.create'),
+            default                      => route('dashboard'),
+        };
+    @endphp
+
+    <a href="{{ $resubmitRoute }}"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-red-600 transition-all shadow-lg group">
+        <span>Resubmit Application</span>
+        <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+    </a>
+</div>
                 
                     @elseif ($status === 'approved')
                     {{-- Fallback: approved users should be redirected by the route,

@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\SellerVerification;
 use App\Models\BusinessVerification;
+use App\Models\StationVerification;
 use App\Models\PreOrder;
 
 class User extends Authenticatable
@@ -49,20 +50,27 @@ class User extends Authenticatable
         ];
     }
     public function sellerVerification(): HasOne
-        {
-            return $this->hasOne(SellerVerification::class);
-        }
+    {
+        return $this->hasOne(SellerVerification::class);
+    }
 
-        public function businessVerification(): HasOne
-        {
-            return $this->hasOne(BusinessVerification::class);
-}
+    public function businessVerification(): HasOne
+    {
+        return $this->hasOne(BusinessVerification::class);
+    }
 
-// helper — works for both roles
-public function verification(): SellerVerification|BusinessVerification|null
-{
-    return $this->sellerVerification ?? $this->businessVerification;
-}
+    public function stationVerification(): HasOne
+    {
+        return $this->hasOne(StationVerification::class);
+    }
+
+    // helper — works for both roles
+    public function verification(): SellerVerification|BusinessVerification|StationVerification|null
+    {
+        return $this->sellerVerification 
+            ?? $this->businessVerification 
+            ?? $this->stationVerification;
+    }
     // Seller / Business relationships
 
     /** Cars listed by this user (as seller or business) */
@@ -70,9 +78,9 @@ public function verification(): SellerVerification|BusinessVerification|null
     {
         return $this->hasMany(Car::class, 'seller_id');
     }
-    
-    // Buyer relationships 
-    
+
+    // Buyer relationships
+
     /** Orders placed by this user */
     public function orders(): HasMany
     {
@@ -81,15 +89,15 @@ public function verification(): SellerVerification|BusinessVerification|null
 
     public function preOrders(): HasMany
     {
-    return $this->hasMany(PreOrder::class, 'buyer_id');
+        return $this->hasMany(PreOrder::class, 'buyer_id');
     }
-    
+
     /** Purchases made by this user */
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class, 'buyer_id');
     }
-    
+
     /** Reviews written by this user */
     public function reviews(): HasMany
     {

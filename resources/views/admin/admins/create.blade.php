@@ -41,40 +41,43 @@
                 @error('password')
                     <p class="text-xs text-red-500 -mt-2">{{ $message }}</p>
                 @enderror
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                    <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($roles as $role)
+                        @php
+                            // Assign colors based on the role name
+                            $style = match(strtolower($role->name)) {
+                                'superadmin' => ['border' => 'peer-checked:border-red-500', 'bg' => 'peer-checked:bg-red-50', 'text' => 'text-red-600'],
+                                'admin'      => ['border' => 'peer-checked:border-yellow-500', 'bg' => 'peer-checked:bg-yellow-50', 'text' => 'text-yellow-600'],
+                                'newsadmin'  => ['border' => 'peer-checked:border-blue-500', 'bg' => 'peer-checked:bg-blue-50', 'text' => 'text-blue-600'],
+                                default      => ['border' => 'peer-checked:border-slate-500', 'bg' => 'peer-checked:bg-slate-50', 'text' => 'text-slate-600'],
+                            };
+                        @endphp
+
                         <label class="cursor-pointer">
-                            <input type="radio" name="role" value="admin" class="sr-only peer"
-                                {{ old('role', 'admin') === 'admin' ? 'checked' : '' }}>
-                            <div
-                                class="border-2 border-gray-200 rounded-xl p-4 text-center peer-checked:border-yellow-500 peer-checked:bg-yellow-50 transition-all">
-                                <div class="text-sm font-semibold">Admin</div>
-                                <div class="text-xs text-gray-500 mt-0.5">Manage users & listings</div>
+                            <input type="radio" name="role" value="{{ $role->name }}" class="sr-only peer"
+                                {{ old('role') === $role->name ? 'checked' : '' }}>
+                            
+                            <div class="border-2 border-gray-200 rounded-xl p-4 text-center transition-all duration-300
+                                        peer-checked:shadow-md {{ $style['border'] }} {{ $style['bg'] }}">
+                                
+                                {{-- Role Name (Formatted) --}}
+                                <div class="text-sm font-black uppercase italic {{ $style['text'] }}">
+                                    {{ ucwords(str_replace(['admin', '_'], [' Admin', ' '], $role->name)) }}
+                                </div>
+
+                                {{-- Dynamic Description --}}
+                                <div class="text-[10px] text-gray-500 mt-1 leading-tight">
+                                    @if($role->name === 'superadmin')
+                                        Full system access & root privileges
+                                    @elseif($role->name === 'newsadmin')
+                                        Manage news, categories & media
+                                    @else
+                                        General administrative access
+                                    @endif
+                                </div>
                             </div>
                         </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="role" value="superadmin" class="sr-only peer"
-                                {{ old('role') === 'superadmin' ? 'checked' : '' }}>
-                            <div
-                                class="border-2 border-gray-200 rounded-xl p-4 text-center peer-checked:border-red-500 peer-checked:bg-red-50 transition-all">
-                                <div class="text-sm font-semibold">Superadmin</div>
-                                <div class="text-xs text-gray-500 mt-0.5">Full access</div>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="role" value="newsadmin" class="sr-only peer"
-                                {{ old('role') === 'newsadmin' ? 'checked' : '' }}>
-                            <div
-                                class="border-2 border-gray-200 rounded-xl p-4 text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
-                                <div class="text-sm font-semibold">News Admin</div>
-                                <div class="text-xs text-gray-500 mt-0.5">Manage news content</div>
-                            </div>
-                        </label>
-                    </div>
-                    @error('role')
-                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                    @enderror
+                    @endforeach
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="submit"

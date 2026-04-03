@@ -7,6 +7,7 @@ use App\Mail\AccountApprovedMail;
 use App\Mail\AccountRejectedMail;
 use App\Models\BusinessVerification;
 use App\Models\SellerVerification;
+use App\Models\StationVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -17,32 +18,28 @@ class AdminVerificationController extends Controller
     /** List all verifications — pending first, then reviewed history. */
     public function index()
     {
-        $sellersPending    = SellerVerification::with('user')
-            ->where('status', 'pending')
-            ->latest()
-            ->get();
+        $sellersPending = SellerVerification::with('user')->where('status', 'pending')->latest()->get();
 
-        $businessesPending = BusinessVerification::with('user')
-            ->where('status', 'pending')
-            ->latest()
-            ->get();
+        $businessesPending = BusinessVerification::with('user')->where('status', 'pending')->latest()->get();
 
-        $sellersAll        = SellerVerification::with('user')
+        $evStationsPending = StationVerification::with('user')->where('status', 'pending')->latest()->get();
+
+        $sellersAll = SellerVerification::with('user')
             ->whereIn('status', ['approved', 'rejected'])
             ->latest()
             ->get();
 
-        $businessesAll     = BusinessVerification::with('user')
+        $businessesAll = BusinessVerification::with('user')
             ->whereIn('status', ['approved', 'rejected'])
             ->latest()
             ->get();
 
-        return view('admin.verifications.index', compact(
-            'sellersPending',
-            'businessesPending',
-            'sellersAll',
-            'businessesAll'
-        ));
+        $evStationsAll = StationVerification::with('user')
+            ->whereIn('status', ['approved', 'rejected'])
+            ->latest()
+            ->get();
+
+        return view('admin.verifications.index', compact('sellersPending', 'businessesPending', 'evStationsPending', 'sellersAll', 'businessesAll', 'evStationsAll'));
     }
 
     // ── Seller ────────────────────────────────────────────────────────
@@ -50,7 +47,7 @@ class AdminVerificationController extends Controller
     public function approveSeller(SellerVerification $verification)
     {
         $verification->update([
-            'status'           => 'approved',
+            'status' => 'approved',
             'rejection_reason' => null,
         ]);
 
@@ -66,14 +63,11 @@ class AdminVerificationController extends Controller
         ]);
 
         $verification->update([
-            'status'           => 'rejected',
+            'status' => 'rejected',
             'rejection_reason' => $request->reason,
         ]);
 
-        $this->sendMail(
-            new AccountRejectedMail($verification->user, $request->reason),
-            $verification->user->email
-        );
+        $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
         return back()->with('success', "{$verification->user->name} has been rejected.");
     }
@@ -83,7 +77,7 @@ class AdminVerificationController extends Controller
     public function approveBusiness(BusinessVerification $verification)
     {
         $verification->update([
-            'status'           => 'approved',
+            'status' => 'approved',
             'rejection_reason' => null,
         ]);
 
@@ -99,33 +93,69 @@ class AdminVerificationController extends Controller
         ]);
 
         $verification->update([
-            'status'           => 'rejected',
+            'status' => 'rejected',
             'rejection_reason' => $request->reason,
         ]);
 
-        $this->sendMail(
-            new AccountRejectedMail($verification->user, $request->reason),
-            $verification->user->email
-        );
+        $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
         return back()->with('success', "{$verification->user->name} has been rejected.");
     }
 
+    // ── EV Station ───────────────────────────────────────────────────
+
+    public function approveEV(StationVerification $verification)
+    {
+        $verification->update([
+            'status' => 'approved',
+            'rejection_reason' => null,
+        ]);
+
+        // Send the same approval mail pattern you used for others
+        $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
+
+        return back()->with('success', "EV Station '{$verification->station_name}' has been approved.");
+    }
+
+    public function rejectEV(Request $request, StationVerification $verification)
+    {
+        $request->validate([
+            'reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $verification->update([
+            'status' => 'rejected',
+            'rejection_reason' => $request->reason,
+        ]);
+
+        $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
+
+        return back()->with('success', "EV Station '{$verification->station_name}' has been rejected.");
+    }
     // ── Secure document viewer ────────────────────────────────────────
 
-    public function viewDocument(string $type, int $id)
+    public function viewDocument($type, $id)
     {
-        $record = $type === 'seller'
-            ? SellerVerification::findOrFail($id)
-            : BusinessVerification::findOrFail($id);
+        // 1. Find the record based on type
+        $record = match ($type) {
+            'seller' => SellerVerification::findOrFail($id),
+            'business' => BusinessVerification::findOrFail($id),
+            'ev_station' => StationVerification::findOrFail($id), // Ensure this model exists
+            default => abort(404),
+        };
 
-        $path = $type === 'seller'
-            ? $record->national_id_path
-            : $record->registration_doc_path;
+        // 2. Get the specific path column for each type
+        $path = match ($type) {
+            'seller' => $record->national_id_path,
+            'business' => $record->registration_doc_path,
+            'ev_station' => $record->license_path, // Double check this column name in your EV table!
+            default => null,
+        };
 
-        abort_unless(Storage::disk('private')->exists($path), 404);
+        // 3. Use your existing Storage logic
+        abort_unless($path && Storage::disk('private')->exists($path), 404);
 
-        return Storage::disk('private')->response($path);
+        return response()->file(Storage::disk('private')->path($path));
     }
 
     // ── Private helper ────────────────────────────────────────────────

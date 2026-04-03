@@ -51,6 +51,42 @@ class RequireVerifiedAccount
             }
         }
 
+        if ($user->hasRole('ev-station')) {
+    $verification = $user->stationVerification;
+
+    // 1. No data submitted yet
+    if (! $verification) {
+        // Prevent redirect if already on the create page
+        if (! request()->routeIs('station.verify.create')) {
+            return redirect()->route('station.verify.create')
+                ->with('info', 'Please register your EV Station details to go live.');
+        }
+    }
+
+    // 2. Data submitted but waiting for approval
+    if ($verification && ! $verification->isApproved()) {
+        // CRITICAL: Only redirect if they AREN'T already on the pending page
+        if (! request()->routeIs('verification.pending')) {
+            return redirect()->route('verification.pending');
+        }
+    }
+}
+
+        // if ($user->hasRole('garage')) {
+        //     $verification = $user->garageVerification;
+
+        //     // 1. No data submitted yet
+        //     if (! $verification) {
+        //         return redirect()->route('garage.verify.create')
+        //             ->with('info', 'Please submit your Garage workshop credentials.');
+        //     }
+
+        //     // 2. Data submitted but waiting for Admin/Mentor approval
+        //     if (! $verification->isApproved()) {
+        //         return redirect()->route('verification.pending');
+        //     }
+        // }
+
         return $next($request);
     }
 }

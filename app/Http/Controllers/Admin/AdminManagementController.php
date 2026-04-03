@@ -7,6 +7,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class AdminManagementController extends Controller
 {
@@ -19,7 +20,9 @@ class AdminManagementController extends Controller
 
     public function create()
     {
-        return view('admin.admins.create');
+        $roles = Role::where('guard_name', 'admin')->get();
+
+        return view('admin.admins.create', compact('roles'));
     }
 
     public function store(Request $request)
@@ -28,7 +31,7 @@ class AdminManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:admins,email'],
             'password' => ['required', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'superadmin', 'newsadmin'])],
+            'role' => ['required', Rule::in(['admin', 'superadmin', 'newsadmin', 'garageadmin', 'evstationadmin'])],
         ]);
 
         $admin = Admin::create([
@@ -47,7 +50,10 @@ class AdminManagementController extends Controller
     public function edit(Admin $admin)
     {
         $currentAdmin = Auth::guard('admin')->user();
-        return view('admin.admins.edit', compact('admin', 'currentAdmin'));
+
+        $roles = Role::where('guard_name', 'admin')->get();
+
+        return view('admin.admins.edit', compact('admin', 'currentAdmin', 'roles'));
     }
 
     public function update(Request $request, Admin $admin)
@@ -58,7 +64,7 @@ class AdminManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:admins,email,' . $admin->id],
             'password' => ['nullable', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'superadmin', 'newsadmin'])],
+            'role' => ['required', Rule::in(['admin', 'superadmin', 'newsadmin', 'garageadmin', 'evstationadmin'])],
         ]);
 
         $data = ['name' => $request->name, 'email' => $request->email];

@@ -21,8 +21,7 @@
                 <div class="max-w-3xl">
                     <div class="flex items-center gap-3 mb-6">
                         <span class="w-12 h-[3px] bg-[#4ade80]"></span>
-                        <span class="text-[10px] lg:text-[12px] uppercase tracking-[0.5em] text-[#4ade80] font-bold">The
-                            Intelligence Hub</span>
+                        <span class="text-[10px] lg:text-[12px] uppercase tracking-[0.5em] text-[#4ade80] font-bold">The Intelligence Hub</span>
                     </div>
 
                     <h1 class="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.8] mb-6">
@@ -77,11 +76,13 @@
 
             {{-- Filter Buttons --}}
             <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6" id="filter-container">
-                <button data-category="all" class="filter-btn px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic active-btn">
+                <button data-category="all"
+                    class="filter-btn px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic active-btn">
                     All
                 </button>
-                @foreach($categories as $category)
-                    <button data-category="{{ $category->slug }}" class="filter-btn px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
+                @foreach ($categories as $category)
+                    <button data-category="{{ $category->slug }}"
+                        class="filter-btn px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
                         {{ $category->name }}
                     </button>
                 @endforeach
@@ -91,7 +92,7 @@
             {{-- <div id="news-list-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 transition-opacity duration-300">
                 @include('frontend.news._list_partial', ['articles' => $newsItems])
             </div> --}}
-            
+
         </div>
 
         <div
@@ -490,7 +491,7 @@
             button.addEventListener('click', function() {
                 const category = this.getAttribute('data-category');
                 const container = document.getElementById('news-list-container');
-                
+
                 // 1. Visual Feedback (Fade out)
                 container.style.opacity = '0.5';
 
@@ -504,14 +505,16 @@
 
                 // 3. Fetch Data
                 fetch(`/news-filter?category=${category}`, {
-                    headers: { "X-Requested-With": "XMLHttpRequest" }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    container.innerHTML = html;
-                    container.style.opacity = '1';
-                })
-                .catch(error => console.error('Error fetching filtered news:', error));
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                        container.style.opacity = '1';
+                    })
+                    .catch(error => console.error('Error fetching filtered news:', error));
             });
         });
     </script>

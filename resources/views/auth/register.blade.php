@@ -111,63 +111,71 @@
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Select Account
-                        Type</label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
+                {{-- select account type --}}
+                <div class="space-y-3">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                        Select Account Type
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+                        {{-- Buyer --}}
                         <label class="group cursor-pointer">
                             <input type="radio" name="role" value="buyer" class="sr-only peer"
                                 {{ old('role') === 'buyer' ? 'checked' : '' }}>
-                            <div
-                                class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all 
-                        peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 
-                        group-hover:border-slate-200 group-hover:shadow-md">
+                            <div class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 group-hover:border-slate-200 group-hover:shadow-md h-full flex flex-col justify-center">
                                 <div class="mb-2 text-xl group-hover:scale-110 transition-transform">🛒</div>
-                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Buyer
-                                </div>
-                                <div class="text-[10px] text-slate-500 font-bold mt-1 leading-tight">Browse & Purchase
-                                </div>
-
-                                <div
-                                    class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity">
-                                </div>
+                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Buyer</div>
+                                <div class="text-[10px] text-slate-500 font-bold mt-1 leading-tight">Browse & Purchase</div>
+                                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </div>
                         </label>
 
+                        {{-- Seller --}}
                         <label class="group cursor-pointer">
                             <input type="radio" name="role" value="seller" class="sr-only peer"
                                 {{ old('role') === 'seller' ? 'checked' : '' }}>
-                            <div
-                                class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all 
-                        peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 
-                        group-hover:border-slate-200 group-hover:shadow-md">
-                                <div class="mb-2 text-xl group-hover:scale-110 transition-transform">⚡</div>
-                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Seller
-                                </div>
+                            <div class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 group-hover:border-slate-200 group-hover:shadow-md h-full flex flex-col justify-center">
+                                <div class="mb-2 text-xl group-hover:scale-110 transition-transform">🏎️</div>
+                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Seller</div>
                                 <div class="text-[10px] text-slate-500 font-bold mt-1 leading-tight">List Your EV</div>
-
-                                <div
-                                    class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity">
-                                </div>
+                                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </div>
                         </label>
 
+                        {{-- EV Station (New) --}}
+                        <label class="group cursor-pointer">
+                            <input type="radio" name="role" value="ev-station" class="sr-only peer"
+                                {{ old('role') === 'ev-station' ? 'checked' : '' }}>
+                            <div class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 group-hover:border-slate-200 group-hover:shadow-md h-full flex flex-col justify-center">
+                                <div class="mb-2 text-xl group-hover:scale-110 transition-transform">⚡</div>
+                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">EV Station</div>
+                                <div class="text-[10px] text-slate-500 font-bold mt-1 leading-tight">Charging Points</div>
+                                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                        </label>
+
+                        {{-- Garage (New) --}}
+                        <label class="group cursor-pointer">
+                            <input type="radio" name="role" value="garage" class="sr-only peer"
+                                {{ old('role') === 'garage' ? 'checked' : '' }}>
+                            <div class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 group-hover:border-slate-200 group-hover:shadow-md h-full flex flex-col justify-center">
+                                <div class="mb-2 text-xl group-hover:scale-110 transition-transform">🔧</div>
+                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Garage</div>
+                                <div class="text-[10px] text-slate-500 font-bold mt-1 leading-tight">Repair & Service</div>
+                                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                        </label>
+
+                        {{-- Business --}}
                         <label class="group cursor-pointer">
                             <input type="radio" name="role" value="business" class="sr-only peer"
                                 {{ old('role') === 'business' ? 'checked' : '' }}>
-                            <div
-                                class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all 
-                        peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 
-                        group-hover:border-slate-200 group-hover:shadow-md">
+                            <div class="relative border-2 border-slate-100 rounded-2xl p-5 text-center transition-all peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 group-hover:border-slate-200 group-hover:shadow-md h-full flex flex-col justify-center">
                                 <div class="mb-2 text-xl group-hover:scale-110 transition-transform">🏢</div>
-                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Business
-                                </div>
+                                <div class="font-black text-xs text-slate-900 uppercase italic tracking-tight">Business</div>
                                 <div class="text-[10px] text-slate-500 font-bold mt-1 leading-tight">Bulk & Ads</div>
-
-                                <div
-                                    class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity">
-                                </div>
+                                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                             </div>
                         </label>
                     </div>

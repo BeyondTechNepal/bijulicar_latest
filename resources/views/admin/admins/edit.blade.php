@@ -71,51 +71,65 @@
                 </div>
 
                 {{-- Role Selection --}}
-                @php $currentRole = $admin->getRoleNames()->first() @endphp
-                <div class="space-y-3">
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Access Tier</label>
+@php $currentRole = $admin->getRoleNames()->first() @endphp
+
+<div class="space-y-3">
+    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Access Tier</label>
+    
+    @if ($admin->id === $currentAdmin->id)
+        {{-- Safety: Prevent self-role-demotion --}}
+        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-3">
+            <svg class="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-xs font-bold text-slate-600 uppercase tracking-tight">
+                Active Session Role: <span class="text-indigo-600">{{ $currentRole }}</span>
+            </span>
+            <input type="hidden" name="role" value="{{ $currentRole }}">
+        </div>
+    @else
+        {{-- Dynamic Grid for other Admins --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            @foreach($roles as $role)
+                @php
+                    // Dynamic styling based on role name
+                    $style = match(strtolower($role->name)) {
+                        'superadmin' => ['border' => 'peer-checked:border-rose-500', 'bg' => 'peer-checked:bg-rose-50/50', 'text' => 'text-rose-600', 'dot' => 'peer-checked:border-rose-500'],
+                        'admin'      => ['border' => 'peer-checked:border-indigo-600', 'bg' => 'peer-checked:bg-indigo-50/50', 'text' => 'text-slate-700', 'dot' => 'peer-checked:border-indigo-600'],
+                        'newsadmin'  => ['border' => 'peer-checked:border-blue-500', 'bg' => 'peer-checked:bg-blue-50/50', 'text' => 'text-blue-600', 'dot' => 'peer-checked:border-blue-500'],
+                        default      => ['border' => 'peer-checked:border-slate-600', 'bg' => 'peer-checked:bg-slate-50', 'text' => 'text-slate-600', 'dot' => 'peer-checked:border-slate-600'],
+                    };
+                @endphp
+
+                <label class="cursor-pointer group">
+                    <input type="radio" name="role" value="{{ $role->name }}" class="sr-only peer" 
+                        {{ old('role', $currentRole) === $role->name ? 'checked' : '' }}>
                     
-                    @if ($admin->id === $currentAdmin->id)
-                        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-3">
-                            <svg class="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                            <span class="text-xs font-bold text-slate-600 uppercase tracking-tight">Active Session Role: <span class="text-indigo-600">{{ $currentRole }}</span></span>
-                            <input type="hidden" name="role" value="{{ $currentRole }}">
+                    <div class="border-2 border-slate-100 rounded-2xl p-5 transition-all group-hover:bg-slate-50 {{ $style['border'] }} {{ $style['bg'] }}">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black uppercase tracking-widest {{ $style['text'] }}">
+                                {{ str_replace('admin', ' Admin', $role->name) }}
+                            </span>
+                            {{-- Custom Radio Indicator --}}
+                            <div class="w-3 h-3 rounded-full border-2 border-slate-300 {{ $style['dot'] }}"></div>
                         </div>
-                    @else
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <label class="cursor-pointer group">
-                                <input type="radio" name="role" value="admin" class="sr-only peer" {{ old('role', $currentRole) === 'admin' ? 'checked' : '' }}>
-                                <div class="border-2 border-slate-100 rounded-2xl p-5 transition-all group-hover:bg-slate-50 peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-black uppercase tracking-widest text-slate-700">Standard</span>
-                                        <div class="w-3 h-3 rounded-full border-2 border-slate-300 peer-checked:border-indigo-600"></div>
-                                    </div>
-                                    <p class="text-[10px] text-slate-400 mt-1 font-medium">Standard administrative access to dashboard assets.</p>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer group">
-                                <input type="radio" name="role" value="superadmin" class="sr-only peer" {{ old('role', $currentRole) === 'superadmin' ? 'checked' : '' }}>
-                                <div class="border-2 border-slate-100 rounded-2xl p-5 transition-all group-hover:bg-slate-50 peer-checked:border-rose-500 peer-checked:bg-rose-50/50">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-black uppercase tracking-widest text-rose-600">Superadmin</span>
-                                        <div class="w-3 h-3 rounded-full border-2 border-slate-300 peer-checked:border-rose-500"></div>
-                                    </div>
-                                    <p class="text-[10px] text-slate-400 mt-1 font-medium">Full system ownership. Destructive permission rights.</p>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer group">
-                                <input type="radio" name="role" value="newsadmin" class="sr-only peer" {{ old('role', $currentRole) === 'newsadmin' ? 'checked' : '' }}>
-                                <div class="border-2 border-slate-100 rounded-2xl p-5 transition-all group-hover:bg-slate-50 peer-checked:border-rose-500 peer-checked:bg-rose-50/50">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-black uppercase tracking-widest text-rose-600">News Admin</span>
-                                        <div class="w-3 h-3 rounded-full border-2 border-slate-300 peer-checked:border-rose-500"></div>
-                                    </div>
-                                    <p class="text-[10px] text-slate-400 mt-1 font-medium">Manage news content and publications.</p>
-                                </div>
-                            </label>
-                        </div>
-                    @endif
-                </div>
+                        
+                        {{-- Contextual Descriptions --}}
+                        <p class="text-[10px] text-slate-400 mt-1 font-medium italic">
+                            @if($role->name === 'superadmin')
+                                Full system ownership. Destructive permission rights.
+                            @elseif($role->name === 'newsadmin')
+                                Manage news content and publications.
+                            @else
+                                Standard administrative access to dashboard assets.
+                            @endif
+                        </p>
+                    </div>
+                </label>
+            @endforeach
+        </div>
+    @endif
+</div>
             </div>
 
             {{-- Footer Actions --}}

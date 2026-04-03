@@ -91,7 +91,8 @@
                         @php
                             $pendingCount =
                                 \App\Models\SellerVerification::where('status', 'pending')->count() +
-                                \App\Models\BusinessVerification::where('status', 'pending')->count();
+                                \App\Models\BusinessVerification::where('status', 'pending')->count() +
+                                \App\Models\StationVerification::where('status', 'pending')->count();
                         @endphp
                         @if ($pendingCount > 0)
                             <span

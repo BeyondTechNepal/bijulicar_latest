@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
 
             // Role must be one of the three frontend roles — never admin/superadmin
-            'role' => ['required', Rule::in(['buyer', 'seller', 'business'])],
+            'role' => ['required', Rule::in(['buyer', 'seller', 'business', 'ev-station', 'garage'])],
         ]);
 
         $user = User::create([

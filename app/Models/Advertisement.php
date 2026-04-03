@@ -40,7 +40,7 @@ class Advertisement extends Model
         'news_sidebar'          => 'News Page — Right Sidebar (Vertical)',
         'news_detail_sidebar'   => 'News Article — Right Sidebar (Vertical)',
         'business_banner'       => 'Business Directory — Top Banner (Horizontal)',
-        'car_detail_sidebar'    => 'Car Detail — Sidebar (Vertical)',
+        'car_detail_horizontal'    => 'Car Detail  (Horizontal Banner)',
         'business_profile'      => 'Business Profile — Banner (Horizontal)',
     ];
 
@@ -55,7 +55,7 @@ class Advertisement extends Model
     public const VERTICAL_PLACEMENTS = [
         'news_sidebar',
         'news_detail_sidebar',
-        'car_detail_sidebar',
+        // 'car_detail_sidebar',
     ];
 
     // ── Relationships ──────────────────────────────────────────────────

@@ -154,34 +154,40 @@
                     </div>
                 </div>
 
-                {{-- ── SPEC GROUPS ──────────────────────────────────── --}}
-
-                {{-- Performance specs --}}
+                {{-- ── VEHICLE DETAILS ──────────────────────────────── --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg {{ $dc['light'] }} flex items-center justify-center text-base">⚡</span>
-                        <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Performance & Specs</span>
+                        <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Vehicle Details</span>
                     </div>
-                    <div class="divide-y divide-slate-50">
+                    {{-- 2-column grid — icon prominent left, label + value stacked right --}}
+                    <div class="grid grid-cols-2 divide-x divide-slate-50">
                         @php
                             $specs = [
-                                ['icon' => '📅', 'label' => 'Year',        'value' => $car->year],
-                                ['icon' => '⚙️', 'label' => 'Drivetrain',  'value' => strtoupper($car->drivetrain)],
-                                ['icon' => '🛣️', 'label' => 'Mileage',     'value' => number_format($car->mileage) . ' km'],
+                                ['icon' => '📅', 'label' => 'Year',       'value' => $car->year],
+                                ['icon' => '⚙️', 'label' => 'Drivetrain', 'value' => strtoupper($car->drivetrain)],
+                                ['icon' => '🛣️', 'label' => 'Mileage',    'value' => number_format($car->mileage) . ' km'],
+                                ['icon' => '🏷️', 'label' => 'Condition',  'value' => ucfirst($car->condition)],
+                                ['icon' => '🎨', 'label' => 'Color',      'value' => $car->color ?? '—'],
+                                ['icon' => '📦', 'label' => 'Stock',      'value' => $car->stock_quantity . ' unit' . ($car->stock_quantity !== 1 ? 's' : '')],
+                                ['icon' => '📍', 'label' => 'Location',   'value' => $car->location],
                             ];
-                            if ($car->range_km)    $specs[] = ['icon' => '🔋', 'label' => 'EV Range',    'value' => number_format($car->range_km) . ' km'];
-                            if ($car->battery_kwh) $specs[] = ['icon' => '⚡', 'label' => 'Battery',     'value' => $car->battery_kwh . ' kWh'];
-                            $specs[] = ['icon' => '🎨', 'label' => 'Color',      'value' => $car->color ?? '—'];
-                            $specs[] = ['icon' => '🏷️', 'label' => 'Condition',  'value' => ucfirst($car->condition)];
+                            if ($car->range_km)    $specs[] = ['icon' => '🔋', 'label' => 'EV Range', 'value' => number_format($car->range_km) . ' km'];
+                            if ($car->battery_kwh) $specs[] = ['icon' => '⚡', 'label' => 'Battery',  'value' => $car->battery_kwh . ' kWh'];
+                            if (count($specs) % 2 !== 0) $specs[] = null;
                         @endphp
                         @foreach ($specs as $spec)
-                            <div class="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50/60 transition-colors">
-                                <span class="flex items-center gap-2.5 text-[13px] font-bold text-slate-500">
-                                    <span>{{ $spec['icon'] }}</span>
-                                    {{ $spec['label'] }}
-                                </span>
-                                <span class="text-[14px] font-black text-slate-800">{{ $spec['value'] }}</span>
+                            @if($spec)
+                            <div class="flex items-center gap-3 px-5 py-3.5 border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
+                                <span class="text-xl shrink-0">{{ $spec['icon'] }}</span>
+                                <div class="min-w-0">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $spec['label'] }}</p>
+                                    <p class="text-[13px] font-black text-slate-800 truncate">{{ $spec['value'] }}</p>
+                                </div>
                             </div>
+                            @else
+                            <div class="border-b border-slate-50"></div>
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -270,7 +276,16 @@
                     @endif
                 </div>
 
+                {{-- ── Business Profile Ads (between listings and reviews) ───────────── --}}
+            @if(isset($carDetailAds) && $carDetailAds->isNotEmpty())
+            <section class="bg-slate-50 py-6 border-t border-slate-100">
+                <div class="max-w-7xl mx-auto px-6">
+                    <x-ads.horizontal-banner :ads="$carDetailAds" />
+                </div>
+            </section>
+            @endif
             </div>
+            
 
             {{-- ── RIGHT: order sidebar ─────────────────────────────── --}}
             <div class="xl:w-80 space-y-5 xl:sticky xl:top-24 xl:self-start">
@@ -478,31 +493,6 @@
                     @endif
                 </div>
 
-                {{-- Quick details --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Quick Details</p>
-                    <div class="space-y-2.5">
-                        @php
-                            $quick = [
-                                ['label' => 'Year',      'value' => $car->year],
-                                ['label' => 'Mileage',   'value' => number_format($car->mileage) . ' km'],
-                                ['label' => 'Condition', 'value' => ucfirst($car->condition)],
-                                ['label' => 'Color',     'value' => $car->color ?? '—'],
-                                ['label' => 'Location',  'value' => $car->location],
-                                ['label' => 'Stock',     'value' => $car->stock_quantity . ' unit' . ($car->stock_quantity !== 1 ? 's' : '')],
-                            ];
-                            if ($car->range_km)    $quick[] = ['label' => 'Range',    'value' => $car->range_km . ' km'];
-                            if ($car->battery_kwh) $quick[] = ['label' => 'Battery',  'value' => $car->battery_kwh . ' kWh'];
-                        @endphp
-                        @foreach ($quick as $q)
-                            <div class="flex items-center justify-between">
-                                <span class="text-[12px] font-bold text-slate-400">{{ $q['label'] }}</span>
-                                <span class="text-[13px] font-black text-slate-800">{{ $q['value'] }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
                 {{-- Share / Compare buttons --}}
                 <div class="flex gap-3">
                     <a href="{{ route('compare_cars', ['cars[]' => $car->id]) }}"
@@ -516,6 +506,12 @@
                         Share
                     </button>
                 </div>
+
+                <!-- {{-- ── Sidebar ads (priority: Premium → Featured → Standard) ── --}}
+                @if(isset($carDetailAds) && $carDetailAds->isNotEmpty())
+                    <x-ads.vertical-sidebar :ads="$carDetailAds" />
+                @endif -->
+
             </div>
         </div>
 
@@ -557,7 +553,6 @@
 
 {{-- ── JS: gallery + lightbox ─────────────────────────────────────── --}}
 <script>
-    // Smooth scroll for #place-order anchor from marketplace cards
     if (window.location.hash === '#place-order') {
         document.addEventListener('DOMContentLoaded', () => {
             const el = document.getElementById('place-order');
@@ -578,13 +573,9 @@
         currentIdx = idx;
         const img = document.getElementById('mainImage');
         img.style.opacity = '0';
-        setTimeout(() => {
-            img.src = url;
-            img.style.opacity = '1';
-        }, 150);
+        setTimeout(() => { img.src = url; img.style.opacity = '1'; }, 150);
         const counter = document.getElementById('imageCounter');
         if (counter) counter.textContent = idx + 1;
-
         document.querySelectorAll('.thumb-btn').forEach(btn => {
             const active = parseInt(btn.dataset.idx) === idx;
             btn.classList.toggle('border-[#4ade80]', active);
@@ -605,10 +596,7 @@
     function closeLightbox() {
         const lb = document.getElementById('lightbox');
         lb.classList.add('opacity-0');
-        setTimeout(() => {
-            lb.classList.add('invisible');
-            document.body.style.overflow = '';
-        }, 200);
+        setTimeout(() => { lb.classList.add('invisible'); document.body.style.overflow = ''; }, 200);
     }
 
     function prevImage(e) {
@@ -645,9 +633,9 @@
     document.addEventListener('keydown', e => {
         const lb = document.getElementById('lightbox');
         if (!lb.classList.contains('invisible')) {
-            if (e.key === 'Escape')      closeLightbox();
-            if (e.key === 'ArrowLeft')   prevImage(e);
-            if (e.key === 'ArrowRight')  nextImage(e);
+            if (e.key === 'Escape')     closeLightbox();
+            if (e.key === 'ArrowLeft')  prevImage(e);
+            if (e.key === 'ArrowRight') nextImage(e);
         }
     });
 </script>

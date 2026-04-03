@@ -59,7 +59,7 @@ class CarController extends Controller
         }
 
         // ── Sidebar ads for the car detail page (priority DESC) ──────────
-        $carDetailAds = Advertisement::liveForPlacement('car_detail_sidebar')->get();
+        $carDetailAds = Advertisement::liveForPlacement('car_detail_horizontal')->get();
 
         return view('frontend.pages.car_detail', compact(
             'car',

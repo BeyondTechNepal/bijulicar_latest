@@ -21,6 +21,7 @@ Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::c
 // Route::get('/news', fn() => view('frontend.pages.news'))->name('news');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/news/{news:slug}', [App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
+Route::get('/news-filter', [App\Http\Controllers\NewsFilterController::class, 'filter'])->name('news.filter');
 Route::get('/business-news/{news:slug}', [App\Http\Controllers\BusinessNewsPublicController::class, 'show']) ->name('business.news.show');
 // Route::get('/map_location', fn() => view('frontend.pages.map_location'))->name('map_location');
 // Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');

@@ -19,82 +19,111 @@ class Advertisement extends Model
         'ends_at',
         'is_active',
         'priority',
+        // Review
+        'status',
+        'rejection_reason',
+        'charged_amount',
+        'reviewed_by',
+        'reviewed_at',
+        // Payment
+        'amount_paid',
+        'payment_method',
+        'payment_note',
+        'paid_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'starts_at' => 'date',
-            'ends_at'   => 'date',
-            'is_active' => 'boolean',
-            'priority'  => 'integer',
+            'starts_at'      => 'date',
+            'ends_at'        => 'date',
+            'is_active'      => 'boolean',
+            'priority'       => 'integer',
+            'charged_amount' => 'decimal:2',
+            'amount_paid'    => 'decimal:2',
+            'reviewed_at'    => 'datetime',
+            'paid_at'        => 'datetime',
         ];
     }
 
-    // ── Constants ──────────────────────────────────────────────────────
+    // ── Constants ────────────────────────────────────────────────────────
 
-    /** All valid placement keys mapped to human labels */
     public const PLACEMENTS = [
         'home'                  => 'Home Page (Horizontal Banner)',
         'marketplace'           => 'Marketplace (Horizontal Banner)',
         'news_sidebar'          => 'News Page — Right Sidebar (Vertical)',
         'news_detail_sidebar'   => 'News Article — Right Sidebar (Vertical)',
         'business_banner'       => 'Business Directory — Top Banner (Horizontal)',
-        'car_detail_horizontal'    => 'Car Detail  (Horizontal Banner)',
+        'car_detail_horizontal' => 'Car Detail (Horizontal Banner)',
         'business_profile'      => 'Business Profile — Banner (Horizontal)',
     ];
 
-    /** Priority tiers for the bidding / boost system */
     public const PRIORITIES = [
         0 => 'Standard',
         1 => 'Featured',
         2 => 'Premium',
     ];
 
-    /** Placements rendered as a vertical sidebar card */
+    public const STATUSES = [
+        'pending_review' => 'Pending Review',
+        'approved'       => 'Approved — Awaiting Payment',
+        'rejected'       => 'Rejected',
+        'published'      => 'Published',
+    ];
+
     public const VERTICAL_PLACEMENTS = [
         'news_sidebar',
         'news_detail_sidebar',
-        // 'car_detail_sidebar',
     ];
 
-    // ── Relationships ──────────────────────────────────────────────────
+    public const PAYMENT_METHODS = [
+        'cash'  => 'Cash',
+        'bank'  => 'Bank Transfer',
+        'esewa' => 'eSewa',
+        'other' => 'Other',
+    ];
 
-    /** The business user who owns this ad */
+    // ── Relationships ─────────────────────────────────────────────────────
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /** The car listing this ad promotes (optional) */
     public function car(): BelongsTo
     {
         return $this->belongsTo(Car::class);
     }
 
-    // ── Scopes ─────────────────────────────────────────────────────────
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'reviewed_by');
+    }
 
-    /**
-     * Scope: only live ads for a given placement, ordered by priority DESC
-     * then by creation date (earlier = longer-running = shown first on ties).
-     */
+    // ── Scopes ────────────────────────────────────────────────────────────
+
     public function scopeLiveForPlacement($query, string $placement)
     {
         return $query->with('car')
             ->where('placement', $placement)
             ->where('is_active', true)
+            ->where('status', 'published')
             ->where(fn($q) => $q->whereNull('starts_at')->orWhereDate('starts_at', '<=', today()))
             ->where(fn($q) => $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', today()))
             ->orderByDesc('priority')
             ->orderBy('created_at');
     }
 
-    // ── Helpers ────────────────────────────────────────────────────────
+    public function scopePendingReview($query)
+    {
+        return $query->where('status', 'pending_review');
+    }
 
-    /** Is this ad currently running? */
+    // ── Computed helpers ──────────────────────────────────────────────────
+
     public function isLive(): bool
     {
-        if (!$this->is_active) {
+        if (!$this->is_active || $this->status !== 'published') {
             return false;
         }
 
@@ -111,35 +140,70 @@ class Advertisement extends Model
         return true;
     }
 
-    /** Human-readable placement label */
+    /**
+     * Calculate the expected charge from the live pricing rule.
+     * Returns null if no rule exists for this placement+priority.
+     */
+    public function calculateExpectedCharge(): ?float
+    {
+        if (!$this->starts_at || !$this->ends_at) {
+            return null;
+        }
+
+        $rule = AdPricingRule::for($this->placement, $this->priority);
+
+        return $rule?->calculateCharge($this->starts_at, $this->ends_at);
+    }
+
+    /** Duration in days (inclusive of both ends) */
+    public function durationDays(): ?int
+    {
+        if (!$this->starts_at || !$this->ends_at) {
+            return null;
+        }
+
+        return (int) $this->starts_at->startOfDay()->diffInDays($this->ends_at->startOfDay()) + 1;
+    }
+
     public function placementLabel(): string
     {
         return self::PLACEMENTS[$this->placement] ?? ucfirst($this->placement);
     }
 
-    /** Human-readable priority label */
     public function priorityLabel(): string
     {
         return self::PRIORITIES[$this->priority] ?? 'Standard';
     }
 
-    /** Badge colour class for priority (Tailwind) */
+    public function statusLabel(): string
+    {
+        return self::STATUSES[$this->status] ?? ucfirst($this->status);
+    }
+
     public function priorityBadgeClass(): string
     {
         return match ($this->priority) {
-            2       => 'bg-amber-100 text-amber-700',   // Premium — gold
-            1       => 'bg-purple-100 text-purple-700', // Featured — purple
-            default => 'bg-slate-100 text-slate-500',   // Standard — grey
+            2       => 'bg-amber-100 text-amber-700',
+            1       => 'bg-purple-100 text-purple-700',
+            default => 'bg-slate-100 text-slate-500',
         };
     }
 
-    /** Is this a vertical sidebar-style placement? */
+    public function statusBadgeClass(): string
+    {
+        return match ($this->status) {
+            'published'      => 'bg-green-100 text-green-700',
+            'approved'       => 'bg-blue-100 text-blue-700',
+            'rejected'       => 'bg-red-100 text-red-700',
+            default          => 'bg-yellow-100 text-yellow-700', // pending_review
+        };
+    }
+
     public function isVertical(): bool
     {
         return in_array($this->placement, self::VERTICAL_PLACEMENTS);
     }
 
-    /** Resolved click target URL */
     public function targetUrl(): ?string
     {
         if ($this->link_url) {

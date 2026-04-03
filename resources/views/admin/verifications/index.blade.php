@@ -301,7 +301,7 @@
 
                             {{-- Actions --}}
                             <div class="flex items-center gap-2 shrink-0">
-                                <a href="{{ route('admin.verifications.document', ['type' => 'ev_station', 'id' => $v->id]) }}"
+                                <a href="{{ route('admin.verifications.document', ['type' => 'ev', 'id' => $v->id]) }}"
                                     target="_blank"
                                     class="inline-flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 transition-all">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

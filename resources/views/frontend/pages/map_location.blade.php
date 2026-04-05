@@ -271,11 +271,25 @@
                         icon
                     })
                     .bindPopup(`
-                        <div style="min-width:180px;font-family:inherit;padding:4px">
+                        <div style="min-width:200px;font-family:inherit;padding:4px">
                             <p style="font-weight:900;font-size:12px;color:#1e293b;margin:0 0 4px">${loc.address}</p>
                             <span style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em">
                                 ${loc.type === 'ev-station' ? '⚡ EV Station' : '🔧 Garage'}
                             </span>
+                            <div style="margin-top:10px">
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.latitude},${loc.longitude}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   style="display:inline-flex;align-items:center;gap:5px;background:#16a34a;color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:6px 12px;border-radius:8px;text-decoration:none;transition:background .2s"
+                                   onmouseover="this.style.background='#15803d'"
+                                   onmouseout="this.style.background='#16a34a'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Open in Google Maps
+                                </a>
+                            </div>
                         </div>
                     `);
 

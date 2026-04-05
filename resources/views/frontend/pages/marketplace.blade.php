@@ -507,9 +507,9 @@
                 <div class="flex flex-wrap gap-1.5 mb-4">${specBadges}</div>
                 <div class="mb-1">
                     <span class="block text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-0.5">Price</span>
-                    <span class="text-[18px] font-black italic tracking-tight whitespace-nowrap ${car.is_preorder ? 'text-violet-700' : 'text-slate-900'}">NRs ${car.price}</span>
+                    <span class="text-[18px] font-black italic tracking-tight whitespace-nowrap ${car.is_preorder ? 'text-slate-900' : 'text-slate-900'}">NRs ${car.price}</span>
                     ${car.is_preorder && car.preorder_deposit
-                        ? `<span class="block text-[9px] font-black text-violet-500 uppercase tracking-widest mt-0.5">Deposit: NRs ${car.preorder_deposit}${car.expected_arrival_date ? ' · ' + car.expected_arrival_date : ''}</span>`
+                        ? `<span class="block text-[9px] font-black text-slate-900 uppercase tracking-widest mt-0.5">Deposit: NRs ${car.preorder_deposit}${car.expected_arrival_date ? ' · ' + car.expected_arrival_date : ''}</span>`
                         : (car.price_negotiable ? '<span class="block text-[9px] font-black text-[#16a34a] uppercase tracking-widest mt-0.5">Negotiable</span>' : '')
                     }
                 </div>

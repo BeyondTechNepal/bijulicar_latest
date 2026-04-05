@@ -32,7 +32,12 @@ class BusinessAdvertisementController extends Controller
         $pricingRules = AdPricingRule::active()
             ->get()
             ->groupBy('placement')
-            ->map(fn($g) => $g->keyBy('priority'));
+            ->map(fn($g) => $g->keyBy('priority'))
+            ->map(fn($tierGroup) => $tierGroup->map(fn($rule) => [
+                'price_per_day' => (float) $rule->price_per_day,
+                'min_days'      => (int)   $rule->min_days,
+                'is_active'     => (bool)  $rule->is_active,
+            ]));
 
         return view('dashboard.business.advertisements.create', compact(
             'cars', 'placements', 'priorities', 'pricingRules'

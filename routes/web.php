@@ -14,6 +14,8 @@ use App\Http\Controllers\Business\BusinessVerificationController;
 use App\Http\Controllers\Business\BusinessNewsController;
 use App\Http\Controllers\Evstation\EVStationVerificationController;
 use App\Http\Controllers\Garage\GarageVerificationController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MapController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes ─────────────────────────────────────────────
@@ -387,9 +389,15 @@ Route::middleware(['auth', 'role:ev-station', 'verified.account'])
             return view('dashboard.ev-station', ['user' => auth()->user()]);
         })->name('dashboard');
 
+        Route::get('/location', [LocationController::class, 'index'])->name('location.index');
+        Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
+        Route::post('/location', [LocationController::class, 'store'])->name('location.store');
+        Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
+        Route::put('/location', [LocationController::class, 'update'])->name('location.update');
+        Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
         // 2. Station Profile & Management
         // Update station location, opening hours, and pricing per kWh.
-        // Route::get('/manage', [App\Http\Controllers\EVStation\EVStationController::class, 'edit'])
+        // Route::get('/manage', [App\Http\Controllers\EVStation\EVSt   ationController::class, 'edit'])
         //     ->name('manage')
         //     ->middleware('permission:manage own stations');
         // Route::patch('/update', [App\Http\Controllers\EVStation\EVStationController::class, 'update'])
@@ -431,20 +439,25 @@ Route::middleware(['auth', 'role:ev-station', 'verified.account'])
         //     ->middleware('permission:create advertisements');
     });
 
-    // ── EV STATION routes ──────────────────────────────────────────────────
-// Only verified EV Station owners can access these management tools.
+// ── GARAGE routes ──────────────────────────────────────────────────
+// Only verified Garage owners can access these management tools.
 Route::middleware(['auth', 'role:garage', 'verified.account'])
     ->prefix('garage')
     ->name('garage.')
     ->group(function () {
         
-        // 1. Station Dashboard
-        // Shows real-time status of chargers, total energy delivered, and revenue.
-        Route::get('/dashboard', function() {
+        // 1. Garage Dashboard
+        Route::get('/dashboard', function () {
             return view('dashboard.garage', ['user' => auth()->user()]);
         })->name('dashboard');
 
-
+        // 2. Map Location CRUD
+        Route::get('/location', [LocationController::class, 'index'])->name('location.index');
+        Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
+        Route::post('/location', [LocationController::class, 'store'])->name('location.store');
+        Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
+        Route::put('/location', [LocationController::class, 'update'])->name('location.update');
+        Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
     });
 
 // ── Profile ────────────────────────────────────────────────────────────

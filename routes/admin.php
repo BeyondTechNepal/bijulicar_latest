@@ -49,6 +49,11 @@ Route::prefix('admin')
                     ->name('verifications.document')
                     ->where('type', 'seller|business|ev|garage');
 
+                // Map Location Requests
+                Route::get('/map-locations', [AdminVerificationController::class, 'mapLocations'])->name('map_locations.index');
+                Route::post('/map-locations/{location}/approve', [AdminVerificationController::class, 'approveLocation'])->name('map_locations.approve');
+                Route::post('/map-locations/{location}/reject', [AdminVerificationController::class, 'rejectLocation'])->name('map_locations.reject');
+
                 // Permissions
                 Route::resource('permissions', PermissionController::class)->except(['show']);
 

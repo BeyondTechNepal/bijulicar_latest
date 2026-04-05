@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\AccountApprovedMail;
 use App\Mail\AccountRejectedMail;
 use App\Models\BusinessVerification;
+use App\Models\NewLocation;
 use App\Models\SellerVerification;
 use App\Models\StationVerification;
 use App\Models\GarageVerification;
@@ -205,6 +206,39 @@ class AdminVerificationController extends Controller
         // }
 
         return response()->file(Storage::disk('private')->path($path));
+    }
+
+    // ── Map Location Requests ─────────────────────────────────────────
+
+    /** List all pending map location submissions from EV stations and garages. */
+    public function mapLocations()
+    {
+        $pending  = NewLocation::with('user')->where('is_active', false)->latest()->get();
+        $approved = NewLocation::with('user')->where('is_active', true)->latest()->get();
+
+        return view('admin.map_locations.index', compact('pending', 'approved'));
+    }
+
+    public function approveLocation(NewLocation $location)
+    {
+        $location->update(['is_active' => true]);
+
+        return back()->with('success', "Location for {$location->user->name} has been approved and is now visible on the map.");
+    }
+
+    public function rejectLocation(Request $request, NewLocation $location)
+    {
+        $request->validate(['reason' => ['required', 'string', 'max:500']]);
+
+        // Keep the record but ensure it stays inactive; optionally notify the user
+        $location->update(['is_active' => false]);
+
+        $this->sendMail(
+            new AccountRejectedMail($location->user, $request->reason),
+            $location->user->email
+        );
+
+        return back()->with('success', "Location for {$location->user->name} has been rejected.");
     }
 
     // ── Private helper ────────────────────────────────────────────────

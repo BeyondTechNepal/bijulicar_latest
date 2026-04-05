@@ -100,98 +100,19 @@
                         </p>
                     @endif
 
-                {{-- Section 2 --}}
-                @if($news->section_2_title || $news->section_2_content)
-                    <div class="mb-10">
-                        @if($news->section_2_title)
-                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
-                                {{ $news->section_2_title }}
-                            </h2>
-                        @endif
-                        @if($news->section_2_content)
-                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
-                                @foreach(explode("\n", strip_tags($news->section_2_content)) as $para)
-                                    @if(trim($para))
-                                        <p>{{ $para }}</p>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
-                @endif
-
-                {{-- Section 3 --}}
-                @if($news->section_3_title || $news->section_3_content)
-                    <div class="mb-10">
-                        @if($news->section_3_title)
-                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
-                                {{ $news->section_3_title }}
-                            </h2>
-                        @endif
-                        @if($news->section_3_content)
-                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
-                                @foreach(explode("\n", strip_tags($news->section_3_content)) as $para)
-                                    @if(trim($para))
-                                        <p>{{ $para }}</p>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
-                @endif
-
-                {{-- Footer actions --}}
-                <div class="mt-12 flex items-center justify-between py-8 border-t border-slate-100">
-                    <div class="flex gap-3">
-                        <button class="px-5 py-2.5 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#4ade80] hover:text-black transition-all">
-                            Save Report
-                        </button>
-                        <button class="px-5 py-2.5 border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-black transition-all">
-                            Print PDF
-                        </button>
-                    </div>
-                    <div class="flex items-center gap-4 text-[10px] font-black uppercase text-slate-400">
-                        <span>Share:</span>
-                        <a href="#" class="hover:text-black">TW</a>
-                        <a href="#" class="hover:text-black">LN</a>
-                    </div>
-                </div>
-
-            </article>
-
-            {{-- ── Sidebar ───────────────────────────────────────────────── --}}
-            <aside class="lg:col-span-4">
-                <div class="sticky top-24 space-y-8">
-
-                    {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
-                        @if(isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
-                            <x-ads.vertical-sidebar :ads="$newsDetailAds" />
-                        @endif
-
-                    {{-- Recent articles --}}
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-3">
-                            Recent Articles
-                        </p>
-                        <div class="space-y-4">
-                            @foreach($recentArticles as $item)
-                                <a href="{{ route($item['route'], $item['slug']) }}"
-                                    class="flex items-start gap-3 group">
-                                    @if($item['hero_image'])
-                                        <img src="{{ asset('storage/' . $item['hero_image']) }}"
-                                            class="w-14 h-12 rounded-xl object-cover shrink-0 border border-slate-100 group-hover:opacity-80 transition-opacity"
-                                            alt="">
-                                    @else
-                                        <div class="w-14 h-12 rounded-xl bg-slate-100 shrink-0 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
-                                            </svg>
-                                        </div>
-                                    @endif
-                                    <div class="flex-1 min-w-0">
-                                        @if($item['type'] === 'business')
-                                            <span class="text-[9px] font-black uppercase tracking-widest text-purple-500 block mb-0.5">Business</span>
+                    {{-- Section 1 --}}
+                    @if ($news->section_1_title || $news->section_1_content)
+                        <div class="mb-10">
+                            @if ($news->section_1_title)
+                                <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
+                                    {{ $news->section_1_title }}
+                                </h2>
+                            @endif
+                            @if ($news->section_1_content)
+                                <div class="text-base text-slate-600 leading-relaxed space-y-4">
+                                    @foreach (explode("\n", strip_tags($news->section_1_content)) as $para)
+                                        @if (trim($para))
+                                            <p>{{ $para }}</p>
                                         @endif
                                     @endforeach
                                 </div>
@@ -350,15 +271,15 @@
                         </div>
 
                         <!-- <aside class="lg:col-span-4">
-                            <div class="sticky top-10 space-y-8">
+                                <div class="sticky top-10 space-y-8">
 
-                                {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
-                                @if (isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
+                                    {{-- ── Business sidebar ads (priority: Premium → Featured → Standard) ── --}}
+                                    @if (isset($newsDetailAds) && $newsDetailAds->isNotEmpty())
     <x-ads.vertical-sidebar :ads="$newsDetailAds" />
     @endif
 
-                            </div>
-                        </aside> -->
+                                </div>
+                            </aside> -->
 
                         {{-- Back to news --}}
                         <a href="{{ route('news') }}"

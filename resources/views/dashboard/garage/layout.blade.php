@@ -70,6 +70,18 @@
                     Services
                 </a>
 
+                <a href="{{ route('garage.location.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                {{ request()->routeIs('garage.location.*') ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Map Location
+                </a>
+
                 {{-- Feature Placeholder (Coming Soon) --}}
                 <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-600 cursor-not-allowed select-none group"
                     title="Bookings coming soon">

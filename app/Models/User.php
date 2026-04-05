@@ -109,4 +109,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class, 'buyer_id');
     }
+
+    public function location()
+    {
+        return $this->hasOne(NewLocation::class, 'user_id');
+    }
 }

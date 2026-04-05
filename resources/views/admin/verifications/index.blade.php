@@ -6,16 +6,18 @@
 
     {{-- Stats row --}}
     @php
-        $totalPending = $sellersPending->count() + $businessesPending->count() + $evStationsPending->count();
-        $totalDone = $sellersAll->count() + $businessesAll->count() + $evStationsAll->count();
+        $totalPending = $sellersPending->count() + $businessesPending->count() + $evStationsPending->count() + $garagePending->count();
+        $totalDone = $sellersAll->count() + $businessesAll->count() + $evStationsAll->count() + $garageAll->count();
         $totalApproved =
             $sellersAll->where('status', 'approved')->count() +
             $businessesAll->where('status', 'approved')->count() +
-            $evStationsAll->where('status', 'approved')->count();
+            $evStationsAll->where('status', 'approved')->count() +
+            $garageAll->where('status', 'approved')->count();
         $totalRejected =
             $sellersAll->where('status', 'rejected')->count() +
             $businessesAll->where('status', 'rejected')->count() +
-            $evStationsAll->where('status', 'rejected')->count();
+            $evStationsAll->where('status', 'rejected')->count() +
+            $garageAll->where('status', 'rejected')->count();
     @endphp
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -441,7 +443,7 @@
 
 
     {{-- ── REVIEWED HISTORY ─────────────────────────────────────────────── --}}
-    @if ($sellersAll->count() > 0 || $businessesAll->count() > 0)
+    @if ($sellersAll->count() > 0 || $businessesAll->count() > 0 || $evStationsAll->count() > 0 || $garageAll->count() > 0)
         <div>
             <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest mb-4">Review History</h2>
 

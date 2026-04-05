@@ -92,7 +92,8 @@
                             $pendingCount =
                                 \App\Models\SellerVerification::where('status', 'pending')->count() +
                                 \App\Models\BusinessVerification::where('status', 'pending')->count() +
-                                \App\Models\StationVerification::where('status', 'pending')->count();
+                                \App\Models\StationVerification::where('status', 'pending')->count() +
+                                \App\Models\GarageVerification::where('status', 'pending')->count();
                         @endphp
                         @if ($pendingCount > 0)
                             <span
@@ -204,6 +205,20 @@
                     <span class="hide-on-collapse">Map Location</span>
                 </a>
 
+                <a href="{{ route('admin.map_locations.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
+                       {{ request()->routeIs('admin.map_locations*') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    <span class="font-bold w-5 text-center">📍</span>
+                    <span class="hide-on-collapse flex-1">Map Requests</span>
+                    @php $pendingMapCount = \App\Models\NewLocation::where('is_active', false)->count(); @endphp
+                    @if ($pendingMapCount > 0)
+                        <span
+                            class="hide-on-collapse text-[10px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                            {{ $pendingMapCount }}
+                        </span>
+                    @endif
+                </a>
+
                 {{-- Advertisements --}}
                 <a href="{{ route('admin.advertisements.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
@@ -212,7 +227,8 @@
                     <span class="hide-on-collapse flex-1">Advertisements</span>
                     @php $pendingAds = \App\Models\Advertisement::where('status', 'pending_review')->count(); @endphp
                     @if ($pendingAds > 0)
-                        <span class="hide-on-collapse text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-black">{{ $pendingAds }}</span>
+                        <span
+                            class="hide-on-collapse text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-black">{{ $pendingAds }}</span>
                     @endif
                 </a>
 

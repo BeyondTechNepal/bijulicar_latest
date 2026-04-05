@@ -71,7 +71,24 @@
                     <span class="ml-auto text-[8px] bg-slate-800 text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded-full font-black uppercase">Soon</span>
                 </div>
 
+                <a href="{{ route('station.location.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                    {{ request()->routeIs('station.location.*') ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+
+                    Map Location
+                </a>
+
                 <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-4">Explore</p>
+
+
+                
 
                 {{-- <a href="{{ route('marketplace') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">

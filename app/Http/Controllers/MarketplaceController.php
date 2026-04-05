@@ -30,7 +30,7 @@ class MarketplaceController extends Controller
 
             $orderedCarIds = Order::where('buyer_id', Auth::id())
                 ->whereIn('car_id', $carIds)
-                ->whereIn('status', ['pending', 'confirmed', 'completed'])
+                ->whereIn('status', ['pending', 'confirmed'])
                 ->pluck('car_id');
 
             $preOrderedCarIds = PreOrder::where('buyer_id', Auth::id())
@@ -145,7 +145,7 @@ class MarketplaceController extends Controller
 
             $orderedCarIds = Order::where('buyer_id', Auth::id())
                 ->whereIn('car_id', $carIds)
-                ->whereIn('status', ['pending', 'confirmed', 'completed'])
+                ->whereIn('status', ['pending', 'confirmed'])
                 ->pluck('car_id');
 
             $preOrderedCarIds = PreOrder::where('buyer_id', Auth::id())

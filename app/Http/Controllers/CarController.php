@@ -35,7 +35,7 @@ class CarController extends Controller
         if (auth()->check() && auth()->user()->hasRole('buyer')) {
             $alreadyOrdered = auth()->user()->orders()
                 ->where('car_id', $car->id)
-                ->whereIn('status', ['pending', 'confirmed', 'completed'])
+                ->whereIn('status', ['pending', 'confirmed'])
                 ->exists();
         }
 

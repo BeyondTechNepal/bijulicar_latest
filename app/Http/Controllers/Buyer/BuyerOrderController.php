@@ -91,7 +91,7 @@ class BuyerOrderController extends Controller
     // Check for active orders
     $hasActiveOrder = Order::where('buyer_id', $buyerId)
         ->where('car_id', $car->id)
-        ->whereIn('status', ['pending', 'confirmed', 'completed'])
+        ->whereIn('status', ['pending', 'confirmed'])
         ->exists();
 
     abort_if($hasActiveOrder, 422, 'You already have an active order for this car.');
@@ -105,6 +105,7 @@ class BuyerOrderController extends Controller
         'buyer_phone' => $request->buyer_phone,
         'buyer_email' => $request->buyer_email,
         'notes'       => $request->notes,
+        'ordered_at'  => now(),
     ]);
 
     return redirect()

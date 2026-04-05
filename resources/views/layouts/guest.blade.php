@@ -5,29 +5,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'BijuliCar') }}</title>
 
-        {{-- Tailwind CSS import --}}
+        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
         <script src="https://cdn.tailwindcss.com"></script>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            body { font-family: 'Inter', sans-serif; }
+        </style>
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+    <body class="bg-[#f1f5f9] min-h-screen flex flex-col items-center justify-center p-4 antialiased">
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+        {{-- Logo / Home link --}}
+        <a href="{{ route('home') }}" class="flex items-center gap-2 mb-8 group no-underline">
+            <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
+                <svg class="w-6 h-6 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
             </div>
+            <span class="text-xl font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
+        </a>
+
+        {{-- Card --}}
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-slate-100 px-8 py-8">
+            {{ $slot }}
         </div>
+
+        {{-- Back to login --}}
+        <p class="mt-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+            <a href="{{ route('login') }}" class="text-[#16a34a] hover:underline">← Back to Login</a>
+        </p>
+
     </body>
 </html>

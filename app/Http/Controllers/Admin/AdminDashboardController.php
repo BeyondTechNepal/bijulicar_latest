@@ -19,7 +19,7 @@ class AdminDashboardController extends Controller
             'buyers' => User::role('buyer')->count(),
             'sellers' => User::role('seller')->count(),
             'businesses' => User::role('business')->count(),
-            'ev-stations' => User::role('ev-station')->count(), // Added
+            'ev_stations' => User::role('ev-station')->count(), // Added
             'garages' => User::role('garage')->count(), // Added
             'total_admins' => Admin::count(),
         ];

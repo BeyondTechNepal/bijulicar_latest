@@ -29,11 +29,14 @@
             class="w-full lg:w-[45%] h-full flex flex-col justify-center px-8 md:px-16 bg-white relative z-10 shadow-2xl overflow-y-auto no-scrollbar">
 
             <div class="mb-8">
-                <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg mb-6">
-                    <svg class="w-7 h-7 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </div>
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-6 group no-underline">
+                    <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
+                        <svg class="w-7 h-7 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
+                </a>
                 <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">
                     Welcome back to <span class="text-[#16a34a]">BijuliCar</span>
                 </h1>

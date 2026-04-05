@@ -21,10 +21,6 @@
                     class="px-4 py-2 rounded-xl transition-all {{ Route::is('compare_cars') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     Compare Cars
                 </a>
-                <a href="{{ route('businesses.index') }}"
-                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('businesses.*') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
-                    Businesses
-                </a>
             </div>
         </div>
 
@@ -41,6 +37,8 @@
         {{-- Right: secondary nav + auth --}}
         <div class="flex items-center space-x-2 md:space-x-4">
             <div class="hidden lg:flex items-center space-x-2">
+                <a href="{{ route('businesses.index') }}"
+                    class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('businesses.*') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Businesses</a>
                 <a href="{{ route('map_location') }}"
                     class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('map_location') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Map Search</a>
                 <a href="{{ route('contact') }}"
@@ -131,16 +129,12 @@
                     </div>
 
                 @else
-                    <a href="{{ route('login') }}" class="text-[14px] font-bold text-slate-900 px-3 hover:text-green-600 transition-colors">Login</a>
+                    <a href="{{ route('login') }}"
+                        class="inline-flex items-center justify-center bg-[#4ade80] text-black px-5 py-2.5 rounded-xl text-[13px] font-black shadow-lg shadow-green-400/20 hover:bg-[#22c55e] transition-all active:scale-95">
+                        Login / Sign Up
+                    </a>
                 @endauth
             </div>
-
-            @guest
-                <a href="{{ route('register') }}"
-                    class="hidden sm:inline-flex items-center justify-center bg-[#4ade80] text-black px-5 py-2.5 rounded-xl text-[13px] font-black shadow-lg shadow-green-400/20 hover:bg-[#22c55e] transition-all active:scale-95">
-                    Sign Up
-                </a>
-            @endguest
 
             <button onclick="toggleMobileMenu()"
                 class="lg:hidden w-10 h-10 flex items-center justify-center bg-slate-100 rounded-xl text-slate-900">
@@ -245,12 +239,10 @@
                         </button>
                     </form>
                 @else
-                    <div class="grid grid-cols-2 gap-3 pt-2">
-                        <a href="{{ route('login') }}"
-                            class="flex items-center justify-center py-4 rounded-2xl bg-slate-100 text-slate-900 font-bold text-sm">Login</a>
-                        <a href="{{ route('register') }}"
-                            class="flex items-center justify-center py-4 rounded-2xl bg-[#4ade80] text-black font-black text-sm shadow-lg shadow-green-400/20">Sign Up</a>
-                    </div>
+                    <a href="{{ route('login') }}"
+                        class="flex items-center justify-center py-4 rounded-2xl bg-[#4ade80] text-black font-black text-sm shadow-lg shadow-green-400/20">
+                        Login / Sign Up
+                    </a>
                 @endauth
             </div>
         </div>

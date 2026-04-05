@@ -50,6 +50,14 @@
             class="w-full lg:w-[50%] h-full flex flex-col justify-center px-8 md:px-20 bg-white relative z-10 overflow-y-auto no-scrollbar">
 
             <div class="mb-8">
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-6 group no-underline">
+                    <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
+                        <svg class="w-6 h-6 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
+                </a>
                 <div class="flex justify-between items-center mb-3 px-1">
                     <span class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest">01. Identity</span>
                 </div>
@@ -207,4 +215,4 @@
 
 </body>
 
-</html>
+</html> 

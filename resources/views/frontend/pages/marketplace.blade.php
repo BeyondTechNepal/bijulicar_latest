@@ -5,26 +5,30 @@
 @section('content')
 
     {{-- ── Hero + Filter section (untouched design) ──────────────────── --}}
-    <section class="relative pt-32 pb-20 lg:pt-38 lg:pb-32 min-h-screen flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
-
+    <section class="relative pt-20 pb-12 lg:pt-28 lg:pb-30 min-h-[60vh] flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
         <div class="absolute inset-0 z-0">
             <img src="{{ asset('images/marketplace_header.jpg') }}"
                 class="w-full h-full object-cover scale-105 blur-[8px] opacity-20 lg:opacity-20" alt="Background">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(15,23,42,0.1)_0%,_#0a0f1e_100%)]"></div>
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(15,23,42,0.1)_0%,_#0a0f1e_100%)]">
+            </div>
         </div>
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
 
-            <div class="mb-10 lg:mb-16">
-                <div class="flex items-center gap-3 mb-4 lg:mb-6">
-                    <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
-                    <span class="text-[8px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Global Marketplace</span>
+            <div class="mb-6 lg:mb-10">
+                <div class="flex items-center gap-3 mb-2 lg:mb-4"> <span class="w-6 lg:w-8 h-[2px] bg-[#4ade80]"></span>
+                    <span class="text-[7px] lg:text-[9px] uppercase tracking-[0.3em] text-[#4ade80] font-bold">Global
+                        Marketplace</span>
                 </div>
-                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white uppercase italic leading-[0.85]">
-                    <span class="block">Digital</span>
+
+                <h1
+                    class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white uppercase italic leading-[0.80]">
+                    <span>Digital</span>
                     <span class="text-slate-500">Showroom</span>
                 </h1>
-                <p class="mt-6 lg:mt-8 text-slate-400 text-xs lg:text-base font-medium max-w-xs lg:max-w-sm leading-relaxed">
+
+                <p
+                    class="mt-4 lg:mt-6 text-slate-400 text-[11px] lg:text-sm font-medium max-w-xs lg:max-w-sm leading-relaxed">
                     Browse our verified inventory of high-performance electric, hybrid, and precision traditional machines.
                 </p>
             </div>
@@ -48,7 +52,7 @@
                         <div class="w-full relative">
                             <select name="drivetrain" class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 appearance-none cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight">
                                 <option value="all">Drivetrain</option>
-                                <option value="ev"     {{ request('drivetrain') === 'ev'     ? 'selected' : '' }}>EV Power</option>
+                                <option value="ev"     {{ request('drivetrain') === 'ev' ? 'selected' : '' }}>EV Power</option>
                                 <option value="hybrid" {{ request('drivetrain') === 'hybrid' ? 'selected' : '' }}>Hybrid Sync</option>
                                 <option value="petrol" {{ request('drivetrain') === 'petrol' ? 'selected' : '' }}>Petrol</option>
                                 <option value="diesel" {{ request('drivetrain') === 'diesel' ? 'selected' : '' }}>Diesel</option>
@@ -82,7 +86,7 @@
                         Advanced Parameters
                     </button>
 
-                    <div id="advanced-panel" class="{{ request()->hasAny(['brand','model_name','year_from','year_to','price_min','price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl overflow-hidden">
+                    <div id="advanced-panel" class="{{ request()->hasAny(['brand', 'model_name', 'year_from', 'year_to', 'price_min', 'price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl overflow-hidden">
                         <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;"></div>
                         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
 
@@ -114,13 +118,13 @@
                                     <select name="year_from" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:ring-2 focus:ring-[#4ade80]/20 outline-none appearance-none cursor-pointer">
                                         <option value="">From</option>
                                         @for ($y = $minYear; $y <= $maxYear; $y++)
-                                            <option value="{{ $y }}" {{ (int)request('year_from') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
+                                            <option value="{{ $y }}" {{ (int) request('year_from') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
                                         @endfor
                                     </select>
                                     <select name="year_to" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:ring-2 focus:ring-[#4ade80]/20 outline-none appearance-none cursor-pointer">
                                         <option value="">To</option>
                                         @for ($y = $maxYear; $y >= $minYear; $y--)
-                                            <option value="{{ $y }}" {{ (int)request('year_to') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
+                                            <option value="{{ $y }}" {{ (int) request('year_to') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -131,9 +135,9 @@
                                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     Price Range (NRs)
                                     <span class="text-[#4ade80] ml-2" id="price-display">
-                                        {{ request('price_min') ? number_format((int)request('price_min')) : number_format($minPrice) }}
+                                        {{ request('price_min') ? number_format((int) request('price_min')) : number_format($minPrice) }}
                                         –
-                                        {{ request('price_max') ? number_format((int)request('price_max')) : number_format($maxPrice) }}
+                                        {{ request('price_max') ? number_format((int) request('price_max')) : number_format($maxPrice) }}
                                     </span>
                                 </label>
                                 <input type="hidden" name="price_min" id="price_min" value="{{ request('price_min', $minPrice) }}">
@@ -166,6 +170,14 @@
                     </div>
                 </div>
             </form>
+
+             <div
+                        class="hidden md:flex flex-col items-center gap-2 animate-bounce opacity-40 hover:opacity-100 transition-opacity pointer-events-none">
+                        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-white/60">Scroll Down</span>
+                        <div class="w-5 h-8 border-2 border-white/20 rounded-full flex justify-center p-1">
+                            <div class="w-1 h-2 bg-[#4ade80] rounded-full"></div>
+                        </div>
+                    </div>
         </div>
     </section>
 
@@ -248,7 +260,7 @@
     @endif
 
     {{-- ── Car listings grid ───────────────────────────────────────────── --}}
-    <section id="listings-section" class="py-20 bg-[#f1f5f9]">
+    <section id="listings-section" class="pt-10 pb-20 bg-[#f1f5f9]">
         <div class="max-w-7xl mx-auto px-6">
 
             {{-- Results count & sort (updated live by JS) --}}

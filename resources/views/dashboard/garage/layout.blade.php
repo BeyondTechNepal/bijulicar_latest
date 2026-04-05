@@ -67,7 +67,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                     </svg>
-                    Services
+                    Update Profile
                 </a>
 
                 <a href="{{ route('garage.location.index') }}"
@@ -83,7 +83,7 @@
                 </a>
 
                 {{-- Feature Placeholder (Coming Soon) --}}
-                <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-600 cursor-not-allowed select-none group"
+                {{-- <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-600 cursor-not-allowed select-none group"
                     title="Bookings coming soon">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,7 +92,7 @@
                     Bookings
                     <span
                         class="ml-auto text-[8px] bg-slate-800 text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded-full font-black uppercase">Soon</span>
-                </div>
+                </div> --}}
 
                 <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-4">Explore</p>
 

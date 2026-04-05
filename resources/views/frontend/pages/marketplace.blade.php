@@ -307,7 +307,7 @@
     const LOGIN_URL     = '{{ route("login") }}';
     const IS_AUTH       = @json(auth()->check());
     const IS_BUYER      = @json(auth()->check() && auth()->user()->hasRole('buyer'));
-    const IS_SELLER     = @json(auth()->check() && (auth()->user()->hasRole('seller') || auth()->user()->hasRole('business')));
+    const IS_SELLER     = @json(auth()->check() && (auth()->user()->hasRole('seller') || auth()->user()->hasRole('business') || auth()->user()->hasRole('ev-station') || auth()->user()->hasRole('garage')));
     const MIN_YEAR      = {{ $minYear }};
     const MAX_YEAR      = {{ $maxYear }};
     // Sets of car IDs the buyer has already ordered / pre-ordered (server-rendered, updated on each AJAX call)

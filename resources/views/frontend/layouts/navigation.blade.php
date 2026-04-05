@@ -49,13 +49,17 @@
                 @auth
                     @php
                         $user = auth()->user();
-                        if ($user->hasRole('buyer'))         $dashRoute = route('buyer.dashboard');
-                        elseif ($user->hasRole('seller'))    $dashRoute = route('seller.dashboard');
-                        elseif ($user->hasRole('business'))  $dashRoute = route('business.dashboard');
-                        else                                 $dashRoute = route('dashboard');
-                        $roleLabel = $user->hasRole('buyer') ? 'Buyer'
-                                   : ($user->hasRole('seller') ? 'Seller'
-                                   : ($user->hasRole('business') ? 'Business' : 'User'));
+                        if ($user->hasRole('buyer'))           $dashRoute = route('buyer.dashboard');
+                        elseif ($user->hasRole('seller'))      $dashRoute = route('seller.dashboard');
+                        elseif ($user->hasRole('business'))    $dashRoute = route('business.dashboard');
+                        elseif ($user->hasRole('ev-station'))  $dashRoute = route('station.dashboard');
+                        elseif ($user->hasRole('garage'))      $dashRoute = route('garage.dashboard');
+                        else                                   $dashRoute = route('dashboard');
+                        $roleLabel = $user->hasRole('buyer')      ? 'Buyer'
+                                   : ($user->hasRole('seller')    ? 'Seller'
+                                   : ($user->hasRole('business')  ? 'Business'
+                                   : ($user->hasRole('ev-station') ? 'EV Station'
+                                   : ($user->hasRole('garage')    ? 'Garage' : 'User'))));
                     @endphp
 
                     <!-- {{-- Dashboard quick-link --}}
@@ -157,13 +161,17 @@
                 @auth
                     @php
                         $user = auth()->user();
-                        if ($user->hasRole('buyer'))         $dashRoute = route('buyer.dashboard');
-                        elseif ($user->hasRole('seller'))    $dashRoute = route('seller.dashboard');
-                        elseif ($user->hasRole('business'))  $dashRoute = route('business.dashboard');
-                        else                                 $dashRoute = route('dashboard');
-                        $roleLabel = $user->hasRole('buyer') ? 'Buyer'
-                                   : ($user->hasRole('seller') ? 'Seller'
-                                   : ($user->hasRole('business') ? 'Business' : 'User'));
+                        if ($user->hasRole('buyer'))           $dashRoute = route('buyer.dashboard');
+                        elseif ($user->hasRole('seller'))      $dashRoute = route('seller.dashboard');
+                        elseif ($user->hasRole('business'))    $dashRoute = route('business.dashboard');
+                        elseif ($user->hasRole('ev-station'))  $dashRoute = route('station.dashboard');
+                        elseif ($user->hasRole('garage'))      $dashRoute = route('garage.dashboard');
+                        else                                   $dashRoute = route('dashboard');
+                        $roleLabel = $user->hasRole('buyer')      ? 'Buyer'
+                                   : ($user->hasRole('seller')    ? 'Seller'
+                                   : ($user->hasRole('business')  ? 'Business'
+                                   : ($user->hasRole('ev-station') ? 'EV Station'
+                                   : ($user->hasRole('garage')    ? 'Garage' : 'User'))));
                     @endphp
                     <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl mb-2">
                         <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[12px] font-black uppercase shrink-0">

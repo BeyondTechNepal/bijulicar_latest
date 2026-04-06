@@ -173,7 +173,7 @@ class BusinessAdvertisementController extends Controller
     public function destroy(Advertisement $advertisement)
     {
         abort_if($advertisement->user_id != Auth::id(), 403);
-        abort_if($advertisement->status === 'published', 403, 'Published ads cannot be deleted.');
+        abort_if($advertisement->status == 'published', 403, 'Published ads cannot be deleted.');
 
         if ($advertisement->image) {
             Storage::disk('public')->delete($advertisement->image);

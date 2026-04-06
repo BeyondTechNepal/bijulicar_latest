@@ -420,7 +420,7 @@
                                     Edit Your Listing
                                 </a>
                             @else
-                                <p class="text-center text-[12px] text-slate-400 font-bold">You can't order other seller's car!</p>
+                                <p class="text-center text-[12px] text-slate-400 font-bold">You must be buyer to order this car! Log in via buyer's account.</p>
                             @endif
                         @else
                             @if ($car->isPreorderable())

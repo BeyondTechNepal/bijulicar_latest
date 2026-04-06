@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -20,35 +19,22 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    // tells spatie that all roles/permissions on this model use the 'web' guard
     protected $guard_name = 'web';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = ['name', 'email', 'password'];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
+
+    // ── Verification relationships ─────────────────────────────────────
+
     public function sellerVerification(): HasOne
     {
         return $this->hasOne(SellerVerification::class);
@@ -69,25 +55,23 @@ class User extends Authenticatable
         return $this->hasOne(GarageVerification::class);
     }
 
-    // helper — works for both roles
     public function verification(): SellerVerification|BusinessVerification|StationVerification|GarageVerification|null
     {
-        return $this->sellerVerification 
-            ?? $this->businessVerification 
+        return $this->sellerVerification
+            ?? $this->businessVerification
             ?? $this->stationVerification
             ?? $this->garageVerification;
     }
-    // Seller / Business relationships
 
-    /** Cars listed by this user (as seller or business) */
+    // ── Car / marketplace relationships ───────────────────────────────
+
     public function listedCars(): HasMany
     {
         return $this->hasMany(Car::class, 'seller_id');
     }
 
-    // Buyer relationships
+    // ── Buyer relationships ────────────────────────────────────────────
 
-    /** Orders placed by this user */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'buyer_id');
@@ -98,20 +82,42 @@ class User extends Authenticatable
         return $this->hasMany(PreOrder::class, 'buyer_id');
     }
 
-    /** Purchases made by this user */
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class, 'buyer_id');
     }
 
-    /** Reviews written by this user */
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'buyer_id');
     }
 
-    public function location()
+    // ── Location ──────────────────────────────────────────────────────
+
+    public function location(): HasOne
     {
         return $this->hasOne(NewLocation::class, 'user_id');
+    }
+
+    // ── EV Station relationships ───────────────────────────────────────
+
+    /** Charging slots owned by this EV station */
+    public function evStationSlots(): HasMany
+    {
+        return $this->hasMany(EvStationSlot::class, 'user_id');
+    }
+
+    // ── Garage relationships ───────────────────────────────────────────
+
+    /** Appointments received by this garage */
+    public function garageAppointments(): HasMany
+    {
+        return $this->hasMany(GarageAppointment::class, 'garage_user_id');
+    }
+
+    /** Appointments booked by this user (as a customer) */
+    public function bookedAppointments(): HasMany
+    {
+        return $this->hasMany(GarageAppointment::class, 'customer_user_id');
     }
 }

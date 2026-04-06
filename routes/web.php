@@ -13,7 +13,10 @@ use App\Http\Controllers\BusinessDirectoryController;
 use App\Http\Controllers\Business\BusinessVerificationController;
 use App\Http\Controllers\Business\BusinessNewsController;
 use App\Http\Controllers\Evstation\EVStationVerificationController;
+use App\Http\Controllers\Evstation\EVStationSlotController;
 use App\Http\Controllers\Garage\GarageVerificationController;
+use App\Http\Controllers\Garage\GarageAppointmentController;
+use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MapController;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +67,16 @@ Route::middleware(['auth'])->group(function () {
     // 4. Garage Verification
     Route::get('/garage/verify', [GarageVerificationController::class, 'create'])->name('garage.verify.create');
     Route::post('/garage/verify', [GarageVerificationController::class, 'store'])->name('garage.verify.store');
+
+     // Book a garage appointment (from the map or garage profile)
+    Route::post('/book/garage',       [PublicBookingController::class, 'bookGarage'])     ->name('booking.garage');
+ 
+    // Request an EV charging slot (from the map pin)
+    Route::post('/book/ev-slot',      [PublicBookingController::class, 'requestSlot'])    ->name('booking.slot');
+ 
+    // My bookings page (all roles — buyer, seller, business, ev, garage)
+    Route::get('/my-bookings',        [PublicBookingController::class, 'myAppointments']) ->name('booking.mine');
+   
 
     // Waiting / pending approval screen
     // 4. Shared Pending Approval Screen
@@ -395,6 +408,12 @@ Route::middleware(['auth', 'role:ev-station', 'verified.account'])
         Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
         Route::put('/location', [LocationController::class, 'update'])->name('location.update');
         Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
+
+        Route::get('/slots',                  [EVStationSlotController::class, 'index'])        ->name('slots.index');
+        Route::post('/slots/configure',       [EVStationSlotController::class, 'configure'])    ->name('slots.configure');
+        Route::patch('/slots/{slot}',         [EVStationSlotController::class, 'updateSlot'])   ->name('slots.update');
+        Route::post('/slots/{slot}/approve',  [EVStationSlotController::class, 'approveRequest'])->name('slots.approve');
+        Route::post('/slots/{slot}/reject',   [EVStationSlotController::class, 'rejectRequest'])->name('slots.reject');
         // 2. Station Profile & Management
         // Update station location, opening hours, and pricing per kWh.
         // Route::get('/manage', [App\Http\Controllers\EVStation\EVSt   ationController::class, 'edit'])
@@ -458,6 +477,14 @@ Route::middleware(['auth', 'role:garage', 'verified.account'])
         Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
         Route::put('/location', [LocationController::class, 'update'])->name('location.update');
         Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
+
+        // Appointments
+        Route::get('/appointments',               [GarageAppointmentController::class, 'index'])        ->name('appointments.index');
+        Route::get('/appointments/{appointment}', [GarageAppointmentController::class, 'show'])         ->name('appointments.show');
+        Route::post('/appointments/{appointment}/approve', [GarageAppointmentController::class, 'approve'])->name('appointments.approve');
+        Route::post('/appointments/{appointment}/reject',  [GarageAppointmentController::class, 'reject']) ->name('appointments.reject');
+        Route::post('/appointments/{appointment}/complete',[GarageAppointmentController::class, 'complete'])->name('appointments.complete');
+        Route::post('/bays/configure',            [GarageAppointmentController::class, 'configureBays'])->name('bays.configure');
     });
 
 // ── Profile ────────────────────────────────────────────────────────────

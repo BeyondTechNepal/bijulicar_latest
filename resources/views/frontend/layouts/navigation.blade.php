@@ -116,6 +116,13 @@
                                 Profile Settings
                             </a>
 
+                            @auth
+                            <a href="{{ route('booking.mine') }}"
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                My Bookings
+                            </a>
+                            @endauth
+
                             <div class="border-t border-slate-100 my-1"></div>
 
                             <form method="POST" action="{{ route('logout') }}">

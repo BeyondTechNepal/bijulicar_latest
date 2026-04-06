@@ -85,6 +85,24 @@
                     Map Location
                 </a>
 
+                <a href="{{ route('station.slots.index') }}"
+    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+    {{ request()->routeIs('station.slots.*') ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+ 
+    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+    </svg>
+ 
+    Slot Manager
+    @php $pendingSlots = \App\Models\EvStationSlot::where('user_id', auth()->id())->where('status','occupied')->whereNotNull('occupied_by')->count(); @endphp
+    @if ($pendingSlots)
+        <span class="ml-auto text-[9px] bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full font-black">
+            {{ $pendingSlots }}
+        </span>
+    @endif
+    </a>
+
                 <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-4">Explore</p>
 
 

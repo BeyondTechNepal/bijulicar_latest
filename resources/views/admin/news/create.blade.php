@@ -22,7 +22,7 @@
                 <div class="md:col-span-2">
                     <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Article Category *</label>
                     <select name="category_id" required 
-                        class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-no-repeat bg-right pr-10"
+                        class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-no-repeat bg-right pr-10 p-2 border-2"
                         style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23cbd5e1%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E'); background-size: 1.2em;">
                         <option value="" disabled {{ old('category_id', $news->category_id ?? '') == '' ? 'selected' : '' }}>Select Category</option>
                         @foreach($categories as $category)
@@ -51,19 +51,19 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-2">
                     <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Main Title *</label>
-                    <input type="text" name="title" value="{{ old('title') }}" required class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500">
+                    <input type="text" name="title" value="{{ old('title') }}" required class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 p-2 border-2">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Slug (URL)</label>
-                    <input type="text" name="slug" value="{{ old('slug') }}" placeholder="auto-generated-slug" class="w-full border-slate-200 rounded-xl bg-slate-50 font-mono text-xs text-slate-400">
+                    <input type="text" name="slug" value="{{ old('slug') }}" placeholder="auto-generated-slug" class="w-full border-slate-200 rounded-xl bg-slate-50 font-mono text-xs text-slate-400 p-2 border-2">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Title Highlight</label>
-                    <input type="text" name="title_highlight" value="{{ old('title_highlight') }}" placeholder="Red Text Part" class="w-full border-slate-200 rounded-xl text-sm">
+                    <input type="text" name="title_highlight" value="{{ old('title_highlight') }}" placeholder="Red Text Part" class="w-full border-slate-200 rounded-xl text-sm p-2 border-2">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Title Suffix</label>
-                    <input type="text" name="title_suffix" value="{{ old('title_suffix') }}" placeholder="Ending Text" class="w-full border-slate-200 rounded-xl text-sm">
+                    <input type="text" name="title_suffix" value="{{ old('title_suffix') }}" placeholder="Ending Text" class="w-full border-slate-200 rounded-xl text-sm p-2 border-2">
                 </div>
             </div>
         </div>
@@ -79,12 +79,12 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Figure Caption</label>
-                    <input type="text" name="figure_caption" value="{{ old('figure_caption') }}" placeholder="Photographer or description" class="w-full border-slate-200 rounded-xl text-sm mt-4">
+                    <input type="text" name="figure_caption" value="{{ old('figure_caption') }}" placeholder="Photographer or description" class="w-full border-slate-200 rounded-xl text-sm mt-4 p-2 border-2">
                 </div>
             </div>
             <div class="mt-8">
                 <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Lead Paragraph (Intro) *</label>
-                <textarea name="lead_paragraph" rows="4" required class="w-full border-slate-200 rounded-[1.5rem] text-sm text-slate-600 focus:ring-indigo-500">{{ old('lead_paragraph') }}</textarea>
+                <textarea name="lead_paragraph" rows="4" required class="w-full border-slate-200 rounded-[1.5rem] text-sm text-slate-600 focus:ring-indigo-500 p-2 border-2">{{ old('lead_paragraph') }}</textarea>
             </div>
         </div>
 
@@ -95,10 +95,10 @@
             @foreach(['1', '2', '3'] as $num)
             <div class="p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100">
                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Section {{ $num }} Title</label>
-                <input type="text" name="section_{{ $num }}_title" value="{{ old('section_'.$num.'_title') }}" class="w-full border-slate-200 rounded-xl mb-4 font-bold">
+                <input type="text" name="section_{{ $num }}_title" value="{{ old('section_'.$num.'_title') }}" class="w-full border-slate-200 rounded-xl mb-4 font-bold p-2 border-2">
                 
                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Section {{ $num }} Content</label>
-                <textarea name="section_{{ $num }}_content" rows="5" class="w-full border-slate-200 rounded-xl text-sm">{{ old('section_'.$num.'_content') }}</textarea>
+                <textarea name="section_{{ $num }}_content" rows="5" class="w-full border-slate-200 rounded-xl text-sm p-2 border-2">{{ old('section_'.$num.'_content') }}</textarea>
             </div>
             @endforeach
         </div>
@@ -110,15 +110,15 @@
                 <h3 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-6">Technical Specifications</h3>
                 <div id="tech-specs-container" class="space-y-3 mb-4">
                     <div class="flex gap-2">
-                        <input type="text" name="tech_specs[0][key]" placeholder="Label (e.g. Speed)" class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
-                        <input type="text" name="tech_specs[0][value]" placeholder="Value (e.g. 200km/h)" class="w-1/2 border-slate-200 rounded-xl text-xs">
+                        <input type="text" name="tech_specs[0][key]" placeholder="Label (e.g. Speed)" class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase p-2 border-2">
+                        <input type="text" name="tech_specs[0][value]" placeholder="Value (e.g. 200km/h)" class="w-1/2 border-slate-200 rounded-xl text-xs p-2 border-2">
                     </div>
                 </div>
                 <button type="button" onclick="addTechSpec()" class="text-[9px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800">+ Add Specification</button>
                 
                 <div class="mt-6">
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Technical Note</label>
-                    <input type="text" name="tech_note" value="{{ old('tech_note') }}" placeholder="Small footer note for specs" class="w-full border-slate-200 rounded-xl text-xs">
+                    <input type="text" name="tech_note" value="{{ old('tech_note') }}" placeholder="Small footer note for specs" class="w-full border-slate-200 rounded-xl text-xs p-2 border-2">
                 </div>
             </div>
 
@@ -126,9 +126,9 @@
             <div class="bg-slate-900 rounded-[2rem] shadow-xl p-8 text-white">
                 <h3 class="font-black text-slate-500 uppercase tracking-widest text-[10px] mb-6">Article Quote</h3>
                 <div class="space-y-4">
-                    <textarea name="quote_text" rows="3" placeholder="Enter quote text..." class="w-full bg-slate-800 border-none rounded-xl text-sm text-indigo-200 focus:ring-indigo-500">{{ old('quote_text') }}</textarea>
-                    <input type="text" name="quote_author" placeholder="Quote Author" class="w-full bg-slate-800 border-none rounded-xl text-xs font-bold">
-                    <input type="text" name="quote_author_title" placeholder="Author Designation" class="w-full bg-slate-800 border-none rounded-xl text-[10px] uppercase tracking-widest">
+                    <textarea name="quote_text" rows="3" placeholder="Enter quote text..." class="w-full bg-slate-800 border-none rounded-xl text-sm text-indigo-200 focus:ring-indigo-500 p-2 border-2">{{ old('quote_text') }}</textarea>
+                    <input type="text" name="quote_author" placeholder="Quote Author" class="w-full bg-slate-800 border-none rounded-xl text-xs font-bold p-2 border-2">
+                    <input type="text" name="quote_author_title" placeholder="Author Designation" class="w-full bg-slate-800 border-none rounded-xl text-[10px] uppercase tracking-widest p-2 border-2">
                 </div>
             </div>
         </div>
@@ -143,22 +143,22 @@
                             $nameParts = explode(' ', Auth::guard('admin')->user()->name);
                             $initials = collect($nameParts)->map(fn($n) => substr($n, 0, 1))->take(2)->join('');
                         @endphp
-                        <input type="text" name="author_initials" value="{{ old('author_initials', strtoupper($initials)) }}" maxlength="2" required class="w-full border-slate-200 rounded-xl text-center font-mono font-bold text-indigo-600" readonly>
+                        <input type="text" name="author_initials" value="{{ old('author_initials', strtoupper($initials)) }}" maxlength="2" required class="w-full border-slate-200 rounded-xl text-center font-mono font-bold text-indigo-600 p-2 border-2" readonly>
                     </div>
                     <div class="flex-1">
                         <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Name</label>
-                        <input type="text" name="author_name" value="{{ old('author_name', Auth::guard('admin')->user()->name) }}" required class="w-full border-slate-200 rounded-xl font-bold" readonly>
+                        <input type="text" name="author_name" value="{{ old('author_name', Auth::guard('admin')->user()->name) }}" required class="w-full border-slate-200 rounded-xl font-bold p-2 border-2" readonly>
                     </div>
                 </div>
                 <div class="mt-4">
                     <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Role</label>
-                    <input type="text" name="author_role" value="{{ old('author_role', 'Lead Editor') }}" required class="w-full border-slate-200 rounded-xl font-bold">
+                    <input type="text" name="author_role" value="{{ old('author_role', 'Lead Editor') }}" required class="w-full border-slate-200 rounded-xl font-bold p-2 border-2">
                 </div>
             </div>
 
-            <div class="bg-indigo-50 rounded-[2rem] p-8 flex flex-col justify-center">
+            <div class="bg-indigo-50 rounded-[2rem] p-8 flex flex-col justify-center border-2">
                 <label class="flex items-center cursor-pointer group">
-                    <input type="checkbox" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }} class="sr-only">
+                    <input type="checkbox" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }} class="sr-only p-2 border-2">
                     <div class="w-12 h-6 bg-slate-300 rounded-full p-1 transition-all group-has-[:checked]:bg-indigo-600">
                         <div class="w-4 h-4 bg-white rounded-full transition-all group-has-[:checked]:translate-x-6"></div>
                     </div>
@@ -179,8 +179,8 @@
         const div = document.createElement('div');
         div.className = 'flex gap-2';
         div.innerHTML = `
-            <input type="text" name="tech_specs[${specIndex}][key]" placeholder="Label" class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
-            <input type="text" name="tech_specs[${specIndex}][value]" placeholder="Value" class="w-1/2 border-slate-200 rounded-xl text-xs">
+            <input type="text" name="tech_specs[${specIndex}][key]" placeholder="Label" class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase p-2 border-2">
+            <input type="text" name="tech_specs[${specIndex}][value]" placeholder="Value" class="w-1/2 border-slate-200 rounded-xl text-xs p-2 border-2">
         `;
         container.appendChild(div);
         specIndex++;

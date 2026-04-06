@@ -28,7 +28,7 @@
                         <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Article Category *</label>
 
                         <select name="category_id" required
-                            class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-no-repeat bg-right pr-10"
+                            class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-no-repeat bg-right pr-10 p-2 border-2"
                             style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23cbd5e1%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E'); background-size: 1.2em;">
 
                             <option value="" disabled>Select Category</option>
@@ -67,23 +67,23 @@
                     <div class="md:col-span-2">
                         <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Main Title *</label>
                         <input type="text" name="title" value="{{ old('title', $article->title) }}" required
-                            class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500">
+                            class="w-full border-slate-200 rounded-xl font-bold text-slate-700 focus:ring-indigo-500 p-2 border-2">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Slug (URL)</label>
                         <input type="text" name="slug" value="{{ old('slug', $article->slug) }}"
-                            class="w-full border-slate-200 rounded-xl bg-slate-50 font-mono text-xs text-slate-400">
+                            class="w-full border-slate-200 rounded-xl bg-slate-50 font-mono text-xs text-slate-400 p-2 border-2">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Title Highlight</label>
                         <input type="text" name="title_highlight"
                             value="{{ old('title_highlight', $article->title_highlight) }}" placeholder="Red Text Part"
-                            class="w-full border-slate-200 rounded-xl text-sm">
+                            class="w-full border-slate-200 rounded-xl text-sm p-2 border-2">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Title Suffix</label>
                         <input type="text" name="title_suffix" value="{{ old('title_suffix', $article->title_suffix) }}"
-                            placeholder="Ending Text" class="w-full border-slate-200 rounded-xl text-sm">
+                            placeholder="Ending Text" class="w-full border-slate-200 rounded-xl text-sm p-2 border-2">
                     </div>
                 </div>
             </div>
@@ -97,21 +97,21 @@
                             <img src="{{ asset('storage/' . $article->hero_image) }}"
                                 class="w-16 h-16 object-cover rounded-lg shadow-sm border border-slate-200">
                             <input type="file" name="hero_image"
-                                class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-black file:uppercase file:text-[9px]">
+                                class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-black file:uppercase file:text-[9px] p-2 border-2">
                         </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Figure Caption</label>
                         <input type="text" name="figure_caption"
                             value="{{ old('figure_caption', $article->figure_caption) }}"
-                            class="w-full border-slate-200 rounded-xl text-sm mt-4">
+                            class="w-full border-slate-200 rounded-xl text-sm mt-4 p-2 border-2">
                     </div>
                 </div>
                 <div class="mt-8">
                     <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Lead Paragraph (Intro)
                         *</label>
                     <textarea name="lead_paragraph" rows="4" required
-                        class="w-full border-slate-200 rounded-[1.5rem] text-sm text-slate-600 focus:ring-indigo-500">{{ old('lead_paragraph', $article->lead_paragraph) }}</textarea>
+                        class="w-full border-slate-200 rounded-[1.5rem] text-sm text-slate-600 focus:ring-indigo-500 p-2 border-2">{{ old('lead_paragraph', $article->lead_paragraph) }}</textarea>
                 </div>
             </div>
 
@@ -125,11 +125,11 @@
                             {{ $num }} Title</label>
                         <input type="text" name="section_{{ $num }}_title"
                             value="{{ old('section_' . $num . '_title', $article->{"section_{$num}_title"}) }}"
-                            class="w-full border-slate-200 rounded-xl mb-4 font-bold">
+                            class="w-full border-slate-200 rounded-xl mb-4 font-bold p-2 border-2">
 
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Section
                             {{ $num }} Content</label>
-                        <textarea name="section_{{ $num }}_content" rows="5" class="w-full border-slate-200 rounded-xl text-sm">{{ old('section_' . $num . '_content', $article->{"section_{$num}_content"}) }}</textarea>
+                        <textarea name="section_{{ $num }}_content" rows="5" class="w-full border-slate-200 rounded-xl text-sm p-2 border-2">{{ old('section_' . $num . '_content', $article->{"section_{$num}_content"}) }}</textarea>
                     </div>
                 @endforeach
             </div>
@@ -146,18 +146,18 @@
                                 <div class="flex gap-2 spec-row">
                                     <input type="text" name="tech_specs[{{ $index }}][key]"
                                         value="{{ $spec['key'] ?? '' }}"
-                                        class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
+                                        class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase p-2 border-2">
                                     <input type="text" name="tech_specs[{{ $index }}][value]"
                                         value="{{ $spec['value'] ?? '' }}"
-                                        class="w-1/2 border-slate-200 rounded-xl text-xs">
+                                        class="w-1/2 border-slate-200 rounded-xl text-xs p-2 border-2">
                                 </div>
                             @endforeach
                         @else
                             <div class="flex gap-2">
                                 <input type="text" name="tech_specs[0][key]" placeholder="Label"
-                                    class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase">
+                                    class="w-1/2 border-slate-200 rounded-xl text-xs font-bold uppercase p-2 border-2">
                                 <input type="text" name="tech_specs[0][value]" placeholder="Value"
-                                    class="w-1/2 border-slate-200 rounded-xl text-xs">
+                                    class="w-1/2 border-slate-200 rounded-xl text-xs p-2 border-2">
                             </div>
                         @endif
                     </div>
@@ -168,7 +168,7 @@
                     <div class="mt-6">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Technical Note</label>
                         <input type="text" name="tech_note" value="{{ old('tech_note', $article->tech_note) }}"
-                            class="w-full border-slate-200 rounded-xl text-xs">
+                            class="w-full border-slate-200 rounded-xl text-xs p-2 border-2">
                     </div>
                 </div>
 
@@ -177,13 +177,13 @@
                     <h3 class="font-black text-slate-500 uppercase tracking-widest text-[10px] mb-6">Article Quote</h3>
                     <div class="space-y-4">
                         <textarea name="quote_text" rows="3"
-                            class="w-full bg-slate-800 border-none rounded-xl text-sm text-indigo-200 focus:ring-indigo-500">{{ old('quote_text', $article->quote_text) }}</textarea>
+                            class="w-full bg-slate-800 border-none rounded-xl text-sm text-indigo-200 focus:ring-indigo-500 p-2 border-2">{{ old('quote_text', $article->quote_text) }}</textarea>
                         <input type="text" name="quote_author"
                             value="{{ old('quote_author', $article->quote_author) }}"
-                            class="w-full bg-slate-800 border-none rounded-xl text-xs font-bold">
+                            class="w-full bg-slate-800 border-none rounded-xl text-xs font-bold p-2 border-2">
                         <input type="text" name="quote_author_title"
                             value="{{ old('quote_author_title', $article->quote_author_title) }}"
-                            class="w-full bg-slate-800 border-none rounded-xl text-[10px] uppercase tracking-widest">
+                            class="w-full bg-slate-800 border-none rounded-xl text-[10px] uppercase tracking-widest p-2 border-2">
                     </div>
                 </div>
             </div>
@@ -196,27 +196,27 @@
                             <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Initials</label>
                             <input type="text" name="author_initials"
                                 value="{{ old('author_initials', $article->author_initials) }}" maxlength="2" required
-                                class="w-full border-slate-200 rounded-xl text-center font-mono font-bold text-indigo-600 bg-slate-50"
+                                class="w-full border-slate-200 rounded-xl text-center font-mono font-bold text-indigo-600 bg-slate-50 p-2 border-2"
                                 readonly>
                         </div>
                         <div class="flex-1">
                             <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Name</label>
                             <input type="text" name="author_name"
                                 value="{{ old('author_name', $article->author_name) }}" required
-                                class="w-full border-slate-200 rounded-xl font-bold bg-slate-50" readonly>
+                                class="w-full border-slate-200 rounded-xl font-bold bg-slate-50 p-2 border-2" readonly>
                         </div>
                     </div>
                     <div class="mt-4">
                         <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Author Role</label>
                         <input type="text" name="author_role" value="{{ old('author_role', $article->author_role) }}"
-                            required class="w-full border-slate-200 rounded-xl font-bold">
+                            required class="w-full border-slate-200 rounded-xl font-bold p-2 border-2">
                     </div>
                 </div>
 
-                <div class="bg-indigo-50 rounded-[2rem] p-8 flex flex-col justify-center">
+                <div class="bg-indigo-50 rounded-[2rem] p-8 flex flex-col justify-center border-2">
                     <label class="flex items-center cursor-pointer group">
                         <input type="checkbox" name="is_published" value="1"
-                            {{ old('is_published', $article->is_published) ? 'checked' : '' }} class="sr-only">
+                            {{ old('is_published', $article->is_published) ? 'checked' : '' }} class="sr-only p-2 border-2">
                         <div
                             class="w-12 h-6 bg-slate-300 rounded-full p-1 transition-all group-has-[:checked]:bg-indigo-600">
                             <div class="w-4 h-4 bg-white rounded-full transition-all group-has-[:checked]:translate-x-6">

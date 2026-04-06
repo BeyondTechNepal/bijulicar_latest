@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 gap-4">
         @forelse($roles as $role)
             @php 
-                $isCore = in_array($role->name, ['buyer', 'seller', 'business']); 
+                $isCore = in_array($role->name, ['buyer', 'seller', 'business', 'ev-station', 'garage']); 
                 $userCount = $role->users()->count();
             @endphp
             

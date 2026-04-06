@@ -202,7 +202,7 @@
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
                        {{ request()->routeIs('admin.locations*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     <span class="font-bold w-5 text-center">M</span>
-                    <span class="hide-on-collapse">Map Location</span>
+                    <span class="hide-on-collapse">Map Locations</span>
                 </a>
 
                 <a href="{{ route('admin.map_locations.index') }}"

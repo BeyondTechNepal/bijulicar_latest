@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminAdvertisementController;
 use App\Http\Controllers\Admin\AdminAdPricingController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\AdminMapController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
@@ -62,7 +63,11 @@ Route::prefix('admin')
                 Route::post('/roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
 
                 // Locations
-                Route::resource('/locations', App\Http\Controllers\Admin\LocationController::class)->except(['show']);
+                // Resource routes for index, edit, update, destroy
+                Route::resource('locations', AdminMapController::class);
+                
+                // Custom route for the toggle switch
+                Route::patch('locations/{id}/toggle', [AdminMapController::class, 'toggleStatus'])->name('locations.toggle');
 
                 // Contact messages
                 Route::get('/contact-messages', [App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact_messages.index');

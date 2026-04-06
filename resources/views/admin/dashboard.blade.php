@@ -100,10 +100,10 @@
                     <span class="w-3 h-3 rounded-full bg-violet-500"></span>
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Garages</span>
                 </div>
-                <a href="{{ route('admin.locations.create') }}"
+                {{-- <a href="{{ route('admin.locations.create') }}"
                     class="ml-auto bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all">
                     + Add Location
-                </a>
+                </a> --}}
             </div>
         </div>
     </div>

@@ -69,7 +69,7 @@ class EVStationSlotController extends Controller
      */
     public function updateSlot(Request $request, EvStationSlot $slot)
     {
-        abort_unless($slot->user_id === auth()->id(), 403);
+        abort_unless($slot->user_id == auth()->id(), 403);
 
         $request->validate([
             'status'  => 'required|in:available,occupied',
@@ -92,7 +92,7 @@ class EVStationSlotController extends Controller
      */
     public function approveRequest(Request $request, EvStationSlot $slot)
     {
-        abort_unless($slot->user_id === auth()->id(), 403);
+        abort_unless($slot->user_id == auth()->id(), 403);
         abort_unless($slot->isPending(), 422, 'Only pending requests can be approved.');
 
         $request->validate([
@@ -121,7 +121,7 @@ class EVStationSlotController extends Controller
      */
     public function rejectRequest(Request $request, EvStationSlot $slot)
     {
-        abort_unless($slot->user_id === auth()->id(), 403);
+        abort_unless($slot->user_id == auth()->id(), 403);
         abort_unless($slot->isPending(), 422, 'Only pending requests can be rejected.');
 
         $request->validate([

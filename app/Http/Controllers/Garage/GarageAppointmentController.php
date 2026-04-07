@@ -47,7 +47,7 @@ class GarageAppointmentController extends Controller
      */
     public function show(GarageAppointment $appointment)
     {
-        abort_unless($appointment->garage_user_id === auth()->id(), 403);
+        abort_unless($appointment->garage_user_id == auth()->id(), 403);
         $appointment->load('customer');
         return view('dashboard.garage.appointments.show', compact('appointment'));
     }
@@ -58,7 +58,7 @@ class GarageAppointmentController extends Controller
      */
     public function approve(Request $request, GarageAppointment $appointment)
     {
-        abort_unless($appointment->garage_user_id === auth()->id(), 403);
+        abort_unless($appointment->garage_user_id == auth()->id(), 403);
         abort_unless($appointment->isPending(), 422, 'Only pending appointments can be approved.');
 
         $request->validate([
@@ -99,7 +99,7 @@ class GarageAppointmentController extends Controller
      */
     public function reject(Request $request, GarageAppointment $appointment)
     {
-        abort_unless($appointment->garage_user_id === auth()->id(), 403);
+        abort_unless($appointment->garage_user_id == auth()->id(), 403);
         abort_unless($appointment->isPending(), 422, 'Only pending appointments can be rejected.');
 
         $request->validate([
@@ -123,7 +123,7 @@ class GarageAppointmentController extends Controller
      */
     public function complete(GarageAppointment $appointment)
     {
-        abort_unless($appointment->garage_user_id === auth()->id(), 403);
+        abort_unless($appointment->garage_user_id == auth()->id(), 403);
         abort_unless($appointment->isApproved(), 422, 'Only approved appointments can be marked complete.');
 
         $appointment->update(['status' => 'completed']);
@@ -189,7 +189,7 @@ class GarageAppointmentController extends Controller
      */
     public function walkinOccupy(Request $request, GarageBay $bay)
     {
-        abort_unless($bay->user_id === auth()->id(), 403);
+        abort_unless($bay->user_id == auth()->id(), 403);
         abort_unless($bay->isAvailable(), 422, 'Bay is already occupied.');
 
         $request->validate([
@@ -214,7 +214,7 @@ class GarageAppointmentController extends Controller
      */
     public function walkinFree(GarageBay $bay)
     {
-        abort_unless($bay->user_id === auth()->id(), 403);
+        abort_unless($bay->user_id == auth()->id(), 403);
 
         // If this bay was linked to an appointment, mark appointment complete too
         if ($bay->appointment_id) {

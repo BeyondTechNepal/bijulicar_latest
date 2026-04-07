@@ -5,7 +5,7 @@
 @section('content')
 
     {{-- ── Hero + Filter section (untouched design) ──────────────────── --}}
-    <section class="relative pt-32 pb-20 lg:pt-38 lg:pb-32 min-h-screen flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
+    <section class="relative pt-32 pb-20 lg:pt-38 lg:pb-15 min-h-60vh flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
 
         <div class="absolute inset-0 z-0">
             <img src="{{ asset('images/marketplace_header.jpg') }}"
@@ -15,19 +15,18 @@
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
 
-            <div class="mb-10 lg:mb-16">
-                <div class="flex items-center gap-3 mb-4 lg:mb-6">
-                    <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
-                    <span class="text-[8px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Global Marketplace</span>
-                </div>
-                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white uppercase italic leading-[0.85]">
-                    <span class="block">Digital</span>
-                    <span class="text-slate-500">Showroom</span>
-                </h1>
-                <p class="mt-6 lg:mt-8 text-slate-400 text-xs lg:text-base font-medium max-w-xs lg:max-w-sm leading-relaxed">
-                    Browse our verified inventory of high-performance electric, hybrid, and precision traditional machines.
-                </p>
+            <div class="mb-6 lg:mb-10"> <div class="flex items-center gap-3 mb-2 lg:mb-3"> <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
+                <span class="text-[8px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Global Marketplace</span>
             </div>
+            
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white uppercase italic leading-none whitespace-nowrap">
+                Digital <span class="text-slate-500">Showroom</span>
+            </h1>
+
+            <p class="mt-3 lg:mt-4 text-slate-400 text-xs lg:text-base font-medium max-w-sm lg:max-w-md leading-relaxed">
+                Browse our verified inventory of high-performance electric, hybrid, and precision traditional machines.
+            </p>
+        </div>
 
             {{-- Quick search bar --}}
             <form method="GET" action="{{ route('marketplace') }}" id="quick-form">

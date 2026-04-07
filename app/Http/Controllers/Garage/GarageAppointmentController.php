@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\BookingApprovedMail;
 use App\Mail\BookingRejectedMail;
 use App\Models\GarageAppointment;
+use App\Models\GarageBay;
 use App\Models\NewLocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Mail;
 class GarageAppointmentController extends Controller
 {
     /**
-     * Show all appointments for this garage owner.
+     * Show appointments + bay grid.
      */
     public function index()
     {
@@ -31,8 +32,14 @@ class GarageAppointmentController extends Controller
         $completed = $appointments->where('status', 'completed');
         $rejected  = $appointments->where('status', 'rejected');
 
+        // Bay grid — auto-create if not yet set up
+        $bays = GarageBay::where('user_id', $user->id)
+            ->orderBy('bay_number')
+            ->with('appointment.customer')
+            ->get();
+
         return view('dashboard.garage.appointments.index',
-            compact('location', 'appointments', 'pending', 'approved', 'completed', 'rejected'));
+            compact('location', 'appointments', 'pending', 'approved', 'completed', 'rejected', 'bays'));
     }
 
     /**
@@ -46,7 +53,8 @@ class GarageAppointmentController extends Controller
     }
 
     /**
-     * Approve a pending appointment and notify the customer by email.
+     * Approve a pending appointment.
+     * Also marks the assigned bay as occupied if a bay number was given.
      */
     public function approve(Request $request, GarageAppointment $appointment)
     {
@@ -54,9 +62,9 @@ class GarageAppointmentController extends Controller
         abort_unless($appointment->isPending(), 422, 'Only pending appointments can be approved.');
 
         $request->validate([
-            'bay_number'           => 'nullable|integer|min:1|max:50',
-            'estimated_finish_at'  => 'nullable|date|after:requested_at',
-            'garage_note'          => 'nullable|string|max:500',
+            'bay_number'          => 'nullable|integer|min:1|max:50',
+            'estimated_finish_at' => 'nullable|date',
+            'garage_note'         => 'nullable|string|max:500',
         ]);
 
         $appointment->update([
@@ -66,6 +74,19 @@ class GarageAppointmentController extends Controller
             'garage_note'         => $request->garage_note,
         ]);
 
+        // Sync bay status if a bay number was assigned
+        if ($request->bay_number) {
+            GarageBay::where('user_id', auth()->id())
+                ->where('bay_number', $request->bay_number)
+                ->update([
+                    'status'               => 'occupied',
+                    'walkin_customer_name' => null,
+                    'service_note'         => $appointment->service_description,
+                    'estimated_finish_at'  => $request->estimated_finish_at,
+                    'appointment_id'       => $appointment->id,
+                ]);
+        }
+
         Mail::to($appointment->customer->email)->send(
             new BookingApprovedMail($appointment)
         );
@@ -74,7 +95,7 @@ class GarageAppointmentController extends Controller
     }
 
     /**
-     * Reject a pending appointment and notify the customer by email.
+     * Reject a pending appointment.
      */
     public function reject(Request $request, GarageAppointment $appointment)
     {
@@ -98,7 +119,7 @@ class GarageAppointmentController extends Controller
     }
 
     /**
-     * Mark an approved appointment as completed.
+     * Mark an approved appointment as completed and free the bay.
      */
     public function complete(GarageAppointment $appointment)
     {
@@ -107,11 +128,22 @@ class GarageAppointmentController extends Controller
 
         $appointment->update(['status' => 'completed']);
 
-        return back()->with('success', 'Appointment marked as completed.');
+        // Free the bay that was linked to this appointment
+        GarageBay::where('user_id', auth()->id())
+            ->where('appointment_id', $appointment->id)
+            ->update([
+                'status'               => 'available',
+                'walkin_customer_name' => null,
+                'service_note'         => null,
+                'estimated_finish_at'  => null,
+                'appointment_id'       => null,
+            ]);
+
+        return back()->with('success', 'Appointment completed and bay freed.');
     }
 
     /**
-     * Configure the total number of bays for this garage.
+     * Configure total bays — syncs bay rows just like EV station slots.
      */
     public function configureBays(Request $request)
     {
@@ -120,11 +152,85 @@ class GarageAppointmentController extends Controller
             'accepts_walkins' => 'nullable|boolean',
         ]);
 
-        NewLocation::where('user_id', auth()->id())->update([
-            'total_slots'     => $request->total_slots,
+        $user       = auth()->user();
+        $totalBays  = (int) $request->total_slots;
+
+        NewLocation::where('user_id', $user->id)->update([
+            'total_slots'     => $totalBays,
             'accepts_walkins' => $request->boolean('accepts_walkins', true),
         ]);
 
-        return back()->with('success', 'Garage bay configuration updated.');
+        // Sync bay rows
+        $existing = GarageBay::where('user_id', $user->id)
+            ->pluck('bay_number')
+            ->toArray();
+
+        for ($i = 1; $i <= $totalBays; $i++) {
+            if (!in_array($i, $existing)) {
+                GarageBay::create([
+                    'user_id'    => $user->id,
+                    'bay_number' => $i,
+                    'status'     => 'available',
+                ]);
+            }
+        }
+
+        // Remove bays beyond the new total (only if they are available)
+        GarageBay::where('user_id', $user->id)
+            ->where('bay_number', '>', $totalBays)
+            ->where('status', 'available')
+            ->delete();
+
+        return back()->with('success', "Garage configured with {$totalBays} service bays.");
+    }
+
+    /**
+     * Manually mark a bay as occupied for a walk-in customer.
+     */
+    public function walkinOccupy(Request $request, GarageBay $bay)
+    {
+        abort_unless($bay->user_id === auth()->id(), 403);
+        abort_unless($bay->isAvailable(), 422, 'Bay is already occupied.');
+
+        $request->validate([
+            'walkin_customer_name' => 'nullable|string|max:100',
+            'service_note'         => 'nullable|string|max:300',
+            'estimated_finish_at'  => 'nullable|date|after:now',
+        ]);
+
+        $bay->update([
+            'status'               => 'occupied',
+            'walkin_customer_name' => $request->walkin_customer_name ?: 'Walk-in',
+            'service_note'         => $request->service_note,
+            'estimated_finish_at'  => $request->estimated_finish_at,
+            'appointment_id'       => null,
+        ]);
+
+        return back()->with('success', "Bay #{$bay->bay_number} marked as occupied.");
+    }
+
+    /**
+     * Manually free a bay (walk-in done or manual override).
+     */
+    public function walkinFree(GarageBay $bay)
+    {
+        abort_unless($bay->user_id === auth()->id(), 403);
+
+        // If this bay was linked to an appointment, mark appointment complete too
+        if ($bay->appointment_id) {
+            GarageAppointment::where('id', $bay->appointment_id)
+                ->where('status', 'approved')
+                ->update(['status' => 'completed']);
+        }
+
+        $bay->update([
+            'status'               => 'available',
+            'walkin_customer_name' => null,
+            'service_note'         => null,
+            'estimated_finish_at'  => null,
+            'appointment_id'       => null,
+        ]);
+
+        return back()->with('success', "Bay #{$bay->bay_number} is now free.");
     }
 }

@@ -14,7 +14,6 @@ class EVStationSlotController extends Controller
 {
     /**
      * Show the slot management dashboard.
-     * Sets up slots automatically if none exist yet.
      */
     public function index()
     {
@@ -29,8 +28,7 @@ class EVStationSlotController extends Controller
     }
 
     /**
-     * Save the total slot count for this station.
-     * Syncs slot records: creates new ones, removes extras.
+     * Save total slot count and sync slot rows.
      */
     public function configure(Request $request)
     {
@@ -38,19 +36,16 @@ class EVStationSlotController extends Controller
             'total_slots' => 'required|integer|min:1|max:50',
         ]);
 
-        $user        = auth()->user();
-        $totalSlots  = (int) $request->total_slots;
+        $user       = auth()->user();
+        $totalSlots = (int) $request->total_slots;
 
-        // Update the location record
         NewLocation::where('user_id', $user->id)
             ->update(['total_slots' => $totalSlots]);
 
-        // Sync slot rows: ensure we have exactly $totalSlots records
         $existing = EvStationSlot::where('user_id', $user->id)
                         ->pluck('slot_number')
                         ->toArray();
 
-        // Create missing slots
         for ($i = 1; $i <= $totalSlots; $i++) {
             if (!in_array($i, $existing)) {
                 EvStationSlot::create([
@@ -61,7 +56,6 @@ class EVStationSlotController extends Controller
             }
         }
 
-        // Remove slots beyond the new total
         EvStationSlot::where('user_id', $user->id)
             ->where('slot_number', '>', $totalSlots)
             ->delete();
@@ -70,12 +64,11 @@ class EVStationSlotController extends Controller
     }
 
     /**
-     * Update a single slot's status and optional free_at time.
-     * Called by the toggle buttons on the slot grid.
+     * Manually update a slot's status from the dashboard toggle.
+     * Station owner can still manually mark slots occupied/available.
      */
     public function updateSlot(Request $request, EvStationSlot $slot)
     {
-        // Ensure the slot belongs to the authenticated station
         abort_unless($slot->user_id === auth()->id(), 403);
 
         $request->validate([
@@ -84,49 +77,61 @@ class EVStationSlotController extends Controller
         ]);
 
         $slot->update([
-            'status'  => $request->status,
-            'free_at' => $request->status === 'occupied' ? $request->free_at : null,
+            'status'      => $request->status,
+            'free_at'     => $request->status === 'occupied' ? $request->free_at : null,
+            'occupied_by' => $request->status === 'available' ? null : $slot->occupied_by,
         ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'slot' => $slot]);
-        }
 
         return back()->with('success', "Slot #{$slot->slot_number} updated.");
     }
 
     /**
-     * Station approves a customer's slot request — sends approval email.
+     * Station approves a PENDING customer request.
+     * This is the moment the slot becomes truly "occupied" — map turns red.
+     * Customer receives a confirmation email.
      */
     public function approveRequest(Request $request, EvStationSlot $slot)
     {
         abort_unless($slot->user_id === auth()->id(), 403);
-        abort_unless($slot->occupant, 404, 'No pending customer on this slot.');
+        abort_unless($slot->isPending(), 422, 'Only pending requests can be approved.');
+
+        $request->validate([
+            'free_at' => 'nullable|date|after:now',
+        ]);
 
         $customer = $slot->occupant;
+        abort_unless($customer, 404, 'No customer linked to this slot.');
+
+        // NOW mark as occupied — this is when the map pin turns red
+        $slot->update([
+            'status'  => 'occupied',
+            'free_at' => $request->free_at,
+        ]);
 
         Mail::to($customer->email)->send(
             new SlotRequestApprovedMail($slot, $customer)
         );
 
-        return back()->with('success', "Approval email sent to {$customer->name}.");
+        return back()->with('success', "Slot #{$slot->slot_number} approved and confirmation email sent to {$customer->name}.");
     }
 
     /**
-     * Station rejects a customer's slot request — sends rejection email.
+     * Station rejects a PENDING customer request.
+     * Slot returns to available (green on map). Customer notified by email.
      */
     public function rejectRequest(Request $request, EvStationSlot $slot)
     {
         abort_unless($slot->user_id === auth()->id(), 403);
-        abort_unless($slot->occupant, 404, 'No pending customer on this slot.');
+        abort_unless($slot->isPending(), 422, 'Only pending requests can be rejected.');
 
         $request->validate([
             'rejection_reason' => 'nullable|string|max:500',
         ]);
 
         $customer = $slot->occupant;
+        abort_unless($customer, 404, 'No customer linked to this slot.');
 
-        // Free the slot back up
+        // Reset slot fully back to available — map turns green again
         $slot->update([
             'status'      => 'available',
             'free_at'     => null,
@@ -137,6 +142,6 @@ class EVStationSlotController extends Controller
             new SlotRequestRejectedMail($slot, $customer, $request->rejection_reason ?? '')
         );
 
-        return back()->with('success', "Slot #{$slot->slot_number} freed and rejection email sent.");
+        return back()->with('success', "Request rejected and slot #{$slot->slot_number} is available again.");
     }
 }

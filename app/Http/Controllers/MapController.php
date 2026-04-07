@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\EvStationSlot;
 use App\Models\GarageAppointment;
 use App\Models\NewLocation;
-use Illuminate\Http\Request;
 
 class MapController extends Controller
 {
@@ -15,10 +14,6 @@ class MapController extends Controller
         return view('frontend.pages.map_location', compact('locations'));
     }
 
-    /**
-     * JSON endpoint consumed by the map JS.
-     * Returns each location enriched with live slot / appointment data.
-     */
     public function getLocations()
     {
         $locations = NewLocation::where('is_active', true)
@@ -44,10 +39,13 @@ class MapController extends Controller
                     ->orderBy('slot_number')
                     ->get(['id', 'slot_number', 'status', 'free_at']);
 
+                // Only truly 'available' slots count as open on the map.
+                // 'pending' slots (requested but not yet approved) do NOT
+                // reduce the green count — they are still awaiting approval.
                 $available = $slots->where('status', 'available')->count();
+                $pending   = $slots->where('status', 'pending')->count();
                 $occupied  = $slots->where('status', 'occupied')->count();
 
-                // Earliest free-by time among occupied slots
                 $nextFree = $slots
                     ->where('status', 'occupied')
                     ->whereNotNull('free_at')
@@ -56,6 +54,7 @@ class MapController extends Controller
 
                 $base['slots']           = $slots->values();
                 $base['available_slots'] = $available;
+                $base['pending_slots']   = $pending;
                 $base['occupied_slots']  = $occupied;
                 $base['next_free_at']    = $nextFree?->free_at?->toDateTimeString();
 
@@ -65,11 +64,9 @@ class MapController extends Controller
                 $approved = GarageAppointment::where('garage_user_id', $loc->user_id)
                                 ->where('status', 'approved')->count();
 
-                // How many bays are currently busy
                 $busyBays = min($approved, $loc->total_slots);
                 $freeBays = max(0, $loc->total_slots - $busyBays);
 
-                // Earliest estimated finish among approved appointments
                 $nextFinish = GarageAppointment::where('garage_user_id', $loc->user_id)
                     ->where('status', 'approved')
                     ->whereNotNull('estimated_finish_at')

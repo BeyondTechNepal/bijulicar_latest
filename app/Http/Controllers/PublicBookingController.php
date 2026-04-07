@@ -11,10 +11,6 @@ class PublicBookingController extends Controller
 {
     // ── Garage booking ─────────────────────────────────────────────────
 
-    /**
-     * Any authenticated user submits a garage appointment request.
-     * garage_user_id comes from the location's user_id.
-     */
     public function bookGarage(Request $request)
     {
         $request->validate([
@@ -23,19 +19,17 @@ class PublicBookingController extends Controller
             'requested_at'        => 'required|date|after:now',
         ]);
 
-        // Prevent booking your own garage
         if ((int) $request->garage_user_id === auth()->id()) {
-            return back()->with('error', 'You cannot book your own garage.');
+            return response()->json(['message' => 'You cannot book your own garage.'], 422);
         }
 
-        // Prevent duplicate pending booking at same garage
         $existing = GarageAppointment::where('garage_user_id', $request->garage_user_id)
             ->where('customer_user_id', auth()->id())
             ->where('status', 'pending')
             ->exists();
 
         if ($existing) {
-            return back()->with('error', 'You already have a pending appointment at this garage.');
+            return response()->json(['message' => 'You already have a pending appointment at this garage.'], 422);
         }
 
         GarageAppointment::create([
@@ -46,14 +40,11 @@ class PublicBookingController extends Controller
             'status'              => 'pending',
         ]);
 
-        return back()->with('success', 'Appointment request sent! The garage will confirm shortly.');
+        return response()->json(['message' => 'Appointment request sent!']);
     }
 
     // ── EV slot request ────────────────────────────────────────────────
 
-    /**
-     * Any authenticated user requests a specific charging slot.
-     */
     public function requestSlot(Request $request)
     {
         $request->validate([
@@ -62,29 +53,27 @@ class PublicBookingController extends Controller
 
         $slot = EvStationSlot::findOrFail($request->slot_id);
 
-        // Prevent requesting your own station's slot
         if ($slot->user_id === auth()->id()) {
-            return back()->with('error', 'You cannot request your own station slot.');
+            return response()->json(['message' => 'You cannot request your own station slot.'], 422);
         }
 
-        if ($slot->isOccupied()) {
-            return back()->with('error', 'This slot is currently occupied. Please try another.');
+        // Only truly available slots can be requested
+        if (!$slot->isAvailable()) {
+            return response()->json(['message' => 'This slot is no longer available.'], 422);
         }
 
-        // Mark slot as occupied by this customer (pending station approval)
+        // Set to PENDING — does NOT count as occupied yet.
+        // The map still shows this slot as available until the station approves.
         $slot->update([
-            'status'      => 'occupied',
+            'status'      => 'pending',
             'occupied_by' => auth()->id(),
         ]);
 
-        return back()->with('success', 'Slot request sent! The station will confirm and you will receive an email.');
+        return response()->json(['message' => 'Slot request sent!']);
     }
 
     // ── My bookings ────────────────────────────────────────────────────
 
-    /**
-     * Show the authenticated user's own appointment history (all roles).
-     */
     public function myAppointments()
     {
         $appointments = GarageAppointment::where('customer_user_id', auth()->id())

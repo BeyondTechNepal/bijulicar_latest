@@ -33,6 +33,7 @@ Route::get('/business-news/{news:slug}', [App\Http\Controllers\BusinessNewsPubli
 // Route::get('/map_location', fn() => view('frontend.pages.map_location'))->name('map_location');
 // Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/map_location', [App\Http\Controllers\MapController::class, 'index'])->name('map_location');
+Route::get('/api/map-locations', [MapController::class, 'getLocations'])->name('api.map.locations');
 Route::get('/loan_calculator', fn() => view('frontend.pages.loan_calculator'))->name('loan_calculator');
 Route::get('/contact', [App\Http\Controllers\Frontend\ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [App\Http\Controllers\ContactMessageController::class, 'store'])->name('contact.store');

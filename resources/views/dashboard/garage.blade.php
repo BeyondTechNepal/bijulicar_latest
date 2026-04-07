@@ -59,21 +59,44 @@
             </div>
         </div>
 
-        {{-- Features Placeholder --}}
-        <div
-            class="bg-amber-50/50 border border-dashed border-amber-200 rounded-3xl p-6 flex flex-col items-center justify-center text-center">
-            <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-4">
-                <svg class="w-6 h-6 text-amber-500 animate-bounce" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+        {{-- Appointments & Bay Management Card --}}
+        @php
+            $pendingCount  = \App\Models\GarageAppointment::where('garage_user_id', auth()->id())->where('status','pending')->count();
+            $bayCount      = \App\Models\GarageBay::where('user_id', auth()->id())->count();
+            $occupiedCount = \App\Models\GarageBay::where('user_id', auth()->id())->where('status','occupied')->count();
+        @endphp
+        <a href="{{ route('garage.appointments.index') }}"
+            class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-purple-200 transition-all group block">
+            <div class="flex items-center justify-between mb-5">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Service Bays & Bookings</p>
+                <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
             </div>
-            <p class="font-black text-slate-900 uppercase italic tracking-tight text-sm">Booking System Soon</p>
-            <p class="text-xs text-slate-500 font-medium mt-1">
-                A priority booking calendar and customer maintenance logs are currently under development.
+            <div class="grid grid-cols-3 gap-3 mb-5">
+                <div class="bg-slate-50 rounded-2xl p-3 text-center">
+                    <p class="text-2xl font-black text-slate-800">{{ $bayCount }}</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Bays</p>
+                </div>
+                <div class="bg-red-50 rounded-2xl p-3 text-center">
+                    <p class="text-2xl font-black text-red-600">{{ $occupiedCount }}</p>
+                    <p class="text-[9px] font-black text-red-400 uppercase tracking-widest mt-0.5">In Use</p>
+                </div>
+                <div class="bg-amber-50 rounded-2xl p-3 text-center relative">
+                    <p class="text-2xl font-black text-amber-700">{{ $pendingCount }}</p>
+                    <p class="text-[9px] font-black text-amber-500 uppercase tracking-widest mt-0.5">Pending</p>
+                    @if ($pendingCount)
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
+                    @endif
+                </div>
+            </div>
+            <p class="text-xs font-black text-purple-600 uppercase tracking-widest group-hover:underline">
+                Manage Bays & Appointments →
             </p>
-        </div>
+        </a>
 
     </div>
 @endsection

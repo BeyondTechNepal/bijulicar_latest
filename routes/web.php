@@ -25,15 +25,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])->name('marketplace');
 Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::class, 'search'])->name('marketplace.search');
-// Route::get('/news', fn() => view('frontend.pages.news'))->name('news');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/news/{news:slug}', [App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
 Route::get('/news-filter', [App\Http\Controllers\NewsFilterController::class, 'filter'])->name('news.filter');
-Route::get('/business-news/{news:slug}', [App\Http\Controllers\BusinessNewsPublicController::class, 'show']) ->name('business.news.show');
-// Route::get('/map_location', fn() => view('frontend.pages.map_location'))->name('map_location');
-// Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
+Route::get('/business-news/{news:slug}', [App\Http\Controllers\BusinessNewsPublicController::class, 'show'])->name('business.news.show');
 Route::get('/map_location', [App\Http\Controllers\MapController::class, 'index'])->name('map_location');
+
+// Public JSON endpoint — returns all active locations enriched with live slot/bay data
+// Consumed by map_location.blade.php JS fetch('/api/map-locations')
 Route::get('/api/map-locations', [MapController::class, 'getLocations'])->name('api.map.locations');
+
 Route::get('/loan_calculator', fn() => view('frontend.pages.loan_calculator'))->name('loan_calculator');
 Route::get('/contact', [App\Http\Controllers\Frontend\ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [App\Http\Controllers\ContactMessageController::class, 'store'])->name('contact.store');
@@ -44,49 +45,43 @@ Route::get('/cars/{car}', [App\Http\Controllers\CarController::class, 'show'])->
 Route::get('/businesses', [BusinessDirectoryController::class, 'index'])->name('businesses.index');
 Route::get('/businesses/{id}', [BusinessDirectoryController::class, 'show'])->name('businesses.show')->whereNumber('id');
 
-// ── Verification routes (auth required, no verified.account check here) ──
-// These must be OUTSIDE the verified.account middleware so unverified
-// sellers/businesses can actually reach the form and the pending page.
+// ── Auth-required routes (no verified.account check) ──────────────────
+// Verification forms and public booking must be outside verified.account
+// middleware so unverified users and all roles can reach them.
 Route::middleware(['auth'])->group(function () {
 
-    // Seller verification form
-    Route::get('/seller/verify', [SellerVerificationController::class, 'create'])
-        ->name('seller.verify.create');
-    Route::post('/seller/verify', [SellerVerificationController::class, 'store'])
-        ->name('seller.verify.store');
+    // Seller verification
+    Route::get('/seller/verify', [SellerVerificationController::class, 'create'])->name('seller.verify.create');
+    Route::post('/seller/verify', [SellerVerificationController::class, 'store'])->name('seller.verify.store');
 
-    // Business verification form
-    Route::get('/business/verify', [BusinessVerificationController::class, 'create'])
-        ->name('business.verify.create');
-    Route::post('/business/verify', [BusinessVerificationController::class, 'store'])
-        ->name('business.verify.store');
+    // Business verification
+    Route::get('/business/verify', [BusinessVerificationController::class, 'create'])->name('business.verify.create');
+    Route::post('/business/verify', [BusinessVerificationController::class, 'store'])->name('business.verify.store');
 
-        // 3. EV-Station Verification (New)
-    Route::get('/ev-station/verify', [EvstationVerificationController::class, 'create'])->name('station.verify.create');
-    Route::post('/ev-station/verify', [EvstationVerificationController::class, 'store'])->name('station.verify.store');
+    // EV Station verification
+    Route::get('/ev-station/verify', [EVStationVerificationController::class, 'create'])->name('station.verify.create');
+    Route::post('/ev-station/verify', [EVStationVerificationController::class, 'store'])->name('station.verify.store');
 
-    // 4. Garage Verification
+    // Garage verification
     Route::get('/garage/verify', [GarageVerificationController::class, 'create'])->name('garage.verify.create');
     Route::post('/garage/verify', [GarageVerificationController::class, 'store'])->name('garage.verify.store');
 
-     // Book a garage appointment (from the map or garage profile)
-    Route::post('/book/garage',       [PublicBookingController::class, 'bookGarage'])     ->name('booking.garage');
- 
-    // Request an EV charging slot (from the map pin)
-    Route::post('/book/ev-slot',      [PublicBookingController::class, 'requestSlot'])    ->name('booking.slot');
- 
-    // My bookings page (all roles — buyer, seller, business, ev, garage)
-    Route::get('/my-bookings',        [PublicBookingController::class, 'myAppointments']) ->name('booking.mine');
-   
+    // ── Public booking — available to ALL authenticated roles ──────────
+    // Any buyer, seller, business, ev-station, or garage user can book
 
-    // Waiting / pending approval screen
-    // 4. Shared Pending Approval Screen
+    // Book a garage appointment (submitted from the map popup)
+    Route::post('/book/garage', [PublicBookingController::class, 'bookGarage'])->name('booking.garage');
+
+    // Request an EV charging slot (submitted from the map popup)
+    Route::post('/book/ev-slot', [PublicBookingController::class, 'requestSlot'])->name('booking.slot');
+
+    // My bookings page — shows the user's garage appointments + EV slot requests
+    Route::get('/my-bookings', [PublicBookingController::class, 'myAppointments'])->name('booking.mine');
+
+    // ── Pending approval screen ────────────────────────────────────────
     Route::get('/pending-approval', function () {
         $user = auth()->user();
-        
-        /** * We find the correct verification record based on the User's Role.
-         * This replaces the generic $user->verification() call.
-         */
+
         $verification = match(true) {
             $user->hasRole('seller')     => $user->sellerVerification,
             $user->hasRole('business')   => $user->businessVerification,
@@ -95,12 +90,10 @@ Route::middleware(['auth'])->group(function () {
             default                      => null
         };
 
-        // If the admin has already clicked "Approve" in the backend
         if ($verification && $verification->isApproved()) {
             return redirect()->route('dashboard');
         }
 
-        // If they landed here but haven't even filled the form yet, send them to the right form
         if (!$verification) {
             return match(true) {
                 $user->hasRole('seller')     => redirect()->route('seller.verify.create'),
@@ -118,291 +111,143 @@ Route::middleware(['auth'])->group(function () {
 // ── Dashboard — smart redirect based on role ───────────────────────────
 Route::get('/dashboard', function () {
     $user = auth()->user();
-    if ($user->hasRole('buyer')) {
-        return redirect()->route('buyer.dashboard');
-    }
-    if ($user->hasRole('seller')) {
-        return redirect()->route('seller.dashboard');
-    }
-    if ($user->hasRole('business')) {
-        return redirect()->route('business.dashboard');
-    }
-    if ($user->hasRole('ev-station')) {
-        return redirect()->route('station.dashboard');
-    }
-    if ($user->hasRole('garage')) {
-        return redirect()->route('garage.dashboard');
-    }
+    if ($user->hasRole('buyer'))      return redirect()->route('buyer.dashboard');
+    if ($user->hasRole('seller'))     return redirect()->route('seller.dashboard');
+    if ($user->hasRole('business'))   return redirect()->route('business.dashboard');
+    if ($user->hasRole('ev-station')) return redirect()->route('station.dashboard');
+    if ($user->hasRole('garage'))     return redirect()->route('garage.dashboard');
     return view('dashboard');
 })
     ->middleware(['auth'])
     ->name('dashboard');
 
 // ── BUYER routes ───────────────────────────────────────────────────────
-// Buyers do not need verification — no verified.account middleware here.
 Route::middleware(['auth', 'role:buyer'])
     ->prefix('buyer')
     ->name('buyer.')
     ->group(function () {
-        // Dashboard
         Route::get('/dashboard', fn() => view('dashboard.buyer', ['user' => auth()->user()]))->name('dashboard');
 
         // Orders
-        Route::get('/orders', [BuyerOrderController::class, 'index'])
-            ->name('orders.index')
-            ->middleware('permission:manage own orders');
-        Route::post('/orders', [BuyerOrderController::class, 'store'])
-            ->name('orders.store')
-            ->middleware('permission:manage own orders');
-        Route::get('/orders/{order}', [BuyerOrderController::class, 'show'])
-            ->name('orders.show')
-            ->middleware('permission:manage own orders');
-        Route::patch('/orders/{order}/cancel', [BuyerOrderController::class, 'cancel'])
-            ->name('orders.cancel')
-            ->middleware('permission:manage own orders');
+        Route::get('/orders', [BuyerOrderController::class, 'index'])->name('orders.index')->middleware('permission:manage own orders');
+        Route::post('/orders', [BuyerOrderController::class, 'store'])->name('orders.store')->middleware('permission:manage own orders');
+        Route::get('/orders/{order}', [BuyerOrderController::class, 'show'])->name('orders.show')->middleware('permission:manage own orders');
+        Route::patch('/orders/{order}/cancel', [BuyerOrderController::class, 'cancel'])->name('orders.cancel')->middleware('permission:manage own orders');
 
         // Purchases
-        Route::get('/purchases', [BuyerPurchaseController::class, 'index'])
-            ->name('purchases.index')
-            ->middleware('permission:purchase vehicle');
+        Route::get('/purchases', [BuyerPurchaseController::class, 'index'])->name('purchases.index')->middleware('permission:purchase vehicle');
 
         // Pre-orders
-        Route::get('/preorders', [BuyerPreOrderController::class, 'index'])
-            ->name('preorders.index')
-            ->middleware('permission:manage own orders');
-        Route::get('/preorders/car/{car}', [BuyerPreOrderController::class, 'create'])
-            ->name('preorders.create')
-            ->middleware('permission:manage own orders');
-        Route::post('/preorders', [BuyerPreOrderController::class, 'store'])
-            ->name('preorders.store')
-            ->middleware('permission:manage own orders');
-        Route::get('/preorders/{preOrder}', [BuyerPreOrderController::class, 'show'])
-            ->name('preorders.show')
-            ->middleware('permission:manage own orders');
-        Route::patch('/preorders/{preOrder}/cancel', [BuyerPreOrderController::class, 'cancel'])
-            ->name('preorders.cancel')
-            ->middleware('permission:manage own orders');
+        Route::get('/preorders', [BuyerPreOrderController::class, 'index'])->name('preorders.index')->middleware('permission:manage own orders');
+        Route::get('/preorders/car/{car}', [BuyerPreOrderController::class, 'create'])->name('preorders.create')->middleware('permission:manage own orders');
+        Route::post('/preorders', [BuyerPreOrderController::class, 'store'])->name('preorders.store')->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}', [BuyerPreOrderController::class, 'show'])->name('preorders.show')->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/cancel', [BuyerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
 
         // Reviews
-        Route::get('/reviews', [BuyerReviewController::class, 'index'])
-            ->name('reviews.index')
-            ->middleware('permission:write reviews');
-        Route::get('/reviews/create/{car}', [BuyerReviewController::class, 'create'])
-            ->name('reviews.create')
-            ->middleware('permission:write reviews');
-        Route::post('/reviews', [BuyerReviewController::class, 'store'])
-            ->name('reviews.store')
-            ->middleware('permission:write reviews');
-        Route::get('/reviews/{review}/edit', [BuyerReviewController::class, 'edit'])
-            ->name('reviews.edit')
-            ->middleware('permission:write reviews');
-        Route::patch('/reviews/{review}', [BuyerReviewController::class, 'update'])
-            ->name('reviews.update')
-            ->middleware('permission:write reviews');
-        Route::delete('/reviews/{review}', [BuyerReviewController::class, 'destroy'])
-            ->name('reviews.destroy')
-            ->middleware('permission:write reviews');
+        Route::get('/reviews', [BuyerReviewController::class, 'index'])->name('reviews.index')->middleware('permission:write reviews');
+        Route::get('/reviews/create/{car}', [BuyerReviewController::class, 'create'])->name('reviews.create')->middleware('permission:write reviews');
+        Route::post('/reviews', [BuyerReviewController::class, 'store'])->name('reviews.store')->middleware('permission:write reviews');
+        Route::get('/reviews/{review}/edit', [BuyerReviewController::class, 'edit'])->name('reviews.edit')->middleware('permission:write reviews');
+        Route::patch('/reviews/{review}', [BuyerReviewController::class, 'update'])->name('reviews.update')->middleware('permission:write reviews');
+        Route::delete('/reviews/{review}', [BuyerReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('permission:write reviews');
     });
 
 // ── SELLER routes ──────────────────────────────────────────────────────
-// verified.account middleware gates entry — unverified sellers are
-// redirected to the form or the pending page automatically.
 Route::middleware(['auth', 'role:seller', 'verified.account'])
     ->prefix('seller')
     ->name('seller.')
     ->group(function () {
-        // Dashboard
         Route::get('/dashboard', fn() => view('dashboard.seller', ['user' => auth()->user()]))->name('dashboard');
 
-        // Car listings (CRUD)
-        Route::get('/cars', [App\Http\Controllers\Seller\SellerCarController::class, 'index'])
-            ->name('cars.index')
-            ->middleware('permission:manage car listing(seller)');
-        Route::get('/cars/create', [App\Http\Controllers\Seller\SellerCarController::class, 'create'])
-            ->name('cars.create')
-            ->middleware('permission:manage car listing(seller)');
-        Route::post('/cars', [App\Http\Controllers\Seller\SellerCarController::class, 'store'])
-            ->name('cars.store')
-            ->middleware('permission:manage car listing(seller)');
-        Route::get('/cars/{car}/edit', [App\Http\Controllers\Seller\SellerCarController::class, 'edit'])
-            ->name('cars.edit')
-            ->middleware('permission:manage car listing(seller)');
-        Route::patch('/cars/{car}', [App\Http\Controllers\Seller\SellerCarController::class, 'update'])
-            ->name('cars.update')
-            ->middleware('permission:manage car listing(seller)');
-        Route::delete('/cars/{car}', [App\Http\Controllers\Seller\SellerCarController::class, 'destroy'])
-            ->name('cars.destroy')
-            ->middleware('permission:manage car listing(seller)');
+        // Cars
+        Route::get('/cars', [SellerCarController::class, 'index'])->name('cars.index')->middleware('permission:manage car listing(seller)');
+        Route::get('/cars/create', [SellerCarController::class, 'create'])->name('cars.create')->middleware('permission:manage car listing(seller)');
+        Route::post('/cars', [SellerCarController::class, 'store'])->name('cars.store')->middleware('permission:manage car listing(seller)');
+        Route::get('/cars/{car}/edit', [SellerCarController::class, 'edit'])->name('cars.edit')->middleware('permission:manage car listing(seller)');
+        Route::patch('/cars/{car}', [SellerCarController::class, 'update'])->name('cars.update')->middleware('permission:manage car listing(seller)');
+        Route::delete('/cars/{car}', [SellerCarController::class, 'destroy'])->name('cars.destroy')->middleware('permission:manage car listing(seller)');
 
-        // Orders on seller's listings
-        Route::get('/orders', [App\Http\Controllers\Seller\SellerOrderController::class, 'index'])
-            ->name('orders.index')
-            ->middleware('permission:manage own orders');
-        Route::get('/orders/{order}', [App\Http\Controllers\Seller\SellerOrderController::class, 'show'])
-            ->name('orders.show')
-            ->middleware('permission:manage own orders');
-        Route::patch('/orders/{order}/confirm', [App\Http\Controllers\Seller\SellerOrderController::class, 'confirm'])
-            ->name('orders.confirm')
-            ->middleware('permission:manage own orders');
-        Route::patch('/orders/{order}/cancel', [App\Http\Controllers\Seller\SellerOrderController::class, 'cancel'])
-            ->name('orders.cancel')
-            ->middleware('permission:manage own orders');
-        Route::get('/orders/{order}/complete', [App\Http\Controllers\Seller\SellerOrderController::class, 'completeForm'])
-            ->name('orders.complete.form')
-            ->middleware('permission:manage own orders');
-        Route::post('/orders/{order}/complete', [App\Http\Controllers\Seller\SellerOrderController::class, 'complete'])
-            ->name('orders.complete')
-            ->middleware('permission:manage own orders');
+        // Orders
+        Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index')->middleware('permission:manage own orders');
+        Route::get('/orders/{order}', [SellerOrderController::class, 'show'])->name('orders.show')->middleware('permission:manage own orders');
+        Route::patch('/orders/{order}/confirm', [SellerOrderController::class, 'confirm'])->name('orders.confirm')->middleware('permission:manage own orders');
+        Route::patch('/orders/{order}/cancel', [SellerOrderController::class, 'cancel'])->name('orders.cancel')->middleware('permission:manage own orders');
+        Route::get('/orders/{order}/complete', [SellerOrderController::class, 'completeForm'])->name('orders.complete.form')->middleware('permission:manage own orders');
+        Route::post('/orders/{order}/complete', [SellerOrderController::class, 'complete'])->name('orders.complete')->middleware('permission:manage own orders');
 
         // Pre-orders
-        Route::get('/preorders', [SellerPreOrderController::class, 'index'])
-            ->name('preorders.index')
-            ->middleware('permission:manage own orders');
-        Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])
-            ->name('preorders.show')
-            ->middleware('permission:manage own orders');
-        Route::get('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDepositForm'])
-            ->name('preorders.confirm_deposit.form')
-            ->middleware('permission:manage own orders');
-        Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])
-            ->name('preorders.confirm_deposit')
-            ->middleware('permission:manage own orders');
-        Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])
-            ->name('preorders.convert')
-            ->middleware('permission:manage own orders');
-        Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])
-            ->name('preorders.cancel')
-            ->middleware('permission:manage own orders');
+        Route::get('/preorders', [SellerPreOrderController::class, 'index'])->name('preorders.index')->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])->name('preorders.show')->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDepositForm'])->name('preorders.confirm_deposit.form')->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])->name('preorders.confirm_deposit')->middleware('permission:manage own orders');
+        Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])->name('preorders.convert')->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
     });
 
 // ── BUSINESS routes ────────────────────────────────────────────────────
-// verified.account middleware gates entry here too.
 Route::middleware(['auth', 'role:business', 'verified.account'])
     ->prefix('business')
     ->name('business.')
     ->group(function () {
-        // Dashboard
         Route::get('/dashboard', fn() => view('dashboard.business', ['user' => auth()->user()]))->name('dashboard');
 
-        // Car listings (CRUD) — reuses SellerCarController
-        Route::get('/cars', [App\Http\Controllers\Seller\SellerCarController::class, 'index'])
-            ->name('cars.index')
-            ->middleware('permission:browse listings');
-        Route::get('/cars/create', [App\Http\Controllers\Seller\SellerCarController::class, 'create'])
-            ->name('cars.create')
-            ->middleware('permission:browse listings');
-        Route::post('/cars', [App\Http\Controllers\Seller\SellerCarController::class, 'store'])
-            ->name('cars.store')
-            ->middleware('permission:browse listings');
-        Route::get('/cars/{car}/edit', [App\Http\Controllers\Seller\SellerCarController::class, 'edit'])
-            ->name('cars.edit')
-            ->middleware('permission:browse listings');
-        Route::patch('/cars/{car}', [App\Http\Controllers\Seller\SellerCarController::class, 'update'])
-            ->name('cars.update')
-            ->middleware('permission:browse listings');
-        Route::delete('/cars/{car}', [App\Http\Controllers\Seller\SellerCarController::class, 'destroy'])
-            ->name('cars.destroy')
-            ->middleware('permission:browse listings');
+        // Cars
+        Route::get('/cars', [SellerCarController::class, 'index'])->name('cars.index')->middleware('permission:browse listings');
+        Route::get('/cars/create', [SellerCarController::class, 'create'])->name('cars.create')->middleware('permission:browse listings');
+        Route::post('/cars', [SellerCarController::class, 'store'])->name('cars.store')->middleware('permission:browse listings');
+        Route::get('/cars/{car}/edit', [SellerCarController::class, 'edit'])->name('cars.edit')->middleware('permission:browse listings');
+        Route::patch('/cars/{car}', [SellerCarController::class, 'update'])->name('cars.update')->middleware('permission:browse listings');
+        Route::delete('/cars/{car}', [SellerCarController::class, 'destroy'])->name('cars.destroy')->middleware('permission:browse listings');
 
-        // Orders on business's listings — reuses SellerOrderController
-        Route::get('/orders', [App\Http\Controllers\Seller\SellerOrderController::class, 'index'])
-            ->name('orders.index')
-            ->middleware('permission:manage own orders');
-        Route::get('/orders/{order}', [App\Http\Controllers\Seller\SellerOrderController::class, 'show'])
-            ->name('orders.show')
-            ->middleware('permission:manage own orders');
-        Route::patch('/orders/{order}/confirm', [App\Http\Controllers\Seller\SellerOrderController::class, 'confirm'])
-            ->name('orders.confirm')
-            ->middleware('permission:manage own orders');
-        Route::patch('/orders/{order}/cancel', [App\Http\Controllers\Seller\SellerOrderController::class, 'cancel'])
-            ->name('orders.cancel')
-            ->middleware('permission:manage own orders');
-        Route::get('/orders/{order}/complete', [App\Http\Controllers\Seller\SellerOrderController::class, 'completeForm'])
-            ->name('orders.complete.form')
-            ->middleware('permission:manage own orders');
-        Route::post('/orders/{order}/complete', [App\Http\Controllers\Seller\SellerOrderController::class, 'complete'])
-            ->name('orders.complete')
-            ->middleware('permission:manage own orders');
+        // Orders
+        Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index')->middleware('permission:manage own orders');
+        Route::get('/orders/{order}', [SellerOrderController::class, 'show'])->name('orders.show')->middleware('permission:manage own orders');
+        Route::patch('/orders/{order}/confirm', [SellerOrderController::class, 'confirm'])->name('orders.confirm')->middleware('permission:manage own orders');
+        Route::patch('/orders/{order}/cancel', [SellerOrderController::class, 'cancel'])->name('orders.cancel')->middleware('permission:manage own orders');
+        Route::get('/orders/{order}/complete', [SellerOrderController::class, 'completeForm'])->name('orders.complete.form')->middleware('permission:manage own orders');
+        Route::post('/orders/{order}/complete', [SellerOrderController::class, 'complete'])->name('orders.complete')->middleware('permission:manage own orders');
 
         // Pre-orders
-        Route::get('/preorders', [SellerPreOrderController::class, 'index'])
-            ->name('preorders.index')
-            ->middleware('permission:manage own orders');
-        Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])
-            ->name('preorders.show')
-            ->middleware('permission:manage own orders');
-        Route::get('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDepositForm'])
-            ->name('preorders.confirm_deposit.form')
-            ->middleware('permission:manage own orders');
-        Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])
-            ->name('preorders.confirm_deposit')
-            ->middleware('permission:manage own orders');
-        Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])
-            ->name('preorders.convert')
-            ->middleware('permission:manage own orders');
-        Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])
-            ->name('preorders.cancel')
-            ->middleware('permission:manage own orders');
+        Route::get('/preorders', [SellerPreOrderController::class, 'index'])->name('preorders.index')->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}', [SellerPreOrderController::class, 'show'])->name('preorders.show')->middleware('permission:manage own orders');
+        Route::get('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDepositForm'])->name('preorders.confirm_deposit.form')->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])->name('preorders.confirm_deposit')->middleware('permission:manage own orders');
+        Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])->name('preorders.convert')->middleware('permission:manage own orders');
+        Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
 
         // Analytics
-        Route::get('/analytics', [App\Http\Controllers\Business\BusinessAnalyticsController::class, 'index'])
-            ->name('analytics')
-            ->middleware('permission:view business analytics');
+        Route::get('/analytics', [App\Http\Controllers\Business\BusinessAnalyticsController::class, 'index'])->name('analytics')->middleware('permission:view business analytics');
 
-         // ── Business News (CRUD) 
-        Route::get('/news', [BusinessNewsController::class, 'index'])
-            ->name('news.index');
- 
-        Route::get('/news/create', [BusinessNewsController::class, 'create'])
-            ->name('news.create');
- 
-        Route::post('/news', [BusinessNewsController::class, 'store'])
-            ->name('news.store');
- 
-        Route::get('/news/{news:slug}/edit', [BusinessNewsController::class, 'edit'])
-            ->name('news.edit');
- 
-        Route::patch('/news/{news:slug}', [BusinessNewsController::class, 'update'])
-            ->name('news.update');
- 
-        Route::delete('/news/{news:slug}', [BusinessNewsController::class, 'destroy'])
-            ->name('news.destroy');
- 
+        // Business News
+        Route::get('/news', [BusinessNewsController::class, 'index'])->name('news.index');
+        Route::get('/news/create', [BusinessNewsController::class, 'create'])->name('news.create');
+        Route::post('/news', [BusinessNewsController::class, 'store'])->name('news.store');
+        Route::get('/news/{news:slug}/edit', [BusinessNewsController::class, 'edit'])->name('news.edit');
+        Route::patch('/news/{news:slug}', [BusinessNewsController::class, 'update'])->name('news.update');
+        Route::delete('/news/{news:slug}', [BusinessNewsController::class, 'destroy'])->name('news.destroy');
 
-        // Advertisements (CRUD)
-        Route::get('/advertisements', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'index'])
-            ->name('advertisements.index')
-            ->middleware('permission:create advertisements');
-        Route::get('/advertisements/create', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'create'])
-            ->name('advertisements.create')
-            ->middleware('permission:create advertisements');
-        Route::post('/advertisements', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'store'])
-            ->name('advertisements.store')
-            ->middleware('permission:create advertisements');
-        Route::get('/advertisements/{advertisement}/edit', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'edit'])
-            ->name('advertisements.edit')
-            ->middleware('permission:create advertisements');
-        Route::patch('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'update'])
-            ->name('advertisements.update')
-            ->middleware('permission:create advertisements');
-        Route::delete('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'destroy'])
-            ->name('advertisements.destroy')
-            ->middleware('permission:create advertisements');
+        // Advertisements
+        Route::get('/advertisements', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'index'])->name('advertisements.index')->middleware('permission:create advertisements');
+        Route::get('/advertisements/create', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'create'])->name('advertisements.create')->middleware('permission:create advertisements');
+        Route::post('/advertisements', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'store'])->name('advertisements.store')->middleware('permission:create advertisements');
+        Route::get('/advertisements/{advertisement}/edit', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'edit'])->name('advertisements.edit')->middleware('permission:create advertisements');
+        Route::patch('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'update'])->name('advertisements.update')->middleware('permission:create advertisements');
+        Route::delete('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'destroy'])->name('advertisements.destroy')->middleware('permission:create advertisements');
     });
 
 // ── EV STATION routes ──────────────────────────────────────────────────
-// Only verified EV Station owners can access these management tools.
 Route::middleware(['auth', 'role:ev-station', 'verified.account'])
     ->prefix('ev-station')
     ->name('station.')
     ->group(function () {
-        
-        // 1. Station Dashboard
-        // Shows real-time status of chargers, total energy delivered, and revenue.
-        Route::get('/dashboard', function() {
+
+        // Dashboard
+        Route::get('/dashboard', function () {
             return view('dashboard.ev-station', ['user' => auth()->user()]);
         })->name('dashboard');
 
+        // Map location CRUD
         Route::get('/location', [LocationController::class, 'index'])->name('location.index');
         Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
         Route::post('/location', [LocationController::class, 'store'])->name('location.store');
@@ -410,68 +255,35 @@ Route::middleware(['auth', 'role:ev-station', 'verified.account'])
         Route::put('/location', [LocationController::class, 'update'])->name('location.update');
         Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
 
-        Route::get('/slots',                  [EVStationSlotController::class, 'index'])        ->name('slots.index');
-        Route::post('/slots/configure',       [EVStationSlotController::class, 'configure'])    ->name('slots.configure');
-        Route::patch('/slots/{slot}',         [EVStationSlotController::class, 'updateSlot'])   ->name('slots.update');
-        Route::post('/slots/{slot}/approve',  [EVStationSlotController::class, 'approveRequest'])->name('slots.approve');
-        Route::post('/slots/{slot}/reject',   [EVStationSlotController::class, 'rejectRequest'])->name('slots.reject');
-        // 2. Station Profile & Management
-        // Update station location, opening hours, and pricing per kWh.
-        // Route::get('/manage', [App\Http\Controllers\EVStation\EVSt   ationController::class, 'edit'])
-        //     ->name('manage')
-        //     ->middleware('permission:manage own stations');
-        // Route::patch('/update', [App\Http\Controllers\EVStation\EVStationController::class, 'update'])
-        //     ->name('update')
-        //     ->middleware('permission:manage own stations');
+        // ── Slot manager ───────────────────────────────────────────────
+        // View slot grid
+        Route::get('/slots', [EVStationSlotController::class, 'index'])->name('slots.index');
 
-        // // 3. Charger CRUD (Individual charging points at the station)
-        // Route::get('/chargers', [App\Http\Controllers\EVStation\ChargerController::class, 'index'])
-        //     ->name('chargers.index')
-        //     ->middleware('permission:manage own stations');
-        // Route::post('/chargers', [App\Http\Controllers\EVStation\ChargerController::class, 'store'])
-        //     ->name('chargers.store')
-        //     ->middleware('permission:manage own stations');
-        // Route::delete('/chargers/{charger}', [App\Http\Controllers\EVStation\ChargerController::class, 'destroy'])
-        //     ->name('chargers.destroy')
-        //     ->middleware('permission:manage own stations');
+        // Set total number of ports (syncs slot rows)
+        Route::post('/slots/configure', [EVStationSlotController::class, 'configure'])->name('slots.configure');
 
-        // // 4. Charging Sessions / Orders
-        // // Tracks active and historical charging sessions.
-        // Route::get('/sessions', [App\Http\Controllers\EVStation\StationSessionController::class, 'index'])
-        //     ->name('sessions.index')
-        //     ->middleware('permission:manage own orders');
-        // Route::get('/sessions/{session}', [App\Http\Controllers\EVStation\StationSessionController::class, 'show'])
-        //     ->name('sessions.show')
-        //     ->middleware('permission:manage own orders');
-        // Route::patch('/sessions/{session}/terminate', [App\Http\Controllers\EVStation\StationSessionController::class, 'terminate'])
-        //     ->name('sessions.terminate')
-        //     ->middleware('permission:manage own orders');
+        // Manually toggle a slot available ↔ occupied
+        Route::patch('/slots/{slot}', [EVStationSlotController::class, 'updateSlot'])->name('slots.update');
 
-        // // 5. Infrastructure Analytics
-        // // Energy consumption charts and peak-hour data.
-        // Route::get('/analytics', [App\Http\Controllers\EVStation\StationAnalyticsController::class, 'index'])
-        //     ->name('analytics')
-        //     ->middleware('permission:view business analytics');
+        // Approve a pending customer slot request → slot becomes occupied, email sent
+        Route::post('/slots/{slot}/approve', [EVStationSlotController::class, 'approveRequest'])->name('slots.approve');
 
-        // // 6. Promotions & Advertisements
-        // // For stations to promote "Happy Hour" pricing or lounge amenities.
-        // Route::resource('promotions', App\Http\Controllers\EVStation\StationPromotionController::class)
-        //     ->middleware('permission:create advertisements');
+        // Reject a pending customer slot request → slot back to available, email sent
+        Route::post('/slots/{slot}/reject', [EVStationSlotController::class, 'rejectRequest'])->name('slots.reject');
     });
 
-// ── GARAGE routes ──────────────────────────────────────────────────
-// Only verified Garage owners can access these management tools.
+// ── GARAGE routes ──────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:garage', 'verified.account'])
     ->prefix('garage')
     ->name('garage.')
     ->group(function () {
-        
-        // 1. Garage Dashboard
+
+        // Dashboard
         Route::get('/dashboard', function () {
             return view('dashboard.garage', ['user' => auth()->user()]);
         })->name('dashboard');
 
-        // 2. Map Location CRUD
+        // Map location CRUD
         Route::get('/location', [LocationController::class, 'index'])->name('location.index');
         Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
         Route::post('/location', [LocationController::class, 'store'])->name('location.store');
@@ -479,13 +291,32 @@ Route::middleware(['auth', 'role:garage', 'verified.account'])
         Route::put('/location', [LocationController::class, 'update'])->name('location.update');
         Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
 
-        // Appointments
-        Route::get('/appointments',               [GarageAppointmentController::class, 'index'])        ->name('appointments.index');
-        Route::get('/appointments/{appointment}', [GarageAppointmentController::class, 'show'])         ->name('appointments.show');
+        // ── Appointment manager ────────────────────────────────────────
+        // View all appointments + bay grid
+        Route::get('/appointments', [GarageAppointmentController::class, 'index'])->name('appointments.index');
+
+        // View single appointment detail
+        Route::get('/appointments/{appointment}', [GarageAppointmentController::class, 'show'])->name('appointments.show');
+
+        // Approve a pending appointment → bay marked occupied, email sent
         Route::post('/appointments/{appointment}/approve', [GarageAppointmentController::class, 'approve'])->name('appointments.approve');
-        Route::post('/appointments/{appointment}/reject',  [GarageAppointmentController::class, 'reject']) ->name('appointments.reject');
-        Route::post('/appointments/{appointment}/complete',[GarageAppointmentController::class, 'complete'])->name('appointments.complete');
-        Route::post('/bays/configure',            [GarageAppointmentController::class, 'configureBays'])->name('bays.configure');
+
+        // Reject a pending appointment → email sent
+        Route::post('/appointments/{appointment}/reject', [GarageAppointmentController::class, 'reject'])->name('appointments.reject');
+
+        // Mark an approved appointment as completed → bay freed
+        Route::post('/appointments/{appointment}/complete', [GarageAppointmentController::class, 'complete'])->name('appointments.complete');
+
+        // ── Bay configuration ──────────────────────────────────────────
+        // Save total bay count + walk-in setting (syncs garage_bays rows)
+        Route::post('/bays/configure', [GarageAppointmentController::class, 'configureBays'])->name('bays.configure');
+
+        // ── Manual bay control (walk-ins) ──────────────────────────────
+        // Mark a bay occupied for a walk-in customer (no appointment needed)
+        Route::post('/bays/{bay}/walkin', [GarageAppointmentController::class, 'walkinOccupy'])->name('bays.walkin');
+
+        // Free a bay manually (walk-in done or override)
+        Route::post('/bays/{bay}/free', [GarageAppointmentController::class, 'walkinFree'])->name('bays.free');
     });
 
 // ── Profile ────────────────────────────────────────────────────────────

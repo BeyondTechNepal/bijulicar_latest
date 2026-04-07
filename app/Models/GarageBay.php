@@ -75,7 +75,7 @@ class GarageBay extends Model
     public function occupantLabel(): string
     {
         if ($this->appointment) {
-            return $this->appointment->customer->name ?? 'Appointment customer';
+            return optional($this->appointment->customer)->name ?? 'Appointment customer';
         }
 
         return $this->walkin_customer_name ?: 'Walk-in customer';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EvStationSlot;
 use App\Models\GarageAppointment;
+use App\Models\GarageBay;
 use App\Models\NewLocation;
 
 class MapController extends Controller
@@ -59,24 +60,23 @@ class MapController extends Controller
                 $base['next_free_at']    = $nextFree?->free_at?->toDateTimeString();
 
             } elseif ($loc->type === 'garage') {
-                $pending  = GarageAppointment::where('garage_user_id', $loc->user_id)
-                                ->where('status', 'pending')->count();
-                $approved = GarageAppointment::where('garage_user_id', $loc->user_id)
-                                ->where('status', 'approved')->count();
+                $bays = GarageBay::where('user_id', $loc->user_id)
+                    ->orderBy('bay_number')
+                    ->get(['id', 'bay_number', 'status', 'estimated_finish_at']);
 
-                $busyBays = min($approved, $loc->total_slots);
-                $freeBays = max(0, $loc->total_slots - $busyBays);
+                $freeBays    = $bays->where('status', 'available')->count();
+                $occupiedBays = $bays->where('status', 'occupied')->count();
 
-                $nextFinish = GarageAppointment::where('garage_user_id', $loc->user_id)
-                    ->where('status', 'approved')
+                $nextFinish = $bays
+                    ->where('status', 'occupied')
                     ->whereNotNull('estimated_finish_at')
-                    ->orderBy('estimated_finish_at')
-                    ->value('estimated_finish_at');
+                    ->sortBy('estimated_finish_at')
+                    ->first();
 
-                $base['free_bays']        = $freeBays;
-                $base['busy_bays']        = $busyBays;
-                $base['pending_requests'] = $pending;
-                $base['next_finish_at']   = $nextFinish;
+                $base['bays']          = $bays->values();
+                $base['free_bays']     = $freeBays;
+                $base['busy_bays']     = $occupiedBays;
+                $base['next_finish_at'] = $nextFinish?->estimated_finish_at?->toDateTimeString();
             }
 
             return $base;

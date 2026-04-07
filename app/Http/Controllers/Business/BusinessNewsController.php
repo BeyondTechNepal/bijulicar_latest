@@ -117,7 +117,7 @@ class BusinessNewsController extends Controller
      */
     protected function authorizeOwner(BusinessNews $news): void
     {
-        if ($news->user_id !== Auth::id()) {
+        if ($news->user_id != Auth::id()) {
             abort(403, 'You do not own this article.');
         }
     }

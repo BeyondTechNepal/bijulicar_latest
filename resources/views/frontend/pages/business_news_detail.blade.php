@@ -147,6 +147,46 @@
                     </div>
                 @endif
 
+                {{-- Section 3 --}}
+                @if($news->section_3_title || $news->section_3_content)
+                    <div class="mb-10">
+                        @if($news->section_3_title)
+                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
+                                {{ $news->section_3_title }}
+                            </h2>
+                        @endif
+                        @if($news->section_3_content)
+                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
+                                @foreach(explode("\n", $news->section_3_content) as $para)
+                                    @if(trim($para))
+                                        <p>{{ $para }}</p>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                {{-- Section 4 --}}
+                @if($news->section_4_title || $news->section_4_content)
+                    <div class="mb-10">
+                        @if($news->section_4_title)
+                            <h2 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-4">
+                                {{ $news->section_4_title }}
+                            </h2>
+                        @endif
+                        @if($news->section_4_content)
+                            <div class="text-base text-slate-600 leading-relaxed space-y-4">
+                                @foreach(explode("\n", $news->section_4_content) as $para)
+                                    @if(trim($para))
+                                        <p>{{ $para }}</p>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
                 {{-- Back to business profile CTA --}}
                 <div class="mt-12 p-6 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-4">
                     <div>

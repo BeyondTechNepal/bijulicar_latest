@@ -42,57 +42,26 @@
                             <input type="text" name="search" id="search-input" value="{{ request('search') }}" placeholder="Search BYD, Tesla..."
                                 autocomplete="off"
                                 class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
-                            <ul id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden max-h-56 overflow-y-auto"></ul>
+                            <ul id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[200] overflow-hidden max-h-56 overflow-y-auto"></ul>
                         </div>
 
-                        <div class="w-full relative" x-data="{ open: false, selected: '{{ request('drivetrain') ?? 'all' }}', label: 'Drivetrain' }">
-    
-                            <input type="hidden" name="drivetrain" :value="selected">
-
-                            <button 
-                                type="button"
-                                @click="open = !open"
-                                @click.away="open = false"
-                                class="w-full flex items-center justify-between bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all"
-                                :class="open ? 'ring-2 ring-[#4ade80]/20' : ''">
-                                
-                                <span x-text="label">Drivetrain</span>
-                                
-                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                                    <path d="M19 9l-7 7-7-7"/>
-                                </svg>
+                        {{-- Custom drivetrain dropdown --}}
+                        <div class="w-full relative" id="dt-wrapper">
+                            <input type="hidden" name="drivetrain" id="dt-value" value="{{ request('drivetrain', 'all') }}">
+                            <button type="button" id="dt-btn"
+                                class="w-full flex items-center justify-between bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all">
+                                <span id="dt-label">{{ collect(['ev'=>'EV Power','hybrid'=>'Hybrid Sync','classic'=>'Classic Combustion','petrol'=>'Petrol','diesel'=>'Diesel'])->get(request('drivetrain'), 'Drivetrain') }}</span>
+                                <svg id="dt-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
                             </button>
-
-                            <div 
-                                x-show="open" 
-                                x-transition:enter="transition ease-out duration-100"
-                                x-transition:enter-start="opacity-0 scale-95"
-                                x-transition:enter-end="opacity-100 scale-100"
-                                class="absolute z-0 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden"
-                                style="display: none;">
-                                
-                                <div class="py-2">
-                                    <button type="button" @click="selected = 'all'; label = 'Drivetrain'; open = false" 
-                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
-                                        Drivetrain (All)
-                                    </button>
-
-                                    <button type="button" @click="selected = 'ev'; label = 'EV Power'; open = false" 
-                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
-                                        EV Power
-                                    </button>
-
-                                    <button type="button" @click="selected = 'hybrid'; label = 'Hybrid Sync'; open = false" 
-                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
-                                        Hybrid Sync
-                                    </button>
-
-                                    <button type="button" @click="selected = 'petrol'; label = 'Petrol'; open = false" 
-                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
-                                        Petrol
-                                    </button>
-                                </div>
-                            </div>
+                            {{-- dropdown list appended to body via JS --}}
+                            <ul id="dt-list" class="hidden bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden py-1">
+                                <li data-value="all"     class="dt-opt px-8 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Drivetrain (All)</li>
+                                <li data-value="ev"      class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">EV Power</li>
+                                <li data-value="hybrid"  class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Hybrid Sync</li>
+                                <li data-value="classic" class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Classic Combustion</li>
+                                <li data-value="petrol"  class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Petrol</li>
+                                <li data-value="diesel"  class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Diesel</li>
+                            </ul>
                         </div>
 
                         {{-- Location with typeahead (replaces dropdown) --}}
@@ -103,7 +72,7 @@
                             <input type="text" name="location" id="location-input" value="{{ request('location') }}" placeholder="Any location..."
                                 autocomplete="off"
                                 class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
-                            <ul id="location-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden max-h-48 overflow-y-auto"></ul>
+                            <ul id="location-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
                         </div>
 
                         <button type="submit" id="search-btn" class="w-full px-12 py-4 lg:py-6 bg-black text-white rounded-2xl lg:rounded-full font-black uppercase italic tracking-widest text-sm hover:bg-[#4ade80] hover:text-black transition-all duration-500 active:scale-95 shadow-xl shadow-black/20">
@@ -121,7 +90,7 @@
                         Advanced Parameters
                     </button>
 
-                    <div id="advanced-panel" class="{{ request()->hasAny(['brand','model_name','year_from','year_to','price_min','price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl overflow-hidden">
+                    <div id="advanced-panel" class="{{ request()->hasAny(['brand','model_name','year_from','year_to','price_min','price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl">
                         <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;"></div>
                         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
 
@@ -131,7 +100,7 @@
                                 <input type="text" name="brand" id="brand-input" value="{{ request('brand') }}" placeholder="e.g. Tesla, BYD"
                                     autocomplete="off"
                                     class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
-                                <ul id="brand-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-48 overflow-y-auto"></ul>
+                                <ul id="brand-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
                             </div> -->
 
                             {{-- Model with autocomplete --}}
@@ -140,28 +109,49 @@
                                 <input type="text" name="model_name" id="model-input" value="{{ request('model_name') }}" placeholder="e.g. Model 3"
                                     autocomplete="off"
                                     class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
-                                <ul id="model-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-48 overflow-y-auto"></ul>
+                                <ul id="model-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
                             </div>
 
-                            {{-- Year range — select dropdowns from real data --}}
+                            {{-- Year range — custom dropdowns --}}
                             <div class="space-y-3 lg:col-span-2">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     Year Range
                                     <span class="text-slate-600 normal-case font-medium ml-1">({{ $minYear }} – {{ $maxYear }})</span>
                                 </label>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <select name="year_from" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:ring-2 focus:ring-[#4ade80]/20 outline-none appearance-none cursor-pointer">
-                                        <option value="">From</option>
-                                        @for ($y = $minYear; $y <= $maxYear; $y++)
-                                            <option value="{{ $y }}" {{ (int)request('year_from') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
-                                        @endfor
-                                    </select>
-                                    <select name="year_to" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-sm font-bold text-white focus:ring-2 focus:ring-[#4ade80]/20 outline-none appearance-none cursor-pointer">
-                                        <option value="">To</option>
-                                        @for ($y = $maxYear; $y >= $minYear; $y--)
-                                            <option value="{{ $y }}" {{ (int)request('year_to') === $y ? 'selected' : '' }} class="bg-[#1e293b]">{{ $y }}</option>
-                                        @endfor
-                                    </select>
+
+                                    {{-- Year From --}}
+                                    <div class="relative" id="yr-from-wrapper">
+                                        <input type="hidden" name="year_from" id="yr-from-value" value="{{ request('year_from') }}">
+                                        <button type="button" id="yr-from-btn"
+                                            class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-sm font-bold text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
+                                            <span id="yr-from-label">{{ request('year_from') ?: 'From' }}</span>
+                                            <svg id="yr-from-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                        <ul id="yr-from-list" class="hidden bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl overflow-y-auto" style="max-height:220px">
+                                            <li data-value="" class="yr-from-opt px-5 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">From (any)</li>
+                                            @for ($y = $minYear; $y <= $maxYear; $y++)
+                                            <li data-value="{{ $y }}" class="yr-from-opt px-5 py-3 text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">{{ $y }}</li>
+                                            @endfor
+                                        </ul>
+                                    </div>
+
+                                    {{-- Year To --}}
+                                    <div class="relative" id="yr-to-wrapper">
+                                        <input type="hidden" name="year_to" id="yr-to-value" value="{{ request('year_to') }}">
+                                        <button type="button" id="yr-to-btn"
+                                            class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-sm font-bold text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
+                                            <span id="yr-to-label">{{ request('year_to') ?: 'To' }}</span>
+                                            <svg id="yr-to-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                        <ul id="yr-to-list" class="hidden bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl overflow-y-auto" style="max-height:220px">
+                                            <li data-value="" class="yr-to-opt px-5 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">To (any)</li>
+                                            @for ($y = $maxYear; $y >= $minYear; $y--)
+                                            <li data-value="{{ $y }}" class="yr-to-opt px-5 py-3 text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">{{ $y }}</li>
+                                            @endfor
+                                        </ul>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -620,10 +610,24 @@
         const input = document.getElementById(inputId);
         const list  = document.getElementById(listId);
         if (!input || !list) return;
+
+        // Move list to body so it escapes all overflow/z-index parent constraints
+        document.body.appendChild(list);
+        list.style.position = 'fixed';
+        list.style.zIndex   = '9999';
+        list.style.margin   = '0';
+
         const dark = opts.dark ?? false;
         const itemCls = dark
             ? 'px-5 py-3 cursor-pointer text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] transition-colors'
             : 'px-5 py-3 cursor-pointer text-sm font-bold text-slate-800 hover:bg-[#4ade80]/10 hover:text-[#16a34a] transition-colors';
+
+        function position() {
+            const r = input.getBoundingClientRect();
+            list.style.top   = (r.bottom + 8) + 'px';
+            list.style.left  = r.left + 'px';
+            list.style.width = r.width + 'px';
+        }
 
         function render(matches) {
             list.innerHTML = '';
@@ -635,10 +639,14 @@
                 li.addEventListener('mousedown', e => { e.preventDefault(); input.value = val; list.classList.add('hidden'); });
                 list.appendChild(li);
             });
+            position();
             list.classList.remove('hidden');
         }
+
         input.addEventListener('input',  () => { const q = input.value.trim().toLowerCase(); render(q ? dataArr.filter(v => v.toLowerCase().includes(q)).slice(0, 8) : []); });
-        input.addEventListener('focus',  () => { if (!input.value.trim()) render(dataArr.slice(0, 8)); });
+        input.addEventListener('focus',  () => { if (!input.value.trim()) render(dataArr.slice(0, 8)); else render(dataArr.filter(v => v.toLowerCase().includes(input.value.trim().toLowerCase())).slice(0, 8)); });
+        window.addEventListener('scroll', () => { if (!list.classList.contains('hidden')) position(); }, true);
+        window.addEventListener('resize', () => { if (!list.classList.contains('hidden')) position(); });
         document.addEventListener('click', e => { if (!input.contains(e.target) && !list.contains(e.target)) list.classList.add('hidden'); });
     }
 
@@ -679,8 +687,105 @@
 
     // ── Boot ──────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
+        // ── Drivetrain custom dropdown ────────────────────────────────────
+        (function() {
+            const btn     = document.getElementById('dt-btn');
+            const list    = document.getElementById('dt-list');
+            const valInp  = document.getElementById('dt-value');
+            const label   = document.getElementById('dt-label');
+            const chevron = document.getElementById('dt-chevron');
+            if (!btn || !list) return;
+
+            // Move to body to escape overflow clipping
+            document.body.appendChild(list);
+            list.style.position = 'fixed';
+            list.style.zIndex   = '9999';
+            list.style.margin   = '0';
+
+            function positionList() {
+                const r = btn.getBoundingClientRect();
+                list.style.top   = (r.bottom + 8) + 'px';
+                list.style.left  = r.left + 'px';
+                list.style.width = r.width + 'px';
+            }
+
+            function openList() {
+                positionList();
+                list.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+
+            function closeList() {
+                list.classList.add('hidden');
+                chevron.style.transform = '';
+            }
+
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                list.classList.contains('hidden') ? openList() : closeList();
+            });
+
+            list.querySelectorAll('.dt-opt').forEach(li => {
+                li.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    valInp.value  = li.dataset.value;
+                    label.textContent = li.textContent.trim();
+                    closeList();
+                });
+            });
+
+            document.addEventListener('click', e => {
+                if (!btn.contains(e.target) && !list.contains(e.target)) closeList();
+            });
+
+            window.addEventListener('scroll', () => { if (!list.classList.contains('hidden')) positionList(); }, true);
+            window.addEventListener('resize', () => { if (!list.classList.contains('hidden')) positionList(); });
+        })();
+
         makeTypeahead('search-input',   'search-suggestions',   [...ALL_BRANDS, ...ALL_MODELS]);
         makeTypeahead('location-input', 'location-suggestions', ALL_LOCATIONS);
+
+        // ── Year From / To custom dropdowns ──────────────────────────────
+        function makeYearDropdown(btnId, listId, valueId, labelId, chevronId, optClass) {
+            const btn     = document.getElementById(btnId);
+            const list    = document.getElementById(listId);
+            const valInp  = document.getElementById(valueId);
+            const label   = document.getElementById(labelId);
+            const chevron = document.getElementById(chevronId);
+            if (!btn || !list) return;
+
+            document.body.appendChild(list);
+            list.style.position = 'fixed';
+            list.style.zIndex   = '9999';
+            list.style.margin   = '0';
+
+            function pos() {
+                const r = btn.getBoundingClientRect();
+                list.style.top   = (r.bottom + 8) + 'px';
+                list.style.left  = r.left + 'px';
+                list.style.width = r.width + 'px';
+            }
+            function open()  { pos(); list.classList.remove('hidden'); chevron.style.transform = 'rotate(180deg)'; }
+            function close() { list.classList.add('hidden'); chevron.style.transform = ''; }
+
+            btn.addEventListener('click', e => { e.stopPropagation(); list.classList.contains('hidden') ? open() : close(); });
+
+            list.querySelectorAll('.' + optClass).forEach(li => {
+                li.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    valInp.value      = li.dataset.value;
+                    label.textContent = li.textContent.trim();
+                    close();
+                });
+            });
+
+            document.addEventListener('click', e => { if (!btn.contains(e.target) && !list.contains(e.target)) close(); });
+            window.addEventListener('scroll', () => { if (!list.classList.contains('hidden')) pos(); }, true);
+            window.addEventListener('resize', () => { if (!list.classList.contains('hidden')) pos(); });
+        }
+
+        makeYearDropdown('yr-from-btn','yr-from-list','yr-from-value','yr-from-label','yr-from-chevron','yr-from-opt');
+        makeYearDropdown('yr-to-btn',  'yr-to-list',  'yr-to-value',  'yr-to-label',  'yr-to-chevron',  'yr-to-opt');
         makeTypeahead('brand-input',    'brand-suggestions',    ALL_BRANDS, { dark: true });
         makeTypeahead('model-input',    'model-suggestions',    ALL_MODELS, { dark: true });
         initPriceSlider();

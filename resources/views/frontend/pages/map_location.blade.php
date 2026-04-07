@@ -451,9 +451,8 @@
             document.getElementById('modal-type-label').textContent = '🔧 Garage';
             document.getElementById('modal-title').textContent       = name;
 
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const minDate = tomorrow.toISOString().slice(0, 16);
+            const minDate = new Date(Date.now() + 5 * 60 * 1000)
+                .toISOString().slice(0, 16);
 
             document.getElementById('modal-body').innerHTML = `
                 <p style="font-size:12px;color:#64748b;margin:0 0 16px">${escHtml(address)}</p>

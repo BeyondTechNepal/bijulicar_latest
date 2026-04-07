@@ -3,21 +3,11 @@
         <div class="flex justify-between h-20">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-        <div class="bg-slate-900 p-2.5 rounded-xl group-hover:bg-[#16a34a] group-hover:shadow-[0_0_15px_rgba(22,163,74,0.5)] transition-all duration-300">
-            <img src="{{ asset('images/logo.png') }}" 
-                 alt="Bijulicar Logo" 
-                 class="h-10 w-auto object-contain brightness-110 contrast-125 grayscale group-hover:grayscale-0 transition-all" />
+    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 no-underline group">
+        <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-[#16a34a] transition-all duration-500 shadow-lg group-hover:rotate-[360deg]">
+            <span class="text-white font-bold text-sm italic">BC</span>
         </div>
-
-        <div class="flex flex-col leading-none">
-            <span class="text-xl font-black uppercase italic tracking-tighter text-slate-900">
-                BIJULI<span class="text-[#16a34a]">CAR</span>
-            </span>
-            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] ml-0.5">
-                The Future is Electric
-            </span>
-        </div>
+        <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
     </a>
 </div>
 

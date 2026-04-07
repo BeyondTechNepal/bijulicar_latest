@@ -60,7 +60,7 @@
                             @endforeach
                         </select>
                         <p id="image-hint" class="text-[11px] text-slate-400 font-medium mt-1.5">
-                            Recommended image: <span id="image-hint-size" class="font-bold text-slate-600">1200×400 px</span>
+                            <!-- Recommended image: <span id="image-hint-size" class="font-bold text-slate-600">1200×400 px</span> -->
                         </p>
                         @error('placement')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                     </div>

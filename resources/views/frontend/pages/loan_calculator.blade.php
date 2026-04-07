@@ -150,24 +150,78 @@
                                         class="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-4 text-slate-900 font-bold focus:bg-white focus:ring-4 focus:ring-green-50 focus:border-[#16a34a] outline-none transition-all">
                                 </div>
 
-                                <div class="space-y-2">
-                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Tenure
-                                        Window</label>
+                                <div class="space-y-2" x-data="{ 
+                                    open: false, 
+                                    selected: '5', 
+                                    label: '5 Years (60 Months)',
+                                    update(val, text) {
+                                        this.selected = val;
+                                        this.label = text;
+                                        this.open = false;
+                                        // Trigger your existing calculation function
+                                        this.$nextTick(() => { calculateLoan(); });
+                                    }
+                                }">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 block">
+                                        Tenure Window
+                                    </label>
+
                                     <div class="relative">
-                                        <select id="tenure" onchange="calculateLoan()"
-                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-4 text-slate-900 font-bold focus:bg-white focus:ring-4 focus:ring-green-50 focus:border-[#16a34a] outline-none transition-all appearance-none cursor-pointer">
-                                            <option value="1">1 Year (12 Months)</option>
-                                            <option value="3">3 Years (36 Months)</option>
-                                            <option value="5" selected>5 Years (60 Months)</option>
-                                            <option value="7">7 Years (84 Months)</option>
-                                            <option value="8">8 Years (96 Months)</option>
-                                        </select>
-                                        <div
-                                            class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                                    d="M19 9l-7 7-7-7"></path>
+                                        <input type="hidden" name="tenure" id="tenure" :value="selected">
+
+                                        <button 
+                                            type="button"
+                                            @click="open = !open"
+                                            @click.away="open = false"
+                                            class="w-full flex items-center justify-between bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all"
+                                            :class="open ? 'ring-2 ring-[#4ade80]/20' : ''">
+                                            
+                                            <span x-text="label">5 Years (60 Months)</span>
+                                            
+                                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                                <path d="M19 9l-7 7-7-7"/>
                                             </svg>
+                                        </button>
+
+                                        <div 
+                                            x-show="open" 
+                                            x-transition:enter="transition ease-out duration-100"
+                                            x-transition:enter-start="opacity-0 scale-95"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            class="absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden"
+                                            style="display: none;">
+                                            
+                                            <div class="py-2 ">
+                                                <button type="button" @click="update('1', '1 Year (12 Months)')" 
+                                                    class="w-full text-left px-8 py-3 text-sm font-bold hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase"
+                                                    :class="selected === '1' ? 'text-[#4ade80] bg-slate-50/50' : 'text-slate-900'">
+                                                    1 Year (12 Months)
+                                                </button>
+
+                                                <button type="button" @click="update('3', '3 Years (36 Months)')" 
+                                                    class="w-full text-left px-8 py-3 text-sm font-bold hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase"
+                                                    :class="selected === '3' ? 'text-[#4ade80] bg-slate-50/50' : 'text-slate-900'">
+                                                    3 Years (36 Months)
+                                                </button>
+
+                                                <button type="button" @click="update('5', '5 Years (60 Months)')" 
+                                                    class="w-full text-left px-8 py-3 text-sm font-bold hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase"
+                                                    :class="selected === '5' ? 'text-[#4ade80] bg-slate-50/50' : 'text-slate-900'">
+                                                    5 Years (60 Months)
+                                                </button>
+
+                                                <button type="button" @click="update('7', '7 Years (84 Months)')" 
+                                                    class="w-full text-left px-8 py-3 text-sm font-bold hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase"
+                                                    :class="selected === '7' ? 'text-[#4ade80] bg-slate-50/50' : 'text-slate-900'">
+                                                    7 Years (84 Months)
+                                                </button>
+
+                                                <button type="button" @click="update('8', '8 Years (96 Months)')" 
+                                                    class="w-full text-left px-8 py-3 text-sm font-bold hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase"
+                                                    :class="selected === '8' ? 'text-[#4ade80] bg-slate-50/50' : 'text-slate-900'">
+                                                    8 Years (96 Months)
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

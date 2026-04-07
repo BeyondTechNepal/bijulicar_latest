@@ -49,15 +49,54 @@
                             <ul id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden max-h-56 overflow-y-auto"></ul>
                         </div>
 
-                        <div class="w-full relative">
-                            <select name="drivetrain" class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 appearance-none cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight">
-                                <option value="all">Drivetrain</option>
-                                <option value="ev"     {{ request('drivetrain') === 'ev' ? 'selected' : '' }}>EV Power</option>
-                                <option value="hybrid" {{ request('drivetrain') === 'hybrid' ? 'selected' : '' }}>Hybrid Sync</option>
-                                <option value="petrol" {{ request('drivetrain') === 'petrol' ? 'selected' : '' }}>Petrol</option>
-                                <option value="diesel" {{ request('drivetrain') === 'diesel' ? 'selected' : '' }}>Diesel</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-6 flex items-center pointer-events-none text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg></div>
+                        <div class="w-full relative" x-data="{ open: false, selected: '{{ request('drivetrain') ?? 'all' }}', label: 'Drivetrain' }">
+    
+                            <input type="hidden" name="drivetrain" :value="selected">
+
+                            <button 
+                                type="button"
+                                @click="open = !open"
+                                @click.away="open = false"
+                                class="w-full flex items-center justify-between bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all"
+                                :class="open ? 'ring-2 ring-[#4ade80]/20' : ''">
+                                
+                                <span x-text="label">Drivetrain</span>
+                                
+                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            <div 
+                                x-show="open" 
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                class="absolute z-0 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden"
+                                style="display: none;">
+                                
+                                <div class="py-2">
+                                    <button type="button" @click="selected = 'all'; label = 'Drivetrain'; open = false" 
+                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
+                                        Drivetrain (All)
+                                    </button>
+
+                                    <button type="button" @click="selected = 'ev'; label = 'EV Power'; open = false" 
+                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
+                                        EV Power
+                                    </button>
+
+                                    <button type="button" @click="selected = 'hybrid'; label = 'Hybrid Sync'; open = false" 
+                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
+                                        Hybrid Sync
+                                    </button>
+
+                                    <button type="button" @click="selected = 'petrol'; label = 'Petrol'; open = false" 
+                                        class="w-full text-left px-8 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 hover:text-[#4ade80] transition-colors uppercase">
+                                        Petrol
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         {{-- Location with typeahead (replaces dropdown) --}}

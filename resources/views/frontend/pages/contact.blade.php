@@ -6,76 +6,94 @@
     {{-- header section --}}
     <section class="relative bg-[#0a0f1e] pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
 
-    <div class="absolute inset-0 z-0">
-        @if ($banner)
-            <img src="{{ asset('storage/' . $banner->image) }}" class="w-full h-full object-cover opacity-70 scale-105" alt="{{ $banner->title }}">
-        @endif
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-[#0a0f1e]/40 to-[#0a0f1e]/80"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#0a0f1e_100%)]"></div>
-    </div>
+        <div class="absolute inset-0 z-0">
+            @if ($banner)
+                <img src="{{ asset('storage/' . $banner->image) }}" class="w-full h-full object-cover opacity-70 scale-105"
+                    alt="{{ $banner->title }}">
+            @endif
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-[#0a0f1e]/40 to-[#0a0f1e]/80"></div>
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#0a0f1e_100%)]"></div>
+        </div>
 
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
-        <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
 
-            <div class="space-y-6">
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3">
-                        <span class="w-10 h-[2px] bg-[#4ade80]"></span>
-                        <span class="text-[9px] uppercase tracking-[0.3em] text-[#4ade80] font-black">Liaison Office</span>
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-[2px] bg-[#4ade80]"></span>
+                            <span class="text-[9px] uppercase tracking-[0.3em] text-[#4ade80] font-black">Liaison
+                                Office</span>
+                        </div>
+                        <h1
+                            class="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-[0.80]">
+                            Get In <br>
+                            <span class="text-slate-500">The Orbit</span>
+                        </h1>
+                        <p class="text-slate-400 text-xs md:text-sm max-w-sm font-medium leading-relaxed">
+                            Connect with our automotive specialists for fleet inquiries or appointments.
+                        </p>
                     </div>
-                    <h1 class="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-[0.80]">
-                        Get In <br>
-                        <span class="text-slate-500">The Orbit</span>
-                    </h1>
-                    <p class="text-slate-400 text-xs md:text-sm max-w-sm font-medium leading-relaxed">
-                        Connect with our automotive specialists for fleet inquiries or appointments.
-                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div
+                            class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
+                            <div class="w-9 h-9 rounded-lg bg-[#4ade80]/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">
+                                    Hotline</p>
+                                @if ($contact_details)
+                                    <p class="text-[11px] font-black text-white">{{ $contact_details->phone_no }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-                        <div class="w-9 h-9 rounded-lg bg-[#4ade80]/10 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Hotline</p>
-                            @if ($contact_details)<p class="text-[11px] font-black text-white">{{ $contact_details->phone_no }}</p>@endif
-                        </div>
-                    </div>
-                    </div>
-            </div>
+                <div class="hidden lg:flex justify-end">
+                    <div class="w-full max-w-sm bg-gradient-to-br from-white/10 to-transparent p-px rounded-[2rem]">
+                        <div class="bg-[#0a0f1e]/80 backdrop-blur-3xl rounded-[2rem] p-7 relative overflow-hidden">
+                            <div class="relative z-10 space-y-4">
+                                <div class="space-y-1">
+                                    <h3 class="text-white font-black uppercase italic tracking-widest text-base">Support
+                                        Status</h3>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
+                                        <span class="text-[9px] text-[#4ade80] font-bold uppercase tracking-[0.2em]">Systems
+                                            Nominal</span>
+                                    </div>
+                                </div>
+                                <p class="text-slate-400 text-xs leading-relaxed">Response time: <span
+                                        class="text-white font-bold italic">45 mins</span></p>
 
-            <div class="hidden lg:flex justify-end">
-                <div class="w-full max-w-sm bg-gradient-to-br from-white/10 to-transparent p-px rounded-[2rem]">
-                    <div class="bg-[#0a0f1e]/80 backdrop-blur-3xl rounded-[2rem] p-7 relative overflow-hidden">
-                        <div class="relative z-10 space-y-4">
-                            <div class="space-y-1">
-                                <h3 class="text-white font-black uppercase italic tracking-widest text-base">Support Status</h3>
-                                <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
-                                    <span class="text-[9px] text-[#4ade80] font-bold uppercase tracking-[0.2em]">Systems Nominal</span>
+                                <div class="pt-4 border-t border-white/10">
+                                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">
+                                        Headquarters</p>
+                                    @if ($contact_details)
+                                        <p class="text-xs text-white font-medium">{{ $contact_details->address }}</p>
+                                    @endif
                                 </div>
                             </div>
-                            <p class="text-slate-400 text-xs leading-relaxed">Response time: <span class="text-white font-bold italic">45 mins</span></p>
-                            
-                            <div class="pt-4 border-t border-white/10">
-                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Headquarters</p>
-                                @if ($contact_details)<p class="text-xs text-white font-medium">{{ $contact_details->address }}</p>@endif
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 animate-bounce opacity-30 pointer-events-none">
-        <span class="text-[8px] font-black uppercase tracking-[0.3em] text-white/60">Scroll</span>
-        <div class="w-4 h-6 border-2 border-white/10 rounded-full flex justify-center p-0.5">
-            <div class="w-1 h-1.5 bg-[#4ade80] rounded-full"></div>
+        <div
+            class="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 animate-bounce opacity-30 pointer-events-none">
+            <span class="text-[8px] font-black uppercase tracking-[0.3em] text-white/60">Scroll</span>
+            <div class="w-4 h-6 border-2 border-white/10 rounded-full flex justify-center p-0.5">
+                <div class="w-1 h-1.5 bg-[#4ade80] rounded-full"></div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <section class="py-24 bg-[#f8fafc] relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
@@ -267,19 +285,72 @@
                                     class="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-4">
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            <div class="space-y-2" x-data="{
+                                open: false,
+                                selected: '',
+                                label: 'Select Category'
+                            }">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">
                                     Category *
                                 </label>
-                                <select name="category"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-4">
 
-                                    <option value="General Support">General Support</option>
-                                    <option value="Sales Team">Sales Team</option>
-                                    <option value="Technical Support">Technical Support</option>
-                                    <option value="Partnership">Partnership</option>
+                                <div class="w-full relative">
+                                    <input type="hidden" name="category" :value="selected">
 
-                                </select>
+                                    <button type="button" @click="open = !open" @click.away="open = false"
+                                        class="w-full flex items-center justify-between bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all"
+                                        :class="open ? 'ring-2 ring-[#4ade80]/20 bg-white' : ''">
+
+                                        <span x-text="label || 'Select Category'">Select Category</span>
+
+                                        <svg class="w-4 h-4 text-slate-400 transition-transform duration-200"
+                                            :class="open ? 'rotate-180 text-[#4ade80]' : ''" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                            <path d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="opacity-0 scale-95"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        class="absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden"
+                                        style="display: none;">
+
+                                        <div class="py-2">
+                                            <button type="button"
+                                                @click="selected = 'General Support'; label = 'General Support'; open = false"
+                                                class="w-full text-left px-8 py-3 text-sm font-bold transition-colors uppercase tracking-tight"
+                                                :class="selected === 'General Support' ? 'text-[#4ade80] bg-slate-50' :
+                                                    'text-slate-900 hover:bg-slate-50 hover:text-[#4ade80]'">
+                                                General Support
+                                            </button>
+
+                                            <button type="button"
+                                                @click="selected = 'Sales Team'; label = 'Sales Team'; open = false"
+                                                class="w-full text-left px-8 py-3 text-sm font-bold transition-colors uppercase tracking-tight"
+                                                :class="selected === 'Sales Team' ? 'text-[#4ade80] bg-slate-50' :
+                                                    'text-slate-900 hover:bg-slate-50 hover:text-[#4ade80]'">
+                                                Sales Team
+                                            </button>
+
+                                            <button type="button"
+                                                @click="selected = 'Technical Support'; label = 'Technical Support'; open = false"
+                                                class="w-full text-left px-8 py-3 text-sm font-bold transition-colors uppercase tracking-tight"
+                                                :class="selected === 'Technical Support' ? 'text-[#4ade80] bg-slate-50' :
+                                                    'text-slate-900 hover:bg-slate-50 hover:text-[#4ade80]'">
+                                                Technical Support
+                                            </button>
+
+                                            <button type="button"
+                                                @click="selected = 'Partnership'; label = 'Partnership'; open = false"
+                                                class="w-full text-left px-8 py-3 text-sm font-bold transition-colors uppercase tracking-tight"
+                                                :class="selected === 'Partnership' ? 'text-[#4ade80] bg-slate-50' :
+                                                    'text-slate-900 hover:bg-slate-50 hover:text-[#4ade80]'">
+                                                Partnership
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

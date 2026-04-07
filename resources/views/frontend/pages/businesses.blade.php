@@ -87,38 +87,120 @@
                 </div>
 
                 {{-- Specialization --}}
-                <div class="relative">
-                    <select name="specialization"
-                        class="bg-slate-100 border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-black text-slate-900 appearance-none cursor-pointer focus:ring-2 focus:ring-[#4ade80]/30 outline-none uppercase tracking-tight">
-                        <option value="all">All Types</option>
-                        <option value="ev" {{ request('specialization') === 'ev' ? 'selected' : '' }}>EV Only</option>
-                        <option value="hybrid" {{ request('specialization') === 'hybrid' ? 'selected' : '' }}>Hybrid
-                        </option>
-                        <option value="petrol" {{ request('specialization') === 'petrol' ? 'selected' : '' }}>Petrol
-                        </option>
-                    </select>
-                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                            <path d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
+                <div class="relative inline-block" x-data="{ 
+    open: false, 
+    selected: '{{ request('specialization') ?? 'all' }}', 
+    label: '{{ request('specialization') ? (request('specialization') === 'ev' ? 'EV Only' : (request('specialization') === 'hybrid' ? 'Hybrid' : 'Petrol')) : 'All Types' }}' 
+}">
+    
+    <input type="hidden" name="specialization" :value="selected">
+
+    <button 
+        type="button"
+        @click="open = !open"
+        @click.away="open = false"
+        class="flex items-center justify-between bg-slate-100 border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-black text-slate-900 cursor-pointer transition-all duration-200 uppercase tracking-tight focus:outline-none"
+        :class="open ? 'ring-2 ring-[#4ade80]/30 bg-white' : 'hover:bg-slate-200/50'">
+        
+        <span x-text="label">All Types</span>
+        
+        <div class="absolute right-3 flex items-center pointer-events-none text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180 text-[#4ade80]' : ''">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                <path d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+    </button>
+
+    <div 
+        x-show="open" 
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        class="absolute z-50 min-w-[160px] mt-2 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden left-0"
+        style="display: none;">
+        
+        <div class="py-1">
+            <button type="button" @click="selected = 'all'; label = 'All Types'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'all' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                All Types
+            </button>
+
+            <button type="button" @click="selected = 'ev'; label = 'EV Only'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'ev' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                EV Only
+            </button>
+
+            <button type="button" @click="selected = 'hybrid'; label = 'Hybrid'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'hybrid' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                Hybrid
+            </button>
+
+            <button type="button" @click="selected = 'petrol'; label = 'Petrol'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'petrol' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                Petrol
+            </button>
+        </div>
+    </div>
+</div>
 
                 {{-- Sort --}}
-                <div class="relative">
-                    <select name="sort"
-                        class="bg-slate-100 border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-black text-slate-900 appearance-none cursor-pointer focus:ring-2 focus:ring-[#4ade80]/30 outline-none uppercase tracking-tight">
-                        <option value="listings" {{ request('sort', 'listings') === 'listings' ? 'selected' : '' }}>Most
-                            Listings</option>
-                        <option value="rating" {{ request('sort') === 'rating' ? 'selected' : '' }}>Top Rated</option>
-                        <option value="reviews" {{ request('sort') === 'reviews' ? 'selected' : '' }}>Most Reviews</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                            <path d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
+                <div class="relative inline-block" x-data="{ 
+    open: false, 
+    selected: '{{ request('sort', 'listings') }}', 
+    label: '{{ request('sort') === 'rating' ? 'Top Rated' : (request('sort') === 'reviews' ? 'Most Reviews' : 'Most Listings') }}' 
+}">
+    
+    <input type="hidden" name="sort" :value="selected">
+
+    <button 
+        type="button"
+        @click="open = !open"
+        @click.away="open = false"
+        class="flex items-center justify-between min-w-[160px] bg-slate-100 border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-black text-slate-900 cursor-pointer transition-all duration-200 uppercase tracking-tight focus:outline-none"
+        :class="open ? 'ring-2 ring-[#4ade80]/30 bg-white' : 'hover:bg-slate-200/50'">
+        
+        <span x-text="label">Most Listings</span>
+        
+        <div class="absolute right-3 flex items-center pointer-events-none text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180 text-[#4ade80]' : ''">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                <path d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+    </button>
+
+    <div 
+        x-show="open" 
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        class="absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden left-0"
+        style="display: none;">
+        
+        <div class="py-1">
+            <button type="button" @click="selected = 'listings'; label = 'Most Listings'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'listings' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                Most Listings
+            </button>
+
+            <button type="button" @click="selected = 'rating'; label = 'Top Rated'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'rating' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                Top Rated
+            </button>
+
+            <button type="button" @click="selected = 'reviews'; label = 'Most Reviews'; open = false" 
+                class="w-full text-left px-5 py-2.5 text-xs font-black transition-colors uppercase tracking-tight"
+                :class="selected === 'reviews' ? 'text-[#4ade80] bg-slate-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                Most Reviews
+            </button>
+        </div>
+    </div>
+</div>
 
                 <button type="submit"
                     class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-black uppercase tracking-wider hover:bg-[#4ade80] hover:text-black transition-all duration-300 active:scale-95">

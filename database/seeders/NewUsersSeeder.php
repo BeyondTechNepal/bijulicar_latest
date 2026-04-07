@@ -45,6 +45,7 @@ class NewUsersSeeder extends Seeder
             'view reports',
             'manage admins',
             'manage site settings',
+            "only news [by only 'news' admin]", // Added for NewsAdmin
             'manage news articles', // Added for NewsAdmin
         ];
 
@@ -81,7 +82,7 @@ class NewUsersSeeder extends Seeder
         $adminRole->syncPermissions(['manage users', 'manage listings', 'view reports']);
 
         $newsAdmin = Role::firstOrCreate(['name' => 'newsadmin', 'guard_name' => 'admin']);
-        $newsAdmin->syncPermissions(['manage news articles', 'view reports']);
+        $newsAdmin->syncPermissions(['manage news articles', 'view reports', "only news [by only 'news' admin]"]);
 
         $superAdmin = Role::firstOrCreate(['name' => 'superadmin', 'guard_name' => 'admin']);
         // Superadmin gets everything in the admin guard

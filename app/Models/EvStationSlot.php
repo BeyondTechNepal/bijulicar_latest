@@ -49,6 +49,11 @@ class EvStationSlot extends Model
         return $this->status === 'pending';
     }
 
+    public function isBooked(): bool
+{
+    return $this->status === 'booked';
+}
+
     /**
      * Station approved — slot is confirmed in use. Shows red on the map.
      */
@@ -83,6 +88,7 @@ class EvStationSlot extends Model
         return match ($this->status) {
             'available' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
             'pending'   => 'bg-amber-50 text-amber-600 border-amber-200',
+            'booked'    => 'bg-blue-50 text-blue-600 border-blue-200',
             'occupied'  => 'bg-red-50 text-red-600 border-red-200',
             default     => 'bg-slate-50 text-slate-500 border-slate-200',
         };

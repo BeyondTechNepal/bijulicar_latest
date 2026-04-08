@@ -90,30 +90,32 @@ class EVStationSlotController extends Controller
      * This is the moment the slot becomes truly "occupied" — map turns red.
      * Customer receives a confirmation email.
      */
-    public function approveRequest(Request $request, EvStationSlot $slot)
-    {
-        abort_unless($slot->user_id == auth()->id(), 403);
-        abort_unless($slot->isPending(), 422, 'Only pending requests can be approved.');
+    
 
-        $request->validate([
-            'free_at' => 'nullable|date|after:now',
-        ]);
+public function approveRequest(Request $request, EvStationSlot $slot)
+{
+    abort_unless($slot->user_id == auth()->id(), 403);
+    abort_unless($slot->isPending(), 422, 'Only pending requests can be approved.');
 
-        $customer = $slot->occupant;
-        abort_unless($customer, 404, 'No customer linked to this slot.');
+    $request->validate([
+        'free_at' => 'nullable|date|after:now',
+    ]);
 
-        // NOW mark as occupied — this is when the map pin turns red
-        $slot->update([
-            'status'  => 'occupied',
-            'free_at' => $request->free_at,
-        ]);
+    $customer = $slot->occupant;
+    abort_unless($customer, 404, 'No customer linked to this slot.');
 
-        Mail::to($customer->email)->send(
-            new SlotRequestApprovedMail($slot, $customer)
-        );
+    // Change: 'occupied' → 'booked'
+    $slot->update([
+        'status'  => 'booked',   // ← was 'occupied'
+        'free_at' => $request->free_at,
+    ]);
 
-        return back()->with('success', "Slot #{$slot->slot_number} approved and confirmation email sent to {$customer->name}.");
-    }
+    Mail::to($customer->email)->send(
+        new SlotRequestApprovedMail($slot, $customer)
+    );
+
+    return back()->with('success', "Slot #{$slot->slot_number} booked and confirmation email sent to {$customer->name}.");
+}
 
     /**
      * Station rejects a PENDING customer request.

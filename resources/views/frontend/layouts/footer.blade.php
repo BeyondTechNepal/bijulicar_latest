@@ -1,6 +1,6 @@
-<footer class="w-full bg-[#f1f5f9] pt-20 pb-10 px-6 border-t border-slate-200">
+<footer class="w-full bg-[#f1f5f9] pt-10 pb-5 px-6 border-t border-slate-200">
     <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-slate-300/50">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-5 border-b border-slate-300/50">
 
             <div class="lg:col-span-4 space-y-8">
                 <div class="flex items-center gap-3">
@@ -86,24 +86,23 @@
             </div>
         </div>
 
-        <div class="pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex flex-col items-center md:items-start gap-1">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    © 2026 Bijulicar.com. All rights reserved.
-                </p>
-                <p class="text-[9px] text-slate-400 flex items-center gap-1">
-                    Supporting ⚡ 🍂 🅿️ Complete Mobility
-                </p>
-            </div>
-
-            <!-- <div class="flex items-center gap-4">
-                <a href="{{ route('login') }}"
-                    class="text-xs font-black uppercase italic tracking-widest text-slate-900 hover:text-[#16a34a] transition-all">Login</a>
-                <a href="#"
-                    class="bg-[#16a34a] text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] hover:bg-slate-900 hover:shadow-lg transition-all">
-                    Join Community
-                </a>
-            </div> -->
+        <div class="pt-5 flex flex-col items-center justify-center gap-2 text-center">
+        
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                © 2026 Bijulicar.com. All rights reserved.
+            </p>
+        
+            <p class="text-[9px] text-slate-400 flex items-center gap-1">
+                Supporting ⚡ 🍂 🅿️ Complete Mobility
+            </p>
+        
+            <p class="text-[10px] text-slate-500">
+                Developed and maintained by
+                <span class="font-bold text-black hover:text-[#4ade80] transition-colors">
+                    Beyond Tech Nepal
+                </span>
+            </p>
+        
         </div>
     </div>
 </footer>

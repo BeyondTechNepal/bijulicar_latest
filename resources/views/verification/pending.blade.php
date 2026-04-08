@@ -57,6 +57,7 @@
             @php
                 $user = auth()->user();
     $verification = match (true) {
+        $user->hasRole('buyer') => $user->buyerVerification,
         $user->hasRole('seller') => $user->sellerVerification,
         $user->hasRole('business') => $user->businessVerification,
         $user->hasRole('ev-station') => $user->stationVerification,
@@ -122,7 +123,22 @@
                     {{-- Details summary --}}
                     <div class="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5 text-left space-y-3">
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Submitted details</p>
-                        @if ($user->hasRole('seller') && $user->sellerVerification)
+                        @if ($user->hasRole('buyer') && $user->buyerVerification)
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">Full name</span>
+                                <span
+                                    class="text-xs font-bold text-slate-900">{{ $user->buyerVerification->full_name }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">Contact</span>
+                                <span
+                                    class="text-xs font-bold text-slate-900">{{ $user->buyerVerification->contact }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">National ID</span>
+                                <span class="text-xs font-bold text-[#16a34a]">Uploaded ✔</span>
+                            </div>
+                        @elseif ($user->hasRole('seller') && $user->sellerVerification)
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-bold text-slate-500">Full name</span>
                                 <span
@@ -221,6 +237,7 @@
                         @php
                             // This ensures every role goes to their specific form
                             $resubmitRoute = match (true) {
+                                $user->hasRole('buyer') => route('buyer.verify.create'),
                                 $user->hasRole('seller') => route('seller.verify.create'),
                                 $user->hasRole('business') => route('business.verify.create'),
                                 $user->hasRole('ev-station') => route('station.verify.create'),
@@ -255,7 +272,12 @@
                         You haven't submitted your verification details yet. Complete the form to get your account
                         approved.
                     </p>
-                    @if ($user->hasRole('seller'))
+                    @if ($user->hasRole('buyer'))
+                        <a href="{{ route('buyer.verify.create') }}"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-[#16a34a] text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-slate-900 transition-all shadow-lg">
+                            Start Verification
+                        </a>
+                    @elseif ($user->hasRole('seller'))
                         <a href="{{ route('seller.verify.create') }}"
                             class="inline-flex items-center gap-2 px-6 py-3 bg-[#16a34a] text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-slate-900 transition-all shadow-lg">
                             Start Verification

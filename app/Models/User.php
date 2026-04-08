@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\SellerVerification;
 use App\Models\BusinessVerification;
+use App\Models\BuyerVerification;
 use App\Models\StationVerification;
 use App\Models\PreOrder;
 
@@ -40,6 +41,11 @@ class User extends Authenticatable
         return $this->hasOne(SellerVerification::class);
     }
 
+    public function buyerVerification(): HasOne
+    {
+        return $this->hasOne(BuyerVerification::class);
+    }
+
     public function businessVerification(): HasOne
     {
         return $this->hasOne(BusinessVerification::class);
@@ -55,9 +61,10 @@ class User extends Authenticatable
         return $this->hasOne(GarageVerification::class);
     }
 
-    public function verification(): SellerVerification|BusinessVerification|StationVerification|GarageVerification|null
+    public function verification(): SellerVerification|BuyerVerification|BusinessVerification|StationVerification|GarageVerification|null
     {
         return $this->sellerVerification
+            ?? $this->buyerVerification
             ?? $this->businessVerification
             ?? $this->stationVerification
             ?? $this->garageVerification;

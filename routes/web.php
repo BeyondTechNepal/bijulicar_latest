@@ -5,6 +5,7 @@ use App\Http\Controllers\Buyer\BuyerOrderController;
 use App\Http\Controllers\Buyer\BuyerPreOrderController;
 use App\Http\Controllers\Buyer\BuyerPurchaseController;
 use App\Http\Controllers\Buyer\BuyerReviewController;
+use App\Http\Controllers\Buyer\BuyerVerificationController;
 use App\Http\Controllers\Seller\SellerVerificationController;
 use App\Http\Controllers\Seller\SellerCarController;
 use App\Http\Controllers\Seller\SellerOrderController;
@@ -58,6 +59,10 @@ Route::get('/newsletter/verify/{token}', [NewsletterController::class, 'verify']
 // middleware so unverified users and all roles can reach them.
 Route::middleware(['auth'])->group(function () {
 
+    // Buyer verification
+    Route::get('/buyer/verify', [BuyerVerificationController::class, 'create'])->name('buyer.verify.create');
+    Route::post('/buyer/verify', [BuyerVerificationController::class, 'store'])->name('buyer.verify.store');
+
     // Seller verification
     Route::get('/seller/verify', [SellerVerificationController::class, 'create'])->name('seller.verify.create');
     Route::post('/seller/verify', [SellerVerificationController::class, 'store'])->name('seller.verify.store');
@@ -91,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
         $user = auth()->user();
 
         $verification = match(true) {
+            $user->hasRole('buyer')      => $user->buyerVerification,
             $user->hasRole('seller')     => $user->sellerVerification,
             $user->hasRole('business')   => $user->businessVerification,
             $user->hasRole('ev-station') => $user->stationVerification,
@@ -104,6 +110,7 @@ Route::middleware(['auth'])->group(function () {
 
         if (!$verification) {
             return match(true) {
+                $user->hasRole('buyer')      => redirect()->route('buyer.verify.create'),
                 $user->hasRole('seller')     => redirect()->route('seller.verify.create'),
                 $user->hasRole('business')   => redirect()->route('business.verify.create'),
                 $user->hasRole('ev-station') => redirect()->route('station.verify.create'),
@@ -130,7 +137,7 @@ Route::get('/dashboard', function () {
     ->name('dashboard');
 
 // ── BUYER routes ───────────────────────────────────────────────────────
-Route::middleware(['auth', 'role:buyer'])
+Route::middleware(['auth', 'role:buyer', 'verified.account'])
     ->prefix('buyer')
     ->name('buyer.')
     ->group(function () {

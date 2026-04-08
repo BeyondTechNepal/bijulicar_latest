@@ -6,14 +6,16 @@
 
     {{-- Stats row --}}
     @php
-        $totalPending = $sellersPending->count() + $businessesPending->count() + $evStationsPending->count() + $garagePending->count();
-        $totalDone = $sellersAll->count() + $businessesAll->count() + $evStationsAll->count() + $garageAll->count();
+        $totalPending = $buyersPending->count() + $sellersPending->count() + $businessesPending->count() + $evStationsPending->count() + $garagePending->count();
+        $totalDone = $buyersAll->count() + $sellersAll->count() + $businessesAll->count() + $evStationsAll->count() + $garageAll->count();
         $totalApproved =
+            $buyersAll->where('status', 'approved')->count() +
             $sellersAll->where('status', 'approved')->count() +
             $businessesAll->where('status', 'approved')->count() +
             $evStationsAll->where('status', 'approved')->count() +
             $garageAll->where('status', 'approved')->count();
         $totalRejected =
+            $buyersAll->where('status', 'rejected')->count() +
             $sellersAll->where('status', 'rejected')->count() +
             $businessesAll->where('status', 'rejected')->count() +
             $evStationsAll->where('status', 'rejected')->count() +
@@ -37,6 +39,114 @@
             <div class="text-2xl font-black text-gray-700">{{ $totalDone }}</div>
             <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Reviewed</div>
         </div>
+    </div>
+
+    {{-- ── PENDING BUYERS ───────────────────────────────────────────────── --}}
+    <div class="mb-10">
+        <div class="flex items-center gap-3 mb-4">
+            <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Pending Buyers</h2>
+            @if ($buyersPending->count() > 0)
+                <span
+                    class="text-[10px] font-black bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full">
+                    {{ $buyersPending->count() }} pending
+                </span>
+            @endif
+        </div>
+
+        @if ($buyersPending->isEmpty())
+            <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+                <p class="text-sm font-bold text-gray-400">No pending buyer verifications</p>
+            </div>
+        @else
+            <div class="space-y-3">
+                @foreach ($buyersPending as $v)
+                    <div class="bg-white border border-gray-200 rounded-2xl p-5" id="buyer-{{ $v->id }}">
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+
+                            {{-- Info --}}
+                            <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Account</p>
+                                    <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->user->name }}</p>
+                                    <p class="text-xs text-gray-400">{{ $v->user->email }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Full Name</p>
+                                    <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->full_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact</p>
+                                    <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $v->contact }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Submitted</p>
+                                    <p class="text-sm font-bold text-gray-800 mt-0.5">
+                                        {{ $v->created_at->format('M d, Y') }}</p>
+                                    <p class="text-xs text-gray-400">{{ $v->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+
+                            {{-- Actions --}}
+                            <div class="flex items-center gap-2 shrink-0">
+                                {{-- View document --}}
+                                <a href="{{ route('admin.verifications.document', ['type' => 'buyer', 'id' => $v->id]) }}"
+                                    target="_blank"
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 transition-all">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    View ID
+                                </a>
+
+                                {{-- Approve --}}
+                                <form method="POST" action="{{ route('admin.verifications.buyer.approve', $v->id) }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Approve
+                                    </button>
+                                </form>
+
+                                {{-- Reject (toggle) --}}
+                                <button onclick="toggleRejectForm('reject-buyer-{{ $v->id }}')"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 rounded-lg text-xs font-black uppercase tracking-wider transition-all">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Reject reason form (hidden by default) --}}
+                        <div id="reject-buyer-{{ $v->id }}" class="hidden mt-4 pt-4 border-t border-gray-100">
+                            <form method="POST" action="{{ route('admin.verifications.buyer.reject', $v->id) }}"
+                                class="flex gap-3">
+                                @csrf
+                                <input type="text" name="reason" required placeholder="Enter reason for rejection..."
+                                    class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-red-400 transition-all">
+                                <button type="submit"
+                                    class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all shrink-0">
+                                    Confirm Reject
+                                </button>
+                                <button type="button" onclick="toggleRejectForm('reject-buyer-{{ $v->id }}')"
+                                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-bold transition-all shrink-0">
+                                    Cancel
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
     {{-- ── PENDING SELLERS ──────────────────────────────────────────────── --}}
@@ -443,7 +553,7 @@
 
 
     {{-- ── REVIEWED HISTORY ─────────────────────────────────────────────── --}}
-    @if ($sellersAll->count() > 0 || $businessesAll->count() > 0 || $evStationsAll->count() > 0 || $garageAll->count() > 0)
+    @if ($buyersAll->count() > 0 || $sellersAll->count() > 0 || $businessesAll->count() > 0 || $evStationsAll->count() > 0 || $garageAll->count() > 0)
         <div>
             <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest mb-4">Review History</h2>
 

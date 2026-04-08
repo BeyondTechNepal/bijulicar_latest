@@ -16,9 +16,17 @@ class RequireVerifiedAccount
             return redirect()->route('login');
         }
 
-        // Buyers skip verification entirely
+        // Buyers now require verification like sellers
         if ($user->hasRole('buyer')) {
-            return $next($request);
+            $verification = $user->buyerVerification;
+
+            if (!$verification) {
+                return redirect()->route('buyer.verify.create')->with('info', 'Please complete your buyer verification to continue.');
+            }
+
+            if (!$verification->isApproved()) {
+                return redirect()->route('verification.pending');
+            }
         }
 
         if ($user->hasRole('seller')) {

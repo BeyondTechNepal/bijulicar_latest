@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\AccountApprovedMail;
 use App\Mail\AccountRejectedMail;
 use App\Models\BusinessVerification;
+use App\Models\BuyerVerification;
 use App\Models\NewLocation;
 use App\Models\SellerVerification;
 use App\Models\StationVerification;
@@ -20,6 +21,8 @@ class AdminVerificationController extends Controller
     /** List all verifications — pending first, then reviewed history. */
     public function index()
     {
+        $buyersPending = BuyerVerification::with('user')->where('status', 'pending')->latest()->get();
+
         $sellersPending = SellerVerification::with('user')->where('status', 'pending')->latest()->get();
 
         $businessesPending = BusinessVerification::with('user')->where('status', 'pending')->latest()->get();
@@ -27,6 +30,11 @@ class AdminVerificationController extends Controller
         $evStationsPending = StationVerification::with('user')->where('status', 'pending')->latest()->get();
 
         $garagePending = GarageVerification::with('user')->where('status', 'pending')->latest()->get();
+
+        $buyersAll = BuyerVerification::with('user')
+            ->whereIn('status', ['approved', 'rejected'])
+            ->latest()
+            ->get();
 
         $sellersAll = SellerVerification::with('user')
             ->whereIn('status', ['approved', 'rejected'])
@@ -48,7 +56,37 @@ class AdminVerificationController extends Controller
             ->latest()
             ->get();
 
-        return view('admin.verifications.index', compact('sellersPending', 'businessesPending', 'evStationsPending', 'garagePending', 'sellersAll', 'businessesAll', 'evStationsAll', 'garageAll'));
+        return view('admin.verifications.index', compact('buyersPending', 'sellersPending', 'businessesPending', 'evStationsPending', 'garagePending', 'buyersAll', 'sellersAll', 'businessesAll', 'evStationsAll', 'garageAll'));
+    }
+
+    // ── Buyer ─────────────────────────────────────────────────────────
+
+    public function approveBuyer(BuyerVerification $verification)
+    {
+        $verification->update([
+            'status' => 'approved',
+            'rejection_reason' => null,
+        ]);
+
+        $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
+
+        return back()->with('success', "{$verification->user->name} has been approved.");
+    }
+
+    public function rejectBuyer(Request $request, BuyerVerification $verification)
+    {
+        $request->validate([
+            'reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $verification->update([
+            'status' => 'rejected',
+            'rejection_reason' => $request->reason,
+        ]);
+
+        $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
+
+        return back()->with('success', "{$verification->user->name} has been rejected.");
     }
 
     // ── Seller ────────────────────────────────────────────────────────
@@ -184,20 +222,22 @@ class AdminVerificationController extends Controller
     {
         // 1. Find the record based on type (Matched to web.php strings)
         $record = match ($type) {
-            'seller' => SellerVerification::findOrFail($id),
+            'buyer'    => BuyerVerification::findOrFail($id),
+            'seller'   => SellerVerification::findOrFail($id),
             'business' => BusinessVerification::findOrFail($id),
-            'ev' => StationVerification::findOrFail($id), // Changed from 'ev_station' to 'ev'
-            'garage' => GarageVerification::findOrFail($id), // Added garage
-            default => abort(404),
+            'ev'       => StationVerification::findOrFail($id),
+            'garage'   => GarageVerification::findOrFail($id),
+            default    => abort(404),
         };
 
         // 2. Get the specific path column for each type
         $path = match ($type) {
-            'seller' => $record->national_id_path,
+            'buyer'    => $record->national_id_path,
+            'seller'   => $record->national_id_path,
             'business' => $record->registration_doc_path,
-            'ev' => $record->license_path,
-            'garage' => $record->license_path, // Ensure this matches your Garage migration column!
-            default => null,
+            'ev'       => $record->license_path,
+            'garage'   => $record->license_path,
+            default    => null,
         };
 
         // 3. Validation

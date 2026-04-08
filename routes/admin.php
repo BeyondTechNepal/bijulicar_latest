@@ -33,6 +33,9 @@ Route::prefix('admin')
                 // Verifications
                 Route::get('/verifications', [AdminVerificationController::class, 'index'])->name('verifications.index');
 
+                Route::post('/verifications/buyer/{verification}/approve', [AdminVerificationController::class, 'approveBuyer'])->name('verifications.buyer.approve');
+                Route::post('/verifications/buyer/{verification}/reject', [AdminVerificationController::class, 'rejectBuyer'])->name('verifications.buyer.reject');
+
                 Route::post('/verifications/seller/{verification}/approve', [AdminVerificationController::class, 'approveSeller'])->name('verifications.seller.approve');
                 Route::post('/verifications/seller/{verification}/reject', [AdminVerificationController::class, 'rejectSeller'])->name('verifications.seller.reject');
 
@@ -48,7 +51,7 @@ Route::prefix('admin')
 
                 Route::get('/verifications/document/{type}/{id}', [AdminVerificationController::class, 'viewDocument'])
                     ->name('verifications.document')
-                    ->where('type', 'seller|business|ev|garage');
+                    ->where('type', 'buyer|seller|business|ev|garage');
 
                 // Map Location Requests
                 Route::get('/map-locations', [AdminVerificationController::class, 'mapLocations'])->name('map_locations.index');

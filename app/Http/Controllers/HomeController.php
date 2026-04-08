@@ -59,7 +59,7 @@ class HomeController extends Controller
                 ];
             })
             ->sortByDesc('active_listings')
-            ->take(3)
+            ->take(8)
             ->values();
 
         return view('frontend.pages.home', compact(

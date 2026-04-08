@@ -437,20 +437,20 @@
 
                             @foreach ($recentCars as $car)
                                 @php
-            $dtColors = [
-                'ev' => ['badge' => 'bg-[#4ade80] text-black', 'label' => '⚡ EV'],
-                'hybrid' => ['badge' => 'bg-blue-500 text-white', 'label' => '🔋 Hybrid'],
-                'petrol' => [
-                    'badge' => 'bg-black/60 backdrop-blur-md text-white',
-                    'label' => 'Petrol',
-                ],
-                'diesel' => [
-                    'badge' => 'bg-black/60 backdrop-blur-md text-white',
-                    'label' => 'Diesel',
-                ],
-            ];
-            $dtc = $dtColors[$car->drivetrain] ?? $dtColors['petrol'];
-            $sellerRole = $car->seller?->getRoleNames()->first();
+                                    $dtColors = [
+                                        'ev' => ['badge' => 'bg-[#4ade80] text-black', 'label' => '⚡ EV'],
+                                        'hybrid' => ['badge' => 'bg-blue-500 text-white', 'label' => '🔋 Hybrid'],
+                                        'petrol' => [
+                                            'badge' => 'bg-black/60 backdrop-blur-md text-white',
+                                            'label' => 'Petrol',
+                                        ],
+                                        'diesel' => [
+                                            'badge' => 'bg-black/60 backdrop-blur-md text-white',
+                                            'label' => 'Diesel',
+                                        ],
+                                    ];
+                                    $dtc = $dtColors[$car->drivetrain] ?? $dtColors['petrol'];
+                                    $sellerRole = $car->seller?->getRoleNames()->first();
                                 @endphp
 
                                 <div
@@ -589,13 +589,10 @@
                             }
 
                             function startAuto() {
+                                clearInterval(autoTimer); // prevent stacking
                                 autoTimer = setInterval(() => {
-                                    // if near end, loop back
                                     if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
-                                        track.scrollTo({
-                                            left: 0,
-                                            behavior: 'smooth'
-                                        });
+                                        track.scrollTo({ left: 0, behavior: 'smooth' });
                                     } else {
                                         scrollBy(1);
                                     }
@@ -620,6 +617,14 @@
                             });
                             track.addEventListener('touchend', () => startAuto(), {
                                 passive: true
+                            });
+
+                            track.addEventListener('mouseenter', () => {
+                                clearInterval(autoTimer);
+                            });
+
+                            track.addEventListener('mouseleave', () => {
+                                startAuto();
                             });
 
                             startAuto();
@@ -656,166 +661,185 @@
          FEATURED BUSINESSES
     ══════════════════════════════════════════════════════════════ --}}
         @if (isset($featuredBusinesses) && $featuredBusinesses->isNotEmpty())
-    <section class="py-20 bg-[#0a0f1e] text-white overflow-hidden relative">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(74,222,128,0.06)_0%,_transparent_60%)]"></div>
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
-
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-                <div>
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="h-[2px] w-8 bg-[#4ade80]"></span>
-                        <span class="text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Verified Network</span>
-                    </div>
-                    <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic">
-                        Featured <span class="text-slate-500">Businesses</span>
-                    </h2>
+            <section class="py-20 bg-[#0a0f1e] text-white overflow-hidden relative">
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(74,222,128,0.06)_0%,_transparent_60%)]">
                 </div>
-                <a href="{{ route('businesses.index') }}" class="inline-flex items-center gap-2 text-sm font-black text-slate-400 hover:text-[#4ade80] transition-colors group">
-                    View All Businesses
-                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
+                <div class="absolute inset-0 opacity-[0.03]"
+                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
 
-            {{-- Slider Container --}}
-            <div class="relative overflow-hidden" id="biz-slider-container">
-                {{-- Slider Track --}}
-                <div class="flex gap-6 transition-transform duration-500 ease-in-out" id="biz-slider-track">
-                    @foreach ($featuredBusinesses as $biz)
-                        {{-- 
-                            Slide Item 
-                            Mobile: 100% width. 
-                            Desktop: exactly 1/3 of the container minus the gap spacing. 
-                            (2 gaps of 1.5rem = 3rem total gap / 3 items = 1rem subtracted per item)
-                        --}}
-                        <div class="flex-none w-full md:w-[calc((100%-3rem)/3)]">
-                            <a href="{{ $biz['profile_url'] }}" class="block h-full group relative bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300 overflow-hidden">
-
-                                {{-- Subtle glow on hover --}}
-                                <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(74,222,128,0.08),_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-
-                                <div class="relative z-10 flex flex-col h-full">
-                                    <div class="flex items-start justify-between mb-5">
-                                        <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-black text-white group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/30 transition-all duration-300">
-                                            {{ $biz['initials'] }}
-                                        </div>
-                                        <span class="flex items-center gap-1.5 text-[10px] font-black text-[#4ade80] bg-[#4ade80]/10 border border-[#4ade80]/20 px-2.5 py-1 rounded-full">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                            </svg>
-                                            Verified
-                                        </span>
-                                    </div>
-
-                                    <h3 class="text-lg font-black text-white leading-tight mb-1 group-hover:text-[#4ade80] transition-colors">
-                                        {{ $biz['name'] }}
-                                    </h3>
-                                    <p class="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-5 flex-grow">
-                                        <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        </svg>
-                                        <span class="truncate">{{ $biz['location'] }} <span class="mx-1 text-slate-600">·</span> {{ $biz['specialization'] }}</span>
-                                    </p>
-
-                                    <div class="flex items-center gap-5 py-4 border-t border-white/5 mt-auto">
-                                        <div>
-                                            <p class="text-xl font-black text-white">{{ $biz['active_listings'] }}</p>
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">Listings</p>
-                                        </div>
-                                        <div class="w-px h-8 bg-white/10"></div>
-                                        <div>
-                                            <p class="text-xl font-black text-white flex items-center gap-1.5">
-                                                {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '—' }}
-                                                @if ($biz['avg_rating'] > 0)
-                                                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                @endif
-                                            </p>
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">Rating</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
+                <div class="max-w-7xl mx-auto px-6 relative z-10">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="h-[2px] w-8 bg-[#4ade80]"></span>
+                                <span class="text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Verified
+                                    Network</span>
+                            </div>
+                            <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic">
+                                Featured <span class="text-slate-500">Businesses</span>
+                            </h2>
                         </div>
-                    @endforeach
+                        <a href="{{ route('businesses.index') }}"
+                            class="inline-flex items-center gap-2 text-sm font-black text-slate-400 hover:text-[#4ade80] transition-colors group">
+                            View All Businesses
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    {{-- Slider Container --}}
+                    <div class="relative overflow-hidden" id="biz-slider-container">
+                        {{-- Slider Track --}}
+                        <div class="flex gap-6 transition-transform duration-500 ease-in-out" id="biz-slider-track">
+                            @foreach ($featuredBusinesses as $biz)
+                                {{--
+                                Slide Item
+                                Mobile: 100% width.
+                                Desktop: exactly 1/3 of the container minus the gap spacing.
+                                (2 gaps of 1.5rem = 3rem total gap / 3 items = 1rem subtracted per item)
+                                --}}
+                                <div class="flex-none w-full md:w-[calc((100%-3rem)/3)]">
+                                    <a href="{{ $biz['profile_url'] }}"
+                                        class="block h-full group relative bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300 overflow-hidden">
+
+                                        {{-- Subtle glow on hover --}}
+                                        <div
+                                            class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(74,222,128,0.08),_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                                        </div>
+
+                                        <div class="relative z-10 flex flex-col h-full">
+                                            <div class="flex items-start justify-between mb-5">
+                                                <div
+                                                    class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-black text-white group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/30 transition-all duration-300">
+                                                    {{ $biz['initials'] }}
+                                                </div>
+                                                <span
+                                                    class="flex items-center gap-1.5 text-[10px] font-black text-[#4ade80] bg-[#4ade80]/10 border border-[#4ade80]/20 px-2.5 py-1 rounded-full">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    Verified
+                                                </span>
+                                            </div>
+
+                                            <h3
+                                                class="text-lg font-black text-white leading-tight mb-1 group-hover:text-[#4ade80] transition-colors">
+                                                {{ $biz['name'] }}
+                                            </h3>
+                                            <p class="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-5 flex-grow">
+                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                </svg>
+                                                <span class="truncate">{{ $biz['location'] }} <span class="mx-1 text-slate-600">·</span>
+                                                    {{ $biz['specialization'] }}</span>
+                                            </p>
+
+                                            <div class="flex items-center gap-5 py-4 border-t border-white/5 mt-auto">
+                                                <div>
+                                                    <p class="text-xl font-black text-white">{{ $biz['active_listings'] }}</p>
+                                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                        Listings</p>
+                                                </div>
+                                                <div class="w-px h-8 bg-white/10"></div>
+                                                <div>
+                                                    <p class="text-xl font-black text-white flex items-center gap-1.5">
+                                                        {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '—' }}
+                                                        @if ($biz['avg_rating'] > 0)
+                                                            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                        @endif
+                                                    </p>
+                                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                        Rating</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    {{-- Vanilla JS Auto-Slider Logic --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('biz-slider-container');
-            const track = document.getElementById('biz-slider-track');
-            
-            if (!track || !container) return;
+            {{-- Vanilla JS Auto-Slider Logic --}}
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const container = document.getElementById('biz-slider-container');
+                    const track = document.getElementById('biz-slider-track');
 
-            const cards = track.children;
-            const totalCards = cards.length;
-            
-            // Determine how many cards are visible based on screen width
-            const getCardsPerView = () => window.innerWidth >= 768 ? 3 : 1;
-            
-            // Only initialize slider if we have more cards than what fits on screen
-            if (totalCards <= getCardsPerView()) return;
+                    if (!track || !container) return;
 
-            let currentIndex = 0;
-            let slideInterval;
-            const gapSize = 24; // Tailwind gap-6 is 24px (1.5rem)
+                    const cards = track.children;
+                    const totalCards = cards.length;
 
-            function slideNext() {
-                const cardsPerView = getCardsPerView();
-                currentIndex++;
+                    // Determine how many cards are visible based on screen width
+                    const getCardsPerView = () => window.innerWidth >= 768 ? 3 : 1;
 
-                // Reset back to start if we reach the end
-                if (currentIndex > totalCards - cardsPerView) {
-                    currentIndex = 0;
-                }
+                    // Only initialize slider if we have more cards than what fits on screen
+                    if (totalCards <= getCardsPerView()) return;
 
-                updateSliderPosition();
-            }
+                    let currentIndex = 0;
+                    let slideInterval;
+                    const gapSize = 24; // Tailwind gap-6 is 24px (1.5rem)
 
-            function updateSliderPosition() {
-                const cardWidth = cards[0].offsetWidth;
-                // Move track by (card width + gap) * index
-                const translation = currentIndex * (cardWidth + gapSize);
-                track.style.transform = `translateX(-${translation}px)`;
-            }
+                    function slideNext() {
+                        const cardsPerView = getCardsPerView();
+                        currentIndex++;
 
-            function startAutoSlide() {
-                slideInterval = setInterval(slideNext, 3000); // Slides every 3 seconds
-            }
+                        // Reset back to start if we reach the end
+                        if (currentIndex > totalCards - cardsPerView) {
+                            currentIndex = 0;
+                        }
 
-            function stopAutoSlide() {
-                clearInterval(slideInterval);
-            }
+                        updateSliderPosition();
+                    }
 
-            // Pause on hover
-            container.addEventListener('mouseenter', stopAutoSlide);
-            container.addEventListener('mouseleave', startAutoSlide);
+                    function updateSliderPosition() {
+                        const cardWidth = cards[0].offsetWidth;
+                        // Move track by (card width + gap) * index
+                        const translation = currentIndex * (cardWidth + gapSize);
+                        track.style.transform = `translateX(-${translation}px)`;
+                    }
 
-            // Handle window resize to keep layout from breaking
-            window.addEventListener('resize', () => {
-                // Instantly update position without animation for clean resizing
-                track.style.transition = 'none';
-                currentIndex = 0; // Reset to start on resize
-                updateSliderPosition();
-                
-                // Restore animation after a tiny delay
-                setTimeout(() => {
-                    track.style.transition = 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)';
-                }, 50);
-            });
+                    function startAutoSlide() {
+                        slideInterval = setInterval(slideNext, 3000); // Slides every 3 seconds
+                    }
 
-            // Start the slider
-            startAutoSlide();
-        });
-    </script>
-@endif
+                    function stopAutoSlide() {
+                        clearInterval(slideInterval);
+                    }
+
+                    // Pause on hover
+                    container.addEventListener('mouseenter', stopAutoSlide);
+                    container.addEventListener('mouseleave', startAutoSlide);
+
+                    // Handle window resize to keep layout from breaking
+                    window.addEventListener('resize', () => {
+                        // Instantly update position without animation for clean resizing
+                        track.style.transition = 'none';
+                        currentIndex = 0; // Reset to start on resize
+                        updateSliderPosition();
+
+                        // Restore animation after a tiny delay
+                        setTimeout(() => {
+                            track.style.transition = 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)';
+                        }, 50);
+                    });
+
+                    // Start the slider
+                    startAutoSlide();
+                });
+            </script>
+        @endif
 
 
         {{-- ══════════════════════════════════════════════════════════

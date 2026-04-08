@@ -655,143 +655,106 @@
         {{-- ══════════════════════════════════════════════════════════
          FEATURED BUSINESSES
     ══════════════════════════════════════════════════════════════ --}}
-       @if (isset($featuredBusinesses) && $featuredBusinesses->isNotEmpty())
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-    <section class="py-20 bg-[#0a0f1e] text-white overflow-hidden relative">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(74,222,128,0.06)_0%,_transparent_60%)]"></div>
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
-
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-                <div>
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="h-[2px] w-8 bg-[#4ade80]"></span>
-                        <span class="text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Verified Network</span>
-                    </div>
-                    <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic">
-                        Featured <span class="text-slate-500">Businesses</span>
-                    </h2>
+        @if (isset($featuredBusinesses) && $featuredBusinesses->isNotEmpty())
+            <section class="py-20 bg-[#0a0f1e] text-white overflow-hidden relative">
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(74,222,128,0.06)_0%,_transparent_60%)]">
                 </div>
-                <a href="{{ route('businesses.index') }}" class="inline-flex items-center gap-2 text-sm font-black text-slate-400 hover:text-[#4ade80] transition-colors group">
-                    View All Businesses
-                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
+                <div class="absolute inset-0 opacity-[0.03]"
+                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
 
-            <div class="swiper business-swiper !overflow-visible">
-                <div class="swiper-wrapper">
-                    @foreach ($featuredBusinesses as $biz)
-                        <div class="swiper-slide h-auto">
+                <div class="max-w-7xl mx-auto px-6 relative z-10">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="h-[2px] w-8 bg-[#4ade80]"></span>
+                                <span class="text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Verified
+                                    Network</span>
+                            </div>
+                            <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic">
+                                Featured <span class="text-slate-500">Businesses</span>
+                            </h2>
+                        </div>
+                        <a href="{{ route('businesses.index') }}"
+                            class="inline-flex items-center gap-2 text-sm font-black text-slate-400 hover:text-[#4ade80] transition-colors group">
+                            View All Businesses
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        @foreach ($featuredBusinesses as $biz)
                             <a href="{{ $biz['profile_url'] }}"
-                                class="group relative block h-full bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300 overflow-hidden">
+                                class="group relative bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300 overflow-hidden">
 
                                 {{-- Subtle glow on hover --}}
-                                <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(74,222,128,0.08),_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                                <div
+                                    class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(74,222,128,0.08),_transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                                </div>
 
-                                <div class="relative z-10 flex flex-col h-full">
+                                <div class="relative z-10">
                                     <div class="flex items-start justify-between mb-5">
-                                        <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-black text-white group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/30 transition-all duration-300">
+                                        <div
+                                            class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-black text-white group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/30 transition-all duration-300">
                                             {{ $biz['initials'] }}
                                         </div>
-                                        <span class="flex items-center gap-1.5 text-[10px] font-black text-[#4ade80] bg-[#4ade80]/10 border border-[#4ade80]/20 px-2.5 py-1 rounded-full">
+                                        <span
+                                            class="flex items-center gap-1.5 text-[10px] font-black text-[#4ade80] bg-[#4ade80]/10 border border-[#4ade80]/20 px-2.5 py-1 rounded-full">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd"
+                                                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
                                             </svg>
                                             Verified
                                         </span>
                                     </div>
 
-                                    <h3 class="text-lg font-black text-white leading-tight mb-1 group-hover:text-[#4ade80] transition-colors">
+                                    <h3
+                                        class="text-lg font-black text-white leading-tight mb-1 group-hover:text-[#4ade80] transition-colors">
                                         {{ $biz['name'] }}
                                     </h3>
                                     <p class="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-5">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         </svg>
                                         {{ $biz['location'] }}
                                         <span class="mx-1 text-slate-600">·</span>
                                         {{ $biz['specialization'] }}
                                     </p>
 
-                                    <div class="flex items-center gap-5 py-4 border-t border-white/5 mt-auto">
+                                    <div class="flex items-center gap-5 py-4 border-t border-white/5">
                                         <div>
                                             <p class="text-xl font-black text-white">{{ $biz['active_listings'] }}</p>
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">Listings</p>
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                Listings</p>
                                         </div>
                                         <div class="w-px h-8 bg-white/10"></div>
                                         <div>
                                             <p class="text-xl font-black text-white flex items-center gap-1.5">
                                                 {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '—' }}
                                                 @if ($biz['avg_rating'] > 0)
-                                                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    <svg class="w-4 h-4 text-amber-400" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                     </svg>
                                                 @endif
                                             </p>
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">Rating</p>
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                Rating</p>
                                         </div>
                                     </div>
                                 </div>
                             </a>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
-                
-                <div class="swiper-pagination !relative !bottom-0 mt-10"></div>
-            </div>
-        </div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            new Swiper('.business-swiper', {
-                slidesPerView: 1,
-                spaceBetween: 24,
-                loop: true,
-                speed: 800,
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true, // Pauses slider on hover
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                breakpoints: {
-                    768: {
-                        slidesPerView: 2,
-                    },
-                    1024: {
-                        slidesPerView: 3, // Shows 3 slides as requested
-                    }
-                }
-            });
-        });
-    </script>
-
-    <style>
-        .business-swiper .swiper-slide {
-            height: auto !important; /* Ensures cards stretch to same height */
-        }
-        .business-swiper .swiper-pagination-bullet {
-            background: #475569;
-            opacity: 0.5;
-            transition: all 0.3s ease;
-        }
-        .business-swiper .swiper-pagination-bullet-active {
-            background: #4ade80 !important;
-            opacity: 1;
-            width: 20px;
-            border-radius: 4px;
-        }
-    </style>
-@endif
+            </section>
+        @endif
 
         {{-- ══════════════════════════════════════════════════════════
          PLATFORM FEATURES

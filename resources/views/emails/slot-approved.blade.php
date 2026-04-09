@@ -4,8 +4,8 @@
 
     <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
 
-        {{-- Top accent bar - emerald for EV --}}
-        <div style="height: 4px; background: #10b981;"></div>
+        {{-- Top accent bar - blue for booked --}}
+        <div style="height: 4px; background: #2563eb;"></div>
 
         {{-- Header --}}
         <div style="padding: 32px 40px 24px; border-bottom: 1px solid #f1f5f9;">
@@ -22,12 +22,12 @@
         {{-- Body --}}
         <div style="padding: 36px 40px;">
 
-            <p style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #10b981; margin: 0 0 8px;">
-                Slot Confirmed
+            <p style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #2563eb; margin: 0 0 8px;">
+                Slot Booked
             </p>
 
             <h1 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0 0 16px; font-style: italic; text-transform: uppercase; letter-spacing: -0.02em;">
-                Your charging slot is ready!
+                Your slot is reserved!
             </h1>
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 12px;">
@@ -35,26 +35,30 @@
             </p>
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
-                Your EV charging slot request has been <strong style="color: #10b981;">approved</strong>. 
-                Head over to the station and use the slot below.
+                The EV station has <strong style="color: #2563eb;">confirmed your booking</strong> for the slot below.
+                Please head over to the station — the station owner will mark your port active once your vehicle arrives.
             </p>
 
             {{-- Slot details card --}}
-            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px 24px; margin: 0 0 24px;">
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px 24px; margin: 0 0 24px;">
 
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <tr>
-                        <td style="padding: 8px 0; color: #6ee7b7; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; width: 40%;">Station</td>
-                        <td style="padding: 8px 0; color: #064e3b; font-weight: 700;">{{ $slot->station->name }}</td>
+                        <td style="padding: 8px 0; color: #93c5fd; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; width: 40%;">Station</td>
+                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">{{ $slot->station->name }}</td>
                     </tr>
-                    <tr style="border-top: 1px solid #d1fae5;">
-                        <td style="padding: 8px 0; color: #6ee7b7; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Slot</td>
-                        <td style="padding: 8px 0; color: #064e3b; font-weight: 700;">Port #{{ $slot->slot_number }}</td>
+                    <tr style="border-top: 1px solid #dbeafe;">
+                        <td style="padding: 8px 0; color: #93c5fd; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Port</td>
+                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">Port #{{ $slot->slot_number }}</td>
+                    </tr>
+                    <tr style="border-top: 1px solid #dbeafe;">
+                        <td style="padding: 8px 0; color: #93c5fd; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Status</td>
+                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">Booked — arrive to activate</td>
                     </tr>
                     @if ($slot->free_at)
-                    <tr style="border-top: 1px solid #d1fae5;">
-                        <td style="padding: 8px 0; color: #6ee7b7; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Available until</td>
-                        <td style="padding: 8px 0; color: #064e3b; font-weight: 700;">{{ $slot->free_at->format('D, d M Y — h:i A') }}</td>
+                    <tr style="border-top: 1px solid #dbeafe;">
+                        <td style="padding: 8px 0; color: #93c5fd; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Available until</td>
+                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">{{ $slot->free_at->format('D, d M Y — h:i A') }}</td>
                     </tr>
                     @endif
                 </table>

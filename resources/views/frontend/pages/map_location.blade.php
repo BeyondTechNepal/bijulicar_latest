@@ -266,9 +266,13 @@
             filtered.forEach(loc => {
                 const isEV       = loc.type === 'ev-station';
                 const hasSpace   = isEV ? (loc.available_slots > 0) : (loc.free_bays > 0);
-                const iconColor  = isEV ? (hasSpace ? '#16a34a' : '#ef4444') : (hasSpace ? '#6366f1' : '#ef4444');
+                const hasAvailable = loc.available_slots > 0;
+                const hasBooked    = (loc.booked_slots ?? 0) > 0;
+                const iconColor    = isEV
+                    ? (hasAvailable ? '#16a34a' : hasBooked ? '#f59e0b' : '#ef4444')
+                    : (hasSpace ? '#6366f1' : '#ef4444');
 
-                const marker = L.marker([loc.latitude, loc.longitude], { icon: makeIcon(iconColor, hasSpace) })
+                const marker = L.marker([loc.latitude, loc.longitude], { icon: makeIcon(iconColor, isEV ? hasAvailable : hasSpace) })
                     .addTo(map)
                     .bindPopup(buildPopup(loc), { maxWidth: 320, minWidth: 280 });
 
@@ -318,12 +322,23 @@
                         <p style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin:0 0 6px">Port status</p>
                         <div style="display:flex;flex-wrap:wrap;gap:4px">`;
                     loc.slots.forEach(s => {
-                        // green=available, amber=pending (requested not yet approved), red=occupied (approved)
-                        const bg    = s.status === 'available' ? '#f0fdf4' : s.status === 'pending' ? '#fffbeb' : '#fef2f2';
-                        const color = s.status === 'available' ? '#16a34a' : s.status === 'pending' ? '#d97706' : '#dc2626';
-                        const bdr   = s.status === 'available' ? '#bbf7d0' : s.status === 'pending' ? '#fde68a' : '#fecaca';
+                        // green=available, amber=pending, blue=booked, red=occupied
+                        const bg    = s.status === 'available' ? '#f0fdf4'
+                                    : s.status === 'pending'   ? '#fffbeb'
+                                    : s.status === 'booked'    ? '#eff6ff'
+                                    : '#fef2f2';
+                        const color = s.status === 'available' ? '#16a34a'
+                                    : s.status === 'pending'   ? '#d97706'
+                                    : s.status === 'booked'    ? '#2563eb'
+                                    : '#dc2626';
+                        const bdr   = s.status === 'available' ? '#bbf7d0'
+                                    : s.status === 'pending'   ? '#fde68a'
+                                    : s.status === 'booked'    ? '#bfdbfe'
+                                    : '#fecaca';
                         const label = s.status === 'pending' ? '~' : s.slot_number;
-                        const tip   = s.status === 'pending' ? `Port #${s.slot_number} — pending approval` : `Port #${s.slot_number} — ${s.status}`;
+                        const tip   = s.status === 'pending' ? `Port #${s.slot_number} — pending approval`
+                                    : s.status === 'booked'  ? `Port #${s.slot_number} — booked (arriving soon)`
+                                    : `Port #${s.slot_number} — ${s.status}`;
                         slotGrid += `<div title="${tip}"
                                           style="width:28px;height:28px;border-radius:6px;background:${bg};border:1px solid ${bdr};
                                                  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:${color}">

@@ -45,6 +45,7 @@ class MapController extends Controller
                 // reduce the green count — they are still awaiting approval.
                 $available = $slots->where('status', 'available')->count();
                 $pending   = $slots->where('status', 'pending')->count();
+                $booked    = $slots->where('status', 'booked')->count();
                 $occupied  = $slots->where('status', 'occupied')->count();
 
                 $nextFree = $slots
@@ -56,6 +57,7 @@ class MapController extends Controller
                 $base['slots']           = $slots->values();
                 $base['available_slots'] = $available;
                 $base['pending_slots']   = $pending;
+                $base['booked_slots']    = $booked;
                 $base['occupied_slots']  = $occupied;
                 $base['next_free_at']    = $nextFree?->free_at?->toDateTimeString();
 

@@ -72,7 +72,7 @@ class EVStationSlotController extends Controller
         abort_unless($slot->user_id == auth()->id(), 403);
 
         $request->validate([
-            'status'  => 'required|in:available,occupied',
+            'status'  => 'required|in:available,occupied,booked',
             'free_at' => 'nullable|date|after:now',
         ]);
 
@@ -90,32 +90,31 @@ class EVStationSlotController extends Controller
      * This is the moment the slot becomes truly "occupied" — map turns red.
      * Customer receives a confirmation email.
      */
-    
+    public function approveRequest(Request $request, EvStationSlot $slot)
+    {
+        abort_unless($slot->user_id == auth()->id(), 403);
+        abort_unless($slot->isPending(), 422, 'Only pending requests can be approved.');
 
-public function approveRequest(Request $request, EvStationSlot $slot)
-{
-    abort_unless($slot->user_id == auth()->id(), 403);
-    abort_unless($slot->isPending(), 422, 'Only pending requests can be approved.');
+        $request->validate([
+            'free_at' => 'nullable|date|after:now',
+        ]);
 
-    $request->validate([
-        'free_at' => 'nullable|date|after:now',
-    ]);
+        $customer = $slot->occupant;
+        abort_unless($customer, 404, 'No customer linked to this slot.');
 
-    $customer = $slot->occupant;
-    abort_unless($customer, 404, 'No customer linked to this slot.');
+        // Mark as BOOKED — customer confirmed, but vehicle hasn't arrived yet.
+        // Station manually marks occupied when vehicle physically arrives.
+        $slot->update([
+            'status'  => 'booked',
+            'free_at' => $request->free_at,
+        ]);
 
-    // Change: 'occupied' → 'booked'
-    $slot->update([
-        'status'  => 'booked',   // ← was 'occupied'
-        'free_at' => $request->free_at,
-    ]);
+        Mail::to($customer->email)->send(
+            new SlotRequestApprovedMail($slot, $customer)
+        );
 
-    Mail::to($customer->email)->send(
-        new SlotRequestApprovedMail($slot, $customer)
-    );
-
-    return back()->with('success', "Slot #{$slot->slot_number} booked and confirmation email sent to {$customer->name}.");
-}
+        return back()->with('success', "Slot #{$slot->slot_number} booked and confirmation email sent to {$customer->name}.");
+    }
 
     /**
      * Station rejects a PENDING customer request.

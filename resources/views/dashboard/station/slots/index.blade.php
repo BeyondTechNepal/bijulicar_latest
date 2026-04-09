@@ -100,7 +100,6 @@
                             <p class="text-xs text-slate-400 font-medium mt-0.5">
                                 {{ $slot->occupant->email ?? '—' }}
                             </p>
-
                             @if ($slot->occupant->phone ?? false)
                             <p class="text-xs text-slate-500 font-medium mt-0.5">
                                 📞 {{ $slot->occupant->phone }}
@@ -206,6 +205,7 @@
             @foreach ($slots as $slot)
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-4
                         {{ $slot->isPending()  ? 'bg-amber-50/40' : '' }}
+                        {{ $slot->isBooked()   ? 'bg-blue-50/40'  : '' }}
                         {{ $slot->isOccupied() ? 'bg-red-50/30'   : '' }}">
 
                 {{-- Port identity --}}
@@ -213,6 +213,7 @@
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm
                         {{ $slot->isAvailable() ? 'bg-emerald-100 text-emerald-700' : '' }}
                         {{ $slot->isPending()   ? 'bg-amber-100 text-amber-700'   : '' }}
+                        {{ $slot->isBooked()    ? 'bg-blue-100 text-blue-700'     : '' }}
                         {{ $slot->isOccupied()  ? 'bg-red-100 text-red-600'       : '' }}">
                         #{{ $slot->slot_number }}
                     </div>
@@ -222,6 +223,14 @@
                         @if ($slot->isPending() && $slot->occupant)
                             <p class="text-xs text-amber-600 font-bold mt-0.5">
                                 ⏳ {{ $slot->occupant->name }} requested · awaiting your approval
+                            </p>
+
+                        @elseif ($slot->isBooked() && $slot->occupant)
+                            <p class="text-xs text-blue-600 font-bold mt-0.5">
+                                🔵 {{ $slot->occupant->name }}
+                                @if ($slot->occupant->phone)
+                                    · 📞 {{ $slot->occupant->phone }}
+                                @endif
                             </p>
 
                         @elseif ($slot->isOccupied() && $slot->occupant)
@@ -249,6 +258,30 @@
                     <span class="text-[10px] text-amber-500 font-bold italic">
                         Approve or reject above ↑
                     </span>
+
+                @elseif ($slot->isBooked())
+                    {{-- Vehicle confirmed booked — station marks occupied when they arrive --}}
+                    <div class="flex flex-wrap items-center gap-2">
+                        <form method="POST" action="{{ route('station.slots.update', $slot) }}" class="flex flex-wrap items-center gap-2">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="occupied">
+                            <input type="datetime-local" name="free_at"
+                                class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-red-400"
+                                min="{{ now()->addMinutes(5)->format('Y-m-d\TH:i') }}">
+                            <button type="submit"
+                                class="px-3 py-1.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-600 transition-colors">
+                                Vehicle Arrived — Mark Occupied
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('station.slots.update', $slot) }}">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="available">
+                            <button type="submit"
+                                class="px-3 py-1.5 border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-colors">
+                                No Show — Free Slot
+                            </button>
+                        </form>
+                    </div>
 
                 @else
                     <form method="POST" action="{{ route('station.slots.update', $slot) }}"

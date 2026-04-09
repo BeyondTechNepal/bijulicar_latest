@@ -99,6 +99,17 @@
                         @enderror
                     </div>
                 </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                        Phone Number
+                    </label>
+                    <input type="tel" name="phone" value="{{ old('phone') }}" required
+                        placeholder="+977 98XXXXXXXX"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('phone') border-red-500 @enderror">
+                    @error('phone')
+                        <p class="text-[9px] text-red-500 font-bold uppercase mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1">

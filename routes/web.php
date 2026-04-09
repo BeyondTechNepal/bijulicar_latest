@@ -126,7 +126,16 @@ Route::middleware(['auth'])->group(function () {
 // ── Dashboard — smart redirect based on role ───────────────────────────
 Route::get('/dashboard', function () {
     $user = auth()->user();
-    if ($user->hasRole('buyer'))      return redirect()->route('buyer.dashboard');
+    if ($user->hasRole('buyer')) {
+        $verification = $user->buyerVerification;
+        if (!$verification) {
+            return redirect()->route('buyer.verify.create')->with('info', 'Please complete your buyer verification to continue.');
+        }
+        if (!$verification->isApproved()) {
+            return redirect()->route('verification.pending');
+        }
+        return redirect()->route('buyer.dashboard');
+    }
     if ($user->hasRole('seller'))     return redirect()->route('seller.dashboard');
     if ($user->hasRole('business'))   return redirect()->route('business.dashboard');
     if ($user->hasRole('ev-station')) return redirect()->route('station.dashboard');

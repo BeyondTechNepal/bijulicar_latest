@@ -85,11 +85,12 @@
                             @endif
                         </div>
                         <span class="shrink-0 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border
-                            {{ $slot->isAvailable()
-                                ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                                : 'bg-amber-50 text-amber-600 border-amber-200' }}">
-                            {{ $slot->isOccupied() ? 'Pending / Occupied' : 'Available' }}
-                        </span>
+                           {{ $slot->isAvailable() ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : '' }}
+                           {{ $slot->isPending()   ? 'bg-amber-50 text-amber-600 border-amber-200'       : '' }}
+                           {{ $slot->isBooked()    ? 'bg-blue-50 text-blue-600 border-blue-200'          : '' }}
+                           {{ $slot->isOccupied()  ? 'bg-red-50 text-red-600 border-red-200'             : '' }}">
+                           {{ ucfirst($slot->status) }}
+                        <span>
                     </div>
                     @endforeach
                 </div>

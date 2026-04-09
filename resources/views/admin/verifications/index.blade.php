@@ -575,6 +575,35 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
+
+                        
+                        @foreach ($buyersAll as $v)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-5 py-3.5">
+                                    <div class="font-bold text-gray-800">{{ $v->user->name }}</div>
+                                    <div class="text-xs text-gray-400">{{ $v->user->email }}</div>
+                                </td>
+                                <td class="px-5 py-3.5">
+                                    <span class="text-[10px] font-black bg-green-50 text-green-600 border border-green-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Buyer</span>
+                                </td>
+                                <td class="px-5 py-3.5">
+                                    <div class="text-xs font-bold text-gray-700">{{ $v->full_name }}</div>
+                                    <div class="text-xs text-gray-400">{{ $v->contact }}</div>
+                                </td>
+                                <td class="px-5 py-3.5">
+                                    @if ($v->status === 'approved')
+                                        <span class="text-[10px] font-black bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Approved</span>
+                                    @else
+                                        <span class="text-[10px] font-black bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Rejected</span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3.5 text-xs text-gray-400">{{ $v->updated_at->format('M d, Y') }}</td>
+                                <td class="px-5 py-3.5">
+                                    <a href="{{ route('admin.verifications.document', ['type' => 'buyer', 'id' => $v->id]) }}"
+                                       target="_blank" class="text-xs font-bold text-indigo-600 hover:underline">View ID</a>
+                                </td>
+                            </tr>
+                        @endforeach
                         @foreach ($sellersAll as $v)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-5 py-3.5">

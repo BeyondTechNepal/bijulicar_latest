@@ -100,6 +100,12 @@
                             <p class="text-xs text-slate-400 font-medium mt-0.5">
                                 {{ $slot->occupant->email ?? '—' }}
                             </p>
+
+                            @if ($slot->occupant->phone ?? false)
+                            <p class="text-xs text-slate-500 font-medium mt-0.5">
+                                📞 {{ $slot->occupant->phone }}
+                            </p>
+                            @endif
                             <p class="text-xs text-amber-600 font-bold mt-1">
                                 Requesting Port #{{ $slot->slot_number }} · Submitted {{ $slot->updated_at->diffForHumans() }}
                             </p>

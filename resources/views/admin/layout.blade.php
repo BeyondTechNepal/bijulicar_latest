@@ -194,6 +194,12 @@
                                     <span class="hide-on-collapse">News Banner</span>
                                 </a>
                             @endcan
+
+                            <a href="{{ route('admin.newsletter.form') }}"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.newsletter.form') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                                <span class="w-5 text-center">•</span>
+                                <span class="hide-on-collapse">News Letter</span>
+                            </a>
                         </div>
                     </div>
                 @endcan

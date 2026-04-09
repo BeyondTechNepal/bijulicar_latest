@@ -72,16 +72,27 @@
 
             <div class="lg:col-span-2">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Newsletter</h4>
+
                 <div class="relative">
-                    <input type="email" placeholder="Your email"
-                        class="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-xs focus:outline-none focus:border-[#4ade80] transition-all">
-                    <button
-                        class="absolute right-1.5 top-1.5 bg-slate-900 text-white p-2 rounded-lg hover:bg-[#16a34a] transition-all">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </button>
+                    <form id="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST">
+                        @csrf
+                        <input type="email" name="email" placeholder="Your email"
+                            class="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-xs focus:outline-none focus:border-[#4ade80] transition-all"
+                            required>
+                        <button type="submit"
+                            class="absolute right-1.5 top-1.5 bg-slate-900 text-white p-2 rounded-lg hover:bg-[#16a34a] transition-all">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </button>
+                    </form>
+
+                    <div class="min-h-[20px] mt-3">
+                        <p id="newsletter-message" 
+                        class="text-[11px] font-medium tracking-wide px-1 hidden items-center gap-2 transition-all duration-300">
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,3 +117,45 @@
         </div>
     </div>
 </footer>
+
+{{-- script for ajax email subscription --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('newsletter-form');
+        const message = document.getElementById('newsletter-message');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // prevent page reload
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    message.textContent = data.success;
+                    message.classList.remove('text-red-600', 'hidden');
+                    message.classList.add('text-green-600');
+                    form.reset();
+                } else if(data.error){
+                    message.textContent = data.error;
+                    message.classList.remove('text-green-600', 'hidden');
+                    message.classList.add('text-red-600');
+                }
+            })
+            .catch(err => {
+                message.textContent = 'Something went wrong!';
+                message.classList.remove('text-green-600', 'hidden');
+                message.classList.add('text-red-600');
+                console.error(err);
+            });
+        });
+    });
+</script>

@@ -19,6 +19,7 @@ use App\Http\Controllers\Garage\GarageAppointmentController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\NewsletterController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes ─────────────────────────────────────────────
@@ -44,6 +45,13 @@ Route::get('/cars/{car}', [App\Http\Controllers\CarController::class, 'show'])->
 // Public business directory
 Route::get('/businesses', [BusinessDirectoryController::class, 'index'])->name('businesses.index');
 Route::get('/businesses/{id}', [BusinessDirectoryController::class, 'show'])->name('businesses.show')->whereNumber('id');
+
+// newsletter
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
+    ->name('newsletter.subscribe');
+
+Route::get('/newsletter/verify/{token}', [NewsletterController::class, 'verify'])
+    ->name('newsletter.verify');
 
 // ── Auth-required routes (no verified.account check) ──────────────────
 // Verification forms and public booking must be outside verified.account

@@ -126,6 +126,12 @@ Route::prefix('admin')
             // ── News (separate role group) ─────────────────────────────
             Route::middleware(['role:superadmin|admin|newsadmin,admin'])->group(function () {
                 Route::resource('news', App\Http\Controllers\Admin\NewsArticleController::class);
+                Route::resource('newsletter', App\Http\Controllers\Admin\NewsletterController::class)
+                ->only(['index', 'store'])
+                ->names([
+                    'index' => 'newsletter.form',
+                    'store' => 'newsletter.send'
+                ]);
             });
 
             // ── 4. Superadmin only ─────────────────────────────────────

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\NotificationService;
 use App\Mail\AdApprovedMail;
 use App\Mail\AdPublishedMail;
 use App\Mail\AdRejectedMail;
@@ -63,6 +64,8 @@ class AdminAdvertisementController extends Controller
             'reviewed_at'     => now(),
         ]);
 
+        app(NotificationService::class)->adApproved($advertisement);
+
         $this->sendMail(
             new AdApprovedMail($advertisement),
             $advertisement->owner->email
@@ -89,6 +92,8 @@ class AdminAdvertisementController extends Controller
             'reviewed_by'      => Auth::id(),
             'reviewed_at'      => now(),
         ]);
+
+        app(NotificationService::class)->adRejected($advertisement);
 
         $this->sendMail(
             new AdRejectedMail($advertisement),
@@ -121,6 +126,8 @@ class AdminAdvertisementController extends Controller
             'payment_note'   => $request->payment_note,
             'paid_at'        => $request->paid_at,
         ]);
+
+        app(NotificationService::class)->adPublished($advertisement);
 
         $this->sendMail(
             new AdPublishedMail($advertisement),

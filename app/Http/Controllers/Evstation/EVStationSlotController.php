@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Evstation;
 
 use App\Http\Controllers\Controller;
+use App\Services\NotificationService;
 use App\Mail\SlotRequestApprovedMail;
 use App\Mail\SlotRequestRejectedMail;
 use App\Models\EvStationSlot;
@@ -108,6 +109,7 @@ class EVStationSlotController extends Controller
             'status'  => 'booked',
             'free_at' => $request->free_at,
         ]);
+        app(NotificationService::class)->slotApproved($slot, $customer);
 
         Mail::to($customer->email)->send(
             new SlotRequestApprovedMail($slot, $customer)
@@ -138,6 +140,7 @@ class EVStationSlotController extends Controller
             'free_at'     => null,
             'occupied_by' => null,
         ]);
+        app(NotificationService::class)->slotRejected($slot, $customer, $request->rejection_reason ?? '');
 
         Mail::to($customer->email)->send(
             new SlotRequestRejectedMail($slot, $customer, $request->rejection_reason ?? '')

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Garage;
 
 use App\Http\Controllers\Controller;
+use App\Services\NotificationService;
 use App\Mail\BookingApprovedMail;
 use App\Mail\BookingRejectedMail;
 use App\Models\GarageAppointment;
@@ -74,6 +75,8 @@ class GarageAppointmentController extends Controller
             'garage_note'         => $request->garage_note,
         ]);
 
+        app(NotificationService::class)->appointmentApproved($appointment);
+
         // Sync bay status if a bay number was assigned
         if ($request->bay_number) {
             GarageBay::where('user_id', auth()->id())
@@ -110,6 +113,8 @@ class GarageAppointmentController extends Controller
             'status'           => 'rejected',
             'rejection_reason' => $request->rejection_reason,
         ]);
+
+        app(NotificationService::class)->appointmentRejected($appointment);
 
         Mail::to($appointment->customer->email)->send(
             new BookingRejectedMail($appointment)

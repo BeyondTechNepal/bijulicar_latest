@@ -14,6 +14,7 @@ use App\Models\BusinessVerification;
 use App\Models\BuyerVerification;
 use App\Models\StationVerification;
 use App\Models\PreOrder;
+use App\Models\UserNotification;
 
 class User extends Authenticatable
 {
@@ -126,5 +127,15 @@ class User extends Authenticatable
     public function bookedAppointments(): HasMany
     {
         return $this->hasMany(GarageAppointment::class, 'customer_user_id');
+    }
+
+    public function notifications(): HasMany
+    {
+    return $this->hasMany(UserNotification::class);
+    }
+ 
+    public function unreadNotificationCount(): int
+    {
+    return $this->notifications()->whereNull('read_at')->count();
     }
 }

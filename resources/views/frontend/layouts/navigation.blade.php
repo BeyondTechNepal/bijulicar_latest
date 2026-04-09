@@ -55,11 +55,12 @@
                         elseif ($user->hasRole('ev-station'))  $dashRoute = route('station.dashboard');
                         elseif ($user->hasRole('garage'))      $dashRoute = route('garage.dashboard');
                         else                                   $dashRoute = route('dashboard');
-                        $roleLabel = $user->hasRole('buyer')      ? 'Buyer'
-                                   : ($user->hasRole('seller')    ? 'Seller'
-                                   : ($user->hasRole('business')  ? 'Business'
+                        $roleLabel = $user->hasRole('buyer')       ? 'Buyer'
+                                   : ($user->hasRole('seller')     ? 'Seller'
+                                   : ($user->hasRole('business')   ? 'Business'
                                    : ($user->hasRole('ev-station') ? 'EV Station'
-                                   : ($user->hasRole('garage')    ? 'Garage' : 'User'))));
+                                   : ($user->hasRole('garage')     ? 'Garage' : 'User'))));
+                        $unreadCount = $user->unreadNotificationCount();
                     @endphp
 
                     <!-- {{-- Dashboard quick-link --}}
@@ -70,15 +71,25 @@
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         Dashboard
-                    </a> -->
+                    </a> -->>
 
                     {{-- Avatar + dropdown --}}
                     <div class="relative" id="userMenuWrapper">
                         <button onclick="toggleUserMenu()"
                             class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-all group">
-                            <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-[11px] font-black uppercase tracking-wide shrink-0">
-                                {{ strtoupper(substr($user->name, 0, 2)) }}
+
+                            {{-- Avatar with unread notification badge --}}
+                            <div class="relative">
+                                <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-[11px] font-black uppercase tracking-wide shrink-0">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </div>
+                                @if ($unreadCount > 0)
+                                    <span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center leading-none">
+                                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                    </span>
+                                @endif
                             </div>
+
                             <div class="text-left leading-tight">
                                 <p class="text-[13px] font-bold text-slate-900 leading-none">{{ explode(' ', $user->name)[0] }}</p>
                                 <p class="text-[10px] font-bold text-green-600 uppercase tracking-wide leading-none mt-0.5">{{ $roleLabel }}</p>
@@ -91,13 +102,15 @@
 
                         {{-- Dropdown panel --}}
                         <div id="userDropdown"
-                            class="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] border border-slate-100 py-2 invisible opacity-0 scale-95 transition-all duration-200 origin-top-right z-50">
+                            class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] border border-slate-100 py-2 invisible opacity-0 scale-95 transition-all duration-200 origin-top-right z-50">
 
+                            {{-- User info --}}
                             <div class="px-4 py-3 border-b border-slate-100">
                                 <p class="text-[13px] font-bold text-slate-900 truncate">{{ $user->name }}</p>
                                 <p class="text-[11px] text-slate-400 truncate">{{ $user->email }}</p>
                             </div>
 
+                            {{-- My Dashboard --}}
                             <a href="{{ $dashRoute }}"
                                 class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,6 +120,7 @@
                                 My Dashboard
                             </a>
 
+                            {{-- Profile Settings --}}
                             <a href="{{ route('profile.edit') }}"
                                 class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +130,7 @@
                                 Profile Settings
                             </a>
 
-                            @auth
+                            {{-- My Bookings --}}
                             <a href="{{ route('booking.mine') }}"
                                class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,10 +139,30 @@
                                 </svg>
                                 My Bookings
                             </a>
-                            @endauth
+
+                            {{-- Notifications --}}
+                            <a href="{{ route('notifications.index') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all">
+                                <div class="relative w-4 h-4 shrink-0">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    @if ($unreadCount > 0)
+                                        <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                                    @endif
+                                </div>
+                                <span class="flex-1">Notifications</span>
+                                @if ($unreadCount > 0)
+                                    <span class="text-[10px] font-black bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full leading-none">
+                                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                    </span>
+                                @endif
+                            </a>
 
                             <div class="border-t border-slate-100 my-1"></div>
 
+                            {{-- Sign Out --}}
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
@@ -178,15 +212,25 @@
                         elseif ($user->hasRole('ev-station'))  $dashRoute = route('station.dashboard');
                         elseif ($user->hasRole('garage'))      $dashRoute = route('garage.dashboard');
                         else                                   $dashRoute = route('dashboard');
-                        $roleLabel = $user->hasRole('buyer')      ? 'Buyer'
-                                   : ($user->hasRole('seller')    ? 'Seller'
-                                   : ($user->hasRole('business')  ? 'Business'
+                        $roleLabel = $user->hasRole('buyer')       ? 'Buyer'
+                                   : ($user->hasRole('seller')     ? 'Seller'
+                                   : ($user->hasRole('business')   ? 'Business'
                                    : ($user->hasRole('ev-station') ? 'EV Station'
-                                   : ($user->hasRole('garage')    ? 'Garage' : 'User'))));
+                                   : ($user->hasRole('garage')     ? 'Garage' : 'User'))));
+                        $unreadCount = $unreadCount ?? $user->unreadNotificationCount();
                     @endphp
+
+                    {{-- Mobile user card --}}
                     <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[12px] font-black uppercase shrink-0">
-                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        <div class="relative">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[12px] font-black uppercase shrink-0">
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                            </div>
+                            @if ($unreadCount > 0)
+                                <span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center leading-none">
+                                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                </span>
+                            @endif
                         </div>
                         <div>
                             <p class="text-[14px] font-bold text-slate-900 leading-tight">{{ $user->name }}</p>
@@ -246,6 +290,34 @@
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </a>
+
+                    {{-- Mobile: My Bookings --}}
+                    <a href="{{ route('booking.mine') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 text-slate-700 font-bold text-sm">
+                        <span>My Bookings</span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </a>
+
+                    {{-- Mobile: Notifications --}}
+                    <a href="{{ route('notifications.index') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 text-slate-700 font-bold text-sm">
+                        <span class="flex items-center gap-2">
+                            Notifications
+                            @if ($unreadCount > 0)
+                                <span class="text-[10px] font-black bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full leading-none">
+                                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                </span>
+                            @endif
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </a>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"

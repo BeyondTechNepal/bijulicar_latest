@@ -21,6 +21,7 @@ use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes ─────────────────────────────────────────────
@@ -78,6 +79,18 @@ Route::middleware(['auth'])->group(function () {
     // Garage verification
     Route::get('/garage/verify', [GarageVerificationController::class, 'create'])->name('garage.verify.create');
     Route::post('/garage/verify', [GarageVerificationController::class, 'store'])->name('garage.verify.store');
+
+    // Full notifications page
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+ 
+    // Mark a single notification as read (and redirect to its url)
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])
+        ->name('notifications.read');
+ 
+    // Mark all as read
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
+        ->name('notifications.readAll');
 
     // ── Public booking — available to ALL authenticated roles ──────────
     // Any buyer, seller, business, ev-station, or garage user can book

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\NotificationService;
 use App\Mail\AccountApprovedMail;
 use App\Mail\AccountRejectedMail;
 use App\Models\BusinessVerification;
@@ -67,6 +68,7 @@ class AdminVerificationController extends Controller
             'status' => 'approved',
             'rejection_reason' => null,
         ]);
+        app(NotificationService::class)->accountApproved($verification->user);
 
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
 
@@ -83,6 +85,7 @@ class AdminVerificationController extends Controller
             'status' => 'rejected',
             'rejection_reason' => $request->reason,
         ]);
+        app(NotificationService::class)->accountRejected($verification->user, $request->reason ?? '');
 
         $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
@@ -97,6 +100,7 @@ class AdminVerificationController extends Controller
             'status' => 'approved',
             'rejection_reason' => null,
         ]);
+        app(NotificationService::class)->accountApproved($verification->user);
 
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
 
@@ -113,6 +117,7 @@ class AdminVerificationController extends Controller
             'status' => 'rejected',
             'rejection_reason' => $request->reason,
         ]);
+        app(NotificationService::class)->accountRejected($verification->user, $request->reason ?? '');
 
         $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
@@ -127,6 +132,7 @@ class AdminVerificationController extends Controller
             'status' => 'approved',
             'rejection_reason' => null,
         ]);
+        app(NotificationService::class)->accountApproved($verification->user);
 
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
 
@@ -157,6 +163,7 @@ class AdminVerificationController extends Controller
             'status' => 'approved',
             'rejection_reason' => null,
         ]);
+        app(NotificationService::class)->accountApproved($verification->user);
 
         // Send the same approval mail pattern you used for others
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
@@ -174,6 +181,7 @@ class AdminVerificationController extends Controller
             'status' => 'rejected',
             'rejection_reason' => $request->reason,
         ]);
+        app(NotificationService::class)->accountRejected($verification->user, $request->reason ?? '');
 
         $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
@@ -189,6 +197,7 @@ class AdminVerificationController extends Controller
             'status' => 'approved',
             'rejection_reason' => null,
         ]);
+        app(NotificationService::class)->accountApproved($verification->user);
 
         // Clear rejection reason and notify the user
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
@@ -209,6 +218,7 @@ class AdminVerificationController extends Controller
             'status' => 'rejected',
             'rejection_reason' => $request->reason,
         ]);
+        app(NotificationService::class)->accountRejected($verification->user, $request->reason ?? '');
 
         // Send the rejection mail with the specific reason provided by the admin
         $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);

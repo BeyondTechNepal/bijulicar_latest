@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminVerificationController;
 use App\Http\Controllers\Admin\AdminAdvertisementController;
 use App\Http\Controllers\Admin\AdminAdPricingController;
+use App\Http\Controllers\Admin\AdminRevenueController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AdminMapController;
@@ -123,6 +124,11 @@ Route::prefix('admin')
                 Route::prefix('ad-pricing')->name('ad-pricing.')->group(function () {
                     Route::get('/',                    [AdminAdPricingController::class, 'index'])->name('index');
                     Route::patch('/{adPricingRule}',   [AdminAdPricingController::class, 'update'])->name('update');
+                });
+
+                // ── Revenue ────────────────────────────────────────────
+                Route::prefix('revenue')->name('revenue.')->group(function () {
+                    Route::get('/', [AdminRevenueController::class, 'index'])->name('index');
                 });
             });
 

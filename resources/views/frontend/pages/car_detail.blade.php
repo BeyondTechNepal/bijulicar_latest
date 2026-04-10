@@ -544,9 +544,9 @@
                                         </div>
                                     @endif
                                 @elseif (auth()->user()->id === $car->seller_id)
-                                    <a href="{{ route('seller.cars.edit', $car) }}"
-                                        class="block w-full py-3.5 rounded-xl bg-slate-900 text-white text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-[#16a34a] transition-all">
-                                        Edit Your Listing
+                                    <a href="{{ auth()->user()->hasRole('business') ? route('business.cars.edit', $car) : route('seller.cars.edit', $car) }}"
+                                    class="block w-full py-3.5 rounded-xl bg-slate-900 text-white text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-[#16a34a] transition-all">
+                                    Edit Your Listing
                                     </a>
                                 @else
                                     <p class="text-center text-[12px] text-slate-400 font-bold">You must be buyer to order this

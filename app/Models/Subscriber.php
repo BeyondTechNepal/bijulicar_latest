@@ -23,7 +23,7 @@ class Subscriber extends Model
 
     /**
      * Check if subscriber is verified
-     */
+     */ 
     public function isVerified()
     {
         return !is_null($this->verified_at);

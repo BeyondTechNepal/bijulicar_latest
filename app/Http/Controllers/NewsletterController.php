@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\VerifyNewsletter;
+use App\Models\User;
 
 class NewsletterController extends Controller
 {
@@ -22,6 +23,12 @@ class NewsletterController extends Controller
         if($validator->fails()){
             return response()->json(['error' => $validator->errors()->first('email')]);
         }
+
+        if (User::where('email', $request->email)->exists()) {
+            return response()->json([
+                'error' => 'This email is already registered. Please login and enable newsletter from your account.'
+        ]);
+    }
 
         $subscriber = Subscriber::create([
             'email' => $request->email,

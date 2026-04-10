@@ -46,6 +46,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'phone'    => $request->phone,
             'password' => Hash::make($request->password),
+            'wants_newsletter' => $request->has('wants_newsletter'),
         ]);
 
         // Assign the chosen role — this is the RBAC birth moment

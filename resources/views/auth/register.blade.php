@@ -206,6 +206,19 @@
                     @enderror
                 </div>
 
+                <div class="flex items-center gap-3 mt-4">
+                    <input 
+                        type="checkbox" 
+                        name="wants_newsletter" 
+                        value="1"
+                        {{ old('wants_newsletter') ? 'checked' : '' }}
+                        class="w-4 h-4 text-[#16a34a] border-slate-300 rounded focus:ring-[#16a34a]"
+                    >
+                    <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                        Receive newsletters & updates
+                    </label>
+                </div>
+
                 <button type="submit"
                     class="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-[#16a34a] transition-all flex items-center justify-center gap-3 shadow-xl group">
                     Initialize Account

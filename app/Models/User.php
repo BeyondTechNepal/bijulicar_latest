@@ -23,7 +23,7 @@ class User extends Authenticatable
 
     protected $guard_name = 'web';
 
-    protected $fillable = ['name', 'email', 'phone', 'password'];
+    protected $fillable = ['name', 'email', 'phone', 'password', 'wants_newsletter'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -32,6 +32,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'wants_newsletter' => 'boolean',
         ];
     }
 

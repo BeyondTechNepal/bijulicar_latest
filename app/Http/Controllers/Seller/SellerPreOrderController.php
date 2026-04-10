@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\PreOrder;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -68,6 +69,7 @@ class SellerPreOrderController extends Controller
             'payment_method'  => $request->payment_method,
             'transaction_ref' => $request->transaction_ref,
         ]);
+        app(NotificationService::class)->preOrderDepositConfirmed($preOrder);
 
         $ctx = $this->context();
         return redirect()
@@ -103,6 +105,7 @@ class SellerPreOrderController extends Controller
             'status'   => 'converted',
             'order_id' => $order->id,
         ]);
+        app(NotificationService::class)->preOrderConverted($preOrder);
 
         // Car is now available (arrived), turn off pre-order mode
         $car->update([
@@ -123,6 +126,7 @@ class SellerPreOrderController extends Controller
         abort_if(!$preOrder->isCancellable(), 422, 'This pre-order can no longer be cancelled.');
 
         $preOrder->update(['status' => 'cancelled']);
+        app(NotificationService::class)->preOrderCancelledBySeller($preOrder);
 
         $ctx = $this->context();
         return redirect()

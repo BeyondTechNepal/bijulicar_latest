@@ -133,6 +133,8 @@ class GarageAppointmentController extends Controller
 
         $appointment->update(['status' => 'completed']);
 
+        app(NotificationService::class)->appointmentCompleted($appointment);
+
         // Free the bay that was linked to this appointment
         GarageBay::where('user_id', auth()->id())
             ->where('appointment_id', $appointment->id)

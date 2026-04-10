@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Purchase;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -69,6 +70,7 @@ class SellerOrderController extends Controller
         abort_if($order->status !== 'pending', 422, 'Only pending orders can be confirmed.');
 
         $order->update(['status' => 'confirmed']);
+        app(NotificationService::class)->orderConfirmed($order);
 
         $prefix = $this->context()['prefix'];
 
@@ -119,6 +121,8 @@ class SellerOrderController extends Controller
 
         $order->update(['status' => 'completed']);
         $order->car->decrementStock();
+        $order->load('car', 'buyer');
+        app(NotificationService::class)->orderCompleted($order);
 
         $prefix = $this->context()['prefix'];
 
@@ -136,6 +140,8 @@ class SellerOrderController extends Controller
         abort_if(!$order->isCancellable(), 422, 'This order can no longer be cancelled.');
 
         $order->update(['status' => 'cancelled']);
+        $order->load('car', 'buyer');
+        app(NotificationService::class)->orderCancelledBySeller($order);
 
         if ($order->car->status === 'reserved') {
             $order->car->update(['status' => 'available']);

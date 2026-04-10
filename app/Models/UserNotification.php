@@ -56,32 +56,81 @@ class UserNotification extends Model
         return $query->where('user_id', $userId);
     }
 
-    // ── Icon + colour map (used in blade views) ────────────────────────
+    // ── Colour + icon helpers (used in the notifications blade view) ───
 
     /**
-     * Returns a Tailwind colour class pair based on notification type.
-     * Format: [bg class, text class]
+     * Returns Tailwind bg + text class pair based on notification type.
+     *
+     * Green  → anything approved, confirmed, completed, published, arrived
+     * Red    → anything rejected or cancelled
+     * Blue   → informational (deposit confirmed, slot active)
+     * Slate  → fallback
      */
     public function colourClasses(): array
     {
         return match (true) {
-            str_ends_with($this->type, '_approved') || str_ends_with($this->type, '_published')
-                => ['bg-emerald-100', 'text-emerald-600'],
-            str_ends_with($this->type, '_rejected')
-                => ['bg-red-100', 'text-red-600'],
-            default
-                => ['bg-slate-100', 'text-slate-500'],
+            in_array($this->type, [
+                'ad_approved',
+                'ad_published',
+                'slot_approved',
+                'appointment_approved',
+                'appointment_completed',
+                'order_confirmed',
+                'order_completed',
+                'preorder_converted',
+                'account_approved',
+            ]) => ['bg-emerald-100', 'text-emerald-600'],
+
+            in_array($this->type, [
+                'ad_rejected',
+                'slot_rejected',
+                'appointment_rejected',
+                'order_cancelled',
+                'preorder_cancelled',
+                'account_rejected',
+            ]) => ['bg-red-100', 'text-red-600'],
+
+            in_array($this->type, [
+                'slot_occupied',
+                'preorder_deposit_confirmed',
+            ]) => ['bg-blue-100', 'text-blue-600'],
+
+            default => ['bg-slate-100', 'text-slate-500'],
         };
     }
 
     /**
-     * Returns a simple SVG path string for the notification icon dot.
+     * Returns 'check', 'cross', 'bolt', or 'info' — mapped to SVG icons in the blade view.
      */
     public function iconType(): string
     {
         return match (true) {
-            str_ends_with($this->type, '_approved') || str_ends_with($this->type, '_published') => 'check',
-            str_ends_with($this->type, '_rejected') => 'cross',
+            in_array($this->type, [
+                'ad_approved',
+                'ad_published',
+                'slot_approved',
+                'appointment_approved',
+                'appointment_completed',
+                'order_confirmed',
+                'order_completed',
+                'preorder_converted',
+                'account_approved',
+            ]) => 'check',
+
+            in_array($this->type, [
+                'ad_rejected',
+                'slot_rejected',
+                'appointment_rejected',
+                'order_cancelled',
+                'preorder_cancelled',
+                'account_rejected',
+            ]) => 'cross',
+
+            in_array($this->type, [
+                'slot_occupied',
+                'preorder_deposit_confirmed',
+            ]) => 'bolt',
+
             default => 'info',
         };
     }

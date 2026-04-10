@@ -9,7 +9,7 @@
             <div>
                 <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Account</p>
                 <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tight">Notifications</h1>
-                <p class="text-slate-400 text-sm font-medium mt-1">Updates on your ads, bookings, and account.</p>
+                <p class="text-slate-400 text-sm font-medium mt-1">Updates on your ads, bookings, orders, and account.</p>
             </div>
 
             @if ($notifications->isNotEmpty())
@@ -35,7 +35,7 @@
                         </svg>
                     </div>
                     <p class="text-slate-400 font-bold text-sm">No notifications yet.</p>
-                    <p class="text-xs text-slate-300 mt-1">Updates on your ads, bookings, and account will appear here.</p>
+                    <p class="text-xs text-slate-300 mt-1">Updates on your ads, bookings, orders, and account will appear here.</p>
                 </div>
 
             @else
@@ -47,7 +47,7 @@
 
                         <div class="flex items-start gap-4 px-6 py-4 {{ $notification->isUnread() ? 'bg-emerald-50/40' : '' }} hover:bg-slate-50 transition-all">
 
-                            {{-- Icon dot --}}
+                            {{-- Icon --}}
                             <div class="mt-0.5 shrink-0 w-8 h-8 rounded-lg {{ $bgClass }} flex items-center justify-center">
                                 @if ($notification->iconType() === 'check')
                                     <svg class="w-4 h-4 {{ $textClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,6 +56,10 @@
                                 @elseif ($notification->iconType() === 'cross')
                                     <svg class="w-4 h-4 {{ $textClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                @elseif ($notification->iconType() === 'bolt')
+                                    <svg class="w-4 h-4 {{ $textClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 @else
                                     <svg class="w-4 h-4 {{ $textClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,9 +81,11 @@
                                         {{ $notification->created_at->diffForHumans() }}
                                     </p>
                                 </div>
+
                                 @if ($notification->body)
                                     <p class="text-xs text-slate-500 mt-1 leading-relaxed">{{ $notification->body }}</p>
                                 @endif
+
                                 @if ($notification->url)
                                     <form method="POST" action="{{ route('notifications.read', $notification) }}" class="inline">
                                         @csrf

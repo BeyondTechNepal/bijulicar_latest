@@ -811,7 +811,7 @@
                     }
 
                     function startAutoSlide() {
-                        slideInterval = setInterval(slideNext, 3000); // Slides every 3 seconds
+                        slideInterval = setInterval(slideNext, 2000); // Slides every 3 seconds
                     }
 
                     function stopAutoSlide() {

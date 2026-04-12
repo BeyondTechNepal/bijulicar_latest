@@ -11,6 +11,8 @@ use App\Models\AdPricingRule;
 use App\Models\Advertisement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -134,6 +136,9 @@ class AdminAdvertisementController extends Controller
             $advertisement->owner->email
         );
 
+
+        // Bust home ads cache — ad is now live
+        Cache::forget(HomeController::CACHE_HOME_ADS);
         return redirect()
             ->route('admin.advertisements.index')
             ->with('success', "Payment confirmed. Ad \"{$advertisement->title}\" is now live.");

@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\HomeController;
 
 class AdminVerificationController extends Controller
 {
@@ -135,6 +137,9 @@ class AdminVerificationController extends Controller
         app(NotificationService::class)->accountApproved($verification->user);
 
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
+
+        // Bust featured businesses cache — new approved business may appear on homepage
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
 
         return back()->with('success', "{$verification->user->name} has been approved.");
     }

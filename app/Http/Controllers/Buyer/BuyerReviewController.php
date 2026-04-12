@@ -7,6 +7,8 @@ use App\Models\Car;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\HomeController;
 
 class BuyerReviewController extends Controller
 {
@@ -90,6 +92,8 @@ class BuyerReviewController extends Controller
             'body'      => $request->body,
         ]);
 
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
+
         return redirect()
             ->route('buyer.reviews.index')
             ->with('success', 'Review submitted successfully.');
@@ -124,6 +128,8 @@ class BuyerReviewController extends Controller
             'body'   => $request->body,
         ]);
 
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
+
         return redirect()
             ->route('buyer.reviews.index')
             ->with('success', 'Review updated successfully.');
@@ -137,6 +143,8 @@ class BuyerReviewController extends Controller
         abort_if($review->buyer_id !== Auth::id(), 403);
 
         $review->delete();
+
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
 
         return redirect()
             ->route('buyer.reviews.index')

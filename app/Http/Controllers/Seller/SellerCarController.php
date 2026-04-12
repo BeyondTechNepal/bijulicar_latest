@@ -8,6 +8,8 @@ use App\Models\CarImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\HomeController;
 
 class SellerCarController extends Controller
 {
@@ -115,6 +117,11 @@ class SellerCarController extends Controller
             }
         }
 
+
+        // Bust homepage caches
+        Cache::forget(HomeController::CACHE_FLEET_COUNTS);
+        Cache::forget(HomeController::CACHE_RECENT_CARS);
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')
             ->with('success', "{$car->displayName()} listed successfully with {$car->stock_quantity} unit(s).");
@@ -229,6 +236,11 @@ class SellerCarController extends Controller
             $firstImage->update(['is_primary' => true]);
         }
 
+
+        // Bust homepage caches
+        Cache::forget(HomeController::CACHE_FLEET_COUNTS);
+        Cache::forget(HomeController::CACHE_RECENT_CARS);
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')
             ->with('success', "Listing updated. Stock: {$car->fresh()->stock_quantity} unit(s).");
@@ -254,6 +266,11 @@ class SellerCarController extends Controller
         $car->delete();
 
         $ctx = $this->context();
+
+        // Bust homepage caches — deleted listing affects counts, recent cars, and rankings
+        Cache::forget(HomeController::CACHE_FLEET_COUNTS);
+        Cache::forget(HomeController::CACHE_RECENT_CARS);
+        Cache::forget(HomeController::CACHE_FEATURED_BIZ);
 
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')

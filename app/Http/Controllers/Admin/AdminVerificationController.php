@@ -170,7 +170,6 @@ class AdminVerificationController extends Controller
         ]);
         app(NotificationService::class)->accountApproved($verification->user);
 
-        // Send the same approval mail pattern you used for others
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
 
         return back()->with('success', "EV Station '{$verification->station_name}' has been approved.");
@@ -193,9 +192,8 @@ class AdminVerificationController extends Controller
         return back()->with('success', "EV Station '{$verification->station_name}' has been rejected.");
     }
 
-    /**
-     * Approve a garage verification request.
-     */
+    // ── Garage ────────────────────────────────────────────────────────
+
     public function approveGarage(GarageVerification $verification)
     {
         $verification->update([
@@ -204,15 +202,11 @@ class AdminVerificationController extends Controller
         ]);
         app(NotificationService::class)->accountApproved($verification->user);
 
-        // Clear rejection reason and notify the user
         $this->sendMail(new AccountApprovedMail($verification->user), $verification->user->email);
 
         return back()->with('success', "Garage '{$verification->garage_name}' has been approved successfully.");
     }
 
-    /**
-     * Reject a garage verification request with a reason.
-     */
     public function rejectGarage(Request $request, GarageVerification $verification)
     {
         $request->validate([
@@ -225,7 +219,6 @@ class AdminVerificationController extends Controller
         ]);
         app(NotificationService::class)->accountRejected($verification->user, $request->reason ?? '');
 
-        // Send the rejection mail with the specific reason provided by the admin
         $this->sendMail(new AccountRejectedMail($verification->user, $request->reason), $verification->user->email);
 
         return back()->with('success', "Garage '{$verification->garage_name}' has been rejected.");
@@ -235,7 +228,7 @@ class AdminVerificationController extends Controller
 
     public function viewDocument($type, $id)
     {
-        // 1. Find the record based on type (Matched to web.php strings)
+        // 1. Find the record based on type
         $record = match ($type) {
             'buyer'    => BuyerVerification::findOrFail($id),
             'seller'   => SellerVerification::findOrFail($id),
@@ -245,7 +238,7 @@ class AdminVerificationController extends Controller
             default    => abort(404),
         };
 
-        // 2. Get the specific path column for each type
+        // 2. Resolve the path column for this verification type
         $path = match ($type) {
             'buyer'    => $record->national_id_path,
             'seller'   => $record->national_id_path,
@@ -255,17 +248,21 @@ class AdminVerificationController extends Controller
             default    => null,
         };
 
-        // 3. Validation
-        // if (!$path || !Storage::disk('private')->exists($path)) {
-        //     abort(404, 'File not found on private disk.');
-        // }
+        // 3. ── BUG 4 FIX ───────────────────────────────────────────────
+        // Guard against null paths (upload never completed) and path
+        // traversal attacks (crafted paths stored in the DB).
+        // Storage::disk('private')->exists() resolves the path within the
+        // configured disk root and returns false for anything outside it —
+        // so ../../.env and similar traversals are safely rejected here.
+        if (!$path || !Storage::disk('private')->exists($path)) {
+            abort(404, 'Document not found.');
+        }
 
         return response()->file(Storage::disk('private')->path($path));
     }
 
     // ── Map Location Requests ─────────────────────────────────────────
 
-    /** List all pending map location submissions from EV stations and garages. */
     public function mapLocations()
     {
         $pending  = NewLocation::with('user')->where('is_active', false)->latest()->get();
@@ -285,7 +282,6 @@ class AdminVerificationController extends Controller
     {
         $request->validate(['reason' => ['required', 'string', 'max:500']]);
 
-        // Keep the record but ensure it stays inactive; optionally notify the user
         $location->update(['is_active' => false]);
 
         $this->sendMail(
@@ -298,11 +294,6 @@ class AdminVerificationController extends Controller
 
     // ── Private helper ────────────────────────────────────────────────
 
-    /**
-     * Send mail safely — approval/rejection always succeeds even if
-     * the mail server is unreachable or credentials aren't set yet.
-     * Failures are logged silently so you can debug without crashing.
-     */
     private function sendMail(object $mailable, string $to): void
     {
         try {

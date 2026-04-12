@@ -9,7 +9,7 @@
         $pendingOrders = $user->orders()->where('status', 'pending')->count();
         $totalPurchases = $user->purchases()->count();
         $totalReviews = $user->reviews()->count();
-        $recentOrders = $user->orders()->with(['car' => fn($q) => $q->withTrashed()])->latest('ordered_at')->take(4)->get();
+        $recentOrders = $user->orders()->with('car')->latest('ordered_at')->take(4)->get();
     @endphp
 
     {{-- Welcome banner --}}
@@ -122,14 +122,14 @@
                                 class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase">
                                 EV</div>
                             <div>
-                                <p class="text-sm font-black text-slate-900">{{ $order->car ? $order->car->displayName() : 'Listing removed' }}</p>
+                                <p class="text-sm font-black text-slate-900">{{ $order->car->displayName() }}</p>
                                 <p class="text-[11px] text-slate-400 font-medium mt-0.5">
                                     {{ $order->ordered_at->diffForHumans() }}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
                             <p class="text-sm font-black text-slate-700 hidden sm:block">
-                                {{ $order->car ? $order->car->formattedPrice() : 'NRs ' . number_format($order->total_price) }}</p>
+                                {{ $order->car->formattedPrice() }}</p>
                             <span @class([
                                 'text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider',
                                 'bg-yellow-100 text-yellow-700' => $order->status === 'pending',

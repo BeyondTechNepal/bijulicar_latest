@@ -85,13 +85,13 @@
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Reviewing</p>
                 <div class="flex items-start gap-3">
                     <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase shrink-0">
-                        {{ $review->car ? strtoupper($review->car->drivetrain) : '—' }}
+                        {{ strtoupper($review->car->drivetrain) }}
                     </div>
                     <div>
                         <p class="text-sm font-black text-slate-900 uppercase italic tracking-tight leading-tight">
-                            {{ $review->car ? $review->car->displayName() : 'Listing removed' }}
+                            {{ $review->car->displayName() }}
                         </p>
-                        <p class="text-[11px] text-slate-400 font-medium mt-1">{{ $review->car ? $review->car->location : '' }}</p>
+                        <p class="text-[11px] text-slate-400 font-medium mt-1">{{ $review->car->location }}</p>
                     </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-slate-100">

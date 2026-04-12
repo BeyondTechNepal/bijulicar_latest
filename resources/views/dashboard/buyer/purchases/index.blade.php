@@ -31,12 +31,10 @@
             {{-- Vehicle --}}
             <div class="col-span-3 flex items-center gap-3">
                 <div class="w-10 h-10 bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-xl flex items-center justify-center text-[10px] font-black text-[#16a34a] uppercase shrink-0">
-                    {{ $purchase->order->car ? strtoupper($purchase->order->car->drivetrain) : '—' }}
+                    {{ strtoupper($purchase->order->car->drivetrain) }}
                 </div>
                 <div>
-                    <p class="text-sm font-black text-slate-900">
-                        {{ $purchase->order->car ? $purchase->order->car->displayName() : 'Listing removed' }}
-                    </p>
+                    <p class="text-sm font-black text-slate-900">{{ $purchase->order->car->displayName() }}</p>
                     <p class="text-[11px] text-slate-400 font-medium mt-0.5">
                         Order #{{ str_pad($purchase->order_id, 5, '0', STR_PAD_LEFT) }}
                     </p>
@@ -72,22 +70,18 @@
 
             {{-- Review --}}
             <div class="col-span-1">
-                @if($purchase->order->car)
-                    @php
-                        $alreadyReviewed = auth()->user()->reviews()
-                            ->where('car_id', $purchase->order->car->id)
-                            ->exists();
-                    @endphp
-                    @if($alreadyReviewed)
-                        <span class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest">✓ Done</span>
-                    @else
-                        <a href="{{ route('buyer.reviews.create', $purchase->order->car) }}"
-                            class="inline-block text-[10px] font-black px-2.5 py-1.5 bg-slate-900 text-white rounded-lg uppercase tracking-widest hover:bg-[#16a34a] transition-all">
-                            Review
-                        </a>
-                    @endif
+                @php
+                    $alreadyReviewed = auth()->user()->reviews()
+                        ->where('car_id', $purchase->order->car->id)
+                        ->exists();
+                @endphp
+                @if($alreadyReviewed)
+                    <span class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest">✓ Done</span>
                 @else
-                    <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">—</span>
+                    <a href="{{ route('buyer.reviews.create', $purchase->order->car) }}"
+                        class="inline-block text-[10px] font-black px-2.5 py-1.5 bg-slate-900 text-white rounded-lg uppercase tracking-widest hover:bg-[#16a34a] transition-all">
+                        Review
+                    </a>
                 @endif
             </div>
 

@@ -235,12 +235,13 @@ class SellerCarController extends Controller
     }
 
     /**
-     * Soft-delete a listing. Images are kept so that existing orders
-     * can still reference them. Use forceDelete() to permanently remove.
+     * Delete a listing and all its images.
      */
     public function destroy(Car $car)
     {
         abort_if($car->seller_id != Auth::id(), 403);
+
+        $ctx = $this->context();
 
         $hasActiveOrders = $car->orders()
             ->whereIn('status', ['pending', 'confirmed'])
@@ -250,10 +251,8 @@ class SellerCarController extends Controller
 
         $name = $car->displayName();
 
-        // Soft-delete: sets deleted_at, keeps images & orders intact.
+        $car->images->each(fn($img) => $img->delete());
         $car->delete();
-
-        $ctx = $this->context();
 
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')

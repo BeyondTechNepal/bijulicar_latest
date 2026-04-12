@@ -55,37 +55,37 @@ class Advertisement extends Model
         'home' => [
             'label' => 'Home Page (Horizontal Banner)',
             'image' => null,
-            'video' => null,
+            'video' => 'https://player.vimeo.com/video/1181908885?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0`',
         ],
         'marketplace' => [
             'label' => 'Marketplace (Horizontal Banner)',
             'image' => null,
-            'video' => null,
+            'video' => 'https://player.vimeo.com/video/1182327058?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
         'news_sidebar' => [
             'label' => 'News Page — Right Sidebar (Vertical)',
             'image' => null,
-            'video' => null,
+            'video' => 'https://player.vimeo.com/video/1182327669?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
         'news_detail_sidebar' => [
             'label' => 'News Article — Right Sidebar (Vertical)',
             'image' => null,
-            'video' => null,
+            'video' => 'https://player.vimeo.com/video/1182328030?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
         'business_banner' => [
             'label' => 'Business Directory — Top Banner (Horizontal)',
             'image' => null,
-            'video' => null,
+            'video' =>  'https://player.vimeo.com/video/1182328980?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
         'car_detail_horizontal' => [
             'label' => 'Car Detail (Horizontal Banner)',
             'image' => null,
-            'video' => null,
+            'video' => 'https://player.vimeo.com/video/1182329249?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
         'business_profile' => [
             'label' => 'Business Profile — Banner (Horizontal)',
             'image' => null,
-            'video' => null,
+            'video' => 'https://player.vimeo.com/video/1182329543?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
     ];
 

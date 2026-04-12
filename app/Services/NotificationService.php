@@ -12,9 +12,6 @@ use App\Models\UserNotification;
 
 /**
  * Central service for creating in-app notifications.
- *
- * Call these right after (or alongside) the existing Mail::send() calls
- * or status update lines in each controller.
  */
 class NotificationService
 {
@@ -48,11 +45,52 @@ class NotificationService
 
     public function adPublished(Advertisement $ad): void
     {
+        // This fires immediately when admin confirms payment.
+        // If starts_at is in the future, the message reflects the scheduled date.
+        $startsAt = $ad->starts_at;
+        $today    = now()->toDateString();
+
+        $isScheduled = $startsAt && $startsAt->toDateString() > $today;
+
+        $body = $isScheduled
+            ? "Payment confirmed. Your ad is scheduled to go live on {$startsAt->format('M d, Y')}."
+            : 'Your advertisement is published and visible to users.';
+
         $this->create(
             userId: $ad->user_id,
             type:   'ad_published',
-            title:  'Ad is now live — "' . $ad->title . '"',
-            body:   'Your advertisement is published and visible to users.',
+            title:  $isScheduled
+                        ? 'Ad scheduled — "' . $ad->title . '"'
+                        : 'Ad is now live — "' . $ad->title . '"',
+            body:   $body,
+            url:    route('business.advertisements.index'),
+        );
+    }
+
+    /**
+     * Fired by ads:sync-status when a future-dated ad's start date arrives.
+     */
+    public function adWentLive(Advertisement $ad): void
+    {
+        $this->create(
+            userId: $ad->user_id,
+            type:   'ad_went_live',
+            title:  'Your ad is now live — "' . $ad->title . '"',
+            body:   'Your scheduled advertisement has started and is now visible to all visitors on Bijulicar.',
+            url:    route('business.advertisements.index'),
+        );
+    }
+
+    /**
+     * Fired by ads:sync-status when an ad's end_date has passed.
+     */
+    public function adExpired(Advertisement $ad): void
+    {
+        $this->create(
+            userId: $ad->user_id,
+            type:   'ad_expired',
+            title:  'Ad run ended — "' . $ad->title . '"',
+            body:   "Your advertisement ran from {$ad->starts_at->format('M d')} to {$ad->ends_at->format('M d, Y')} and has now ended. Book a new campaign to continue reaching customers.",
             url:    route('business.advertisements.index'),
         );
     }
@@ -86,11 +124,6 @@ class NotificationService
         );
     }
 
-    /**
-     * Fired when a station manually marks a BOOKED slot as OCCUPIED
-     * (i.e. the vehicle has physically arrived at the station).
-     * Only notify if a customer (occupant) is actually linked to the slot.
-     */
     public function slotOccupied(EvStationSlot $slot, User $customer): void
     {
         $this->create(
@@ -143,9 +176,6 @@ class NotificationService
         );
     }
 
-    /**
-     * Fired when garage marks the appointment as completed (job done).
-     */
     public function appointmentCompleted(GarageAppointment $appointment): void
     {
         $garageName = $appointment->garage->name ?? 'the garage';
@@ -161,10 +191,6 @@ class NotificationService
 
     // ── Order ──────────────────────────────────────────────────────────
 
-    /**
-     * Seller confirms a pending order → buyer notified.
-     * Trigger in: SellerOrderController::confirm()
-     */
     public function orderConfirmed(Order $order): void
     {
         $carName = $order->car->title ?? 'your car';
@@ -178,10 +204,6 @@ class NotificationService
         );
     }
 
-    /**
-     * Seller records payment and marks order as completed → buyer notified.
-     * Trigger in: SellerOrderController::complete()
-     */
     public function orderCompleted(Order $order): void
     {
         $carName = $order->car->title ?? 'your car';
@@ -195,10 +217,6 @@ class NotificationService
         );
     }
 
-    /**
-     * Seller cancels an order → buyer notified.
-     * Trigger in: SellerOrderController::cancel()
-     */
     public function orderCancelledBySeller(Order $order): void
     {
         $carName = $order->car->title ?? 'your car';
@@ -214,10 +232,6 @@ class NotificationService
 
     // ── Pre-Order ──────────────────────────────────────────────────────
 
-    /**
-     * Seller confirms the deposit was received → buyer notified.
-     * Trigger in: SellerPreOrderController::confirmDeposit()
-     */
     public function preOrderDepositConfirmed(PreOrder $preOrder): void
     {
         $carName = $preOrder->car->title ?? 'your pre-ordered car';
@@ -231,10 +245,6 @@ class NotificationService
         );
     }
 
-    /**
-     * Seller converts pre-order to a full order (car arrived) → buyer notified.
-     * Trigger in: SellerPreOrderController::convert()
-     */
     public function preOrderConverted(PreOrder $preOrder): void
     {
         $carName = $preOrder->car->title ?? 'your pre-ordered car';
@@ -248,10 +258,6 @@ class NotificationService
         );
     }
 
-    /**
-     * Seller cancels a pre-order → buyer notified.
-     * Trigger in: SellerPreOrderController::cancel()
-     */
     public function preOrderCancelledBySeller(PreOrder $preOrder): void
     {
         $carName = $preOrder->car->title ?? 'your pre-ordered car';
@@ -307,7 +313,6 @@ class NotificationService
             'read_at' => null,
         ]);
 
-        // Bust the cached unread count so the nav badge reflects the new notification.
         \Illuminate\Support\Facades\Cache::forget("user_unread_notifications_{$userId}");
     }
 }

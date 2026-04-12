@@ -38,8 +38,6 @@ class AdminAdvertisementController extends Controller
     {
         $advertisement->load('owner', 'car');
 
-        // Auto-calculate the expected charge from the current pricing rule.
-        // Admin can override this in the approve form.
         $suggestedCharge = $advertisement->calculateExpectedCharge();
         $pricingRule     = AdPricingRule::for($advertisement->placement, $advertisement->priority);
 
@@ -59,11 +57,11 @@ class AdminAdvertisementController extends Controller
         ]);
 
         $advertisement->update([
-            'status'          => 'approved',
-            'charged_amount'  => $request->charged_amount,
+            'status'           => 'approved',
+            'charged_amount'   => $request->charged_amount,
             'rejection_reason' => null,
-            'reviewed_by'     => Auth::id(),
-            'reviewed_at'     => now(),
+            'reviewed_by'      => Auth::id(),
+            'reviewed_at'      => now(),
         ]);
 
         app(NotificationService::class)->adApproved($advertisement);
@@ -120,9 +118,18 @@ class AdminAdvertisementController extends Controller
             'paid_at'        => ['required', 'date', 'before_or_equal:today'],
         ]);
 
+        $today    = now()->toDateString();
+        $startsAt = $advertisement->starts_at?->toDateString();
+
+        // ── KEY FIX ────────────────────────────────────────────────────────
+        // Only flip is_active to true immediately if the ad's start date has
+        // already arrived. If starts_at is in the future, keep is_active false
+        // — the daily ads:sync-status command will activate it on the right day.
+        $isActiveNow = $startsAt === null || $startsAt <= $today;
+
         $advertisement->update([
             'status'         => 'published',
-            'is_active'      => true,
+            'is_active'      => $isActiveNow,
             'amount_paid'    => $request->amount_paid,
             'payment_method' => $request->payment_method,
             'payment_note'   => $request->payment_note,
@@ -136,12 +143,18 @@ class AdminAdvertisementController extends Controller
             $advertisement->owner->email
         );
 
+        // Only bust the cache if the ad is actually live right now
+        if ($isActiveNow) {
+            Cache::forget(HomeController::CACHE_HOME_ADS);
+        }
 
-        // Bust home ads cache — ad is now live
-        Cache::forget(HomeController::CACHE_HOME_ADS);
+        $message = $isActiveNow
+            ? "Payment confirmed. Ad \"{$advertisement->title}\" is now live."
+            : "Payment confirmed. Ad \"{$advertisement->title}\" is scheduled — it will go live automatically on {$advertisement->starts_at->format('M d, Y')}.";
+
         return redirect()
             ->route('admin.advertisements.index')
-            ->with('success', "Payment confirmed. Ad \"{$advertisement->title}\" is now live.");
+            ->with('success', $message);
     }
 
     // ── Private helper ────────────────────────────────────────────────────

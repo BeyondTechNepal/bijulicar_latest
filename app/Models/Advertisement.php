@@ -51,52 +51,14 @@ class Advertisement extends Model
 
     // ── Constants ────────────────────────────────────────────────────────
 
-    // public const PLACEMENTS = [
-    //     'home'                  => 'Home Page (Horizontal Banner)',
-    //     'marketplace'           => 'Marketplace (Horizontal Banner)',
-    //     'news_sidebar'          => 'News Page — Right Sidebar (Vertical)',
-    //     'news_detail_sidebar'   => 'News Article — Right Sidebar (Vertical)',
-    //     'business_banner'       => 'Business Directory — Top Banner (Horizontal)',
-    //     'car_detail_horizontal' => 'Car Detail (Horizontal Banner)',
-    //     'business_profile'      => 'Business Profile — Banner (Horizontal)',
-    // ];
-
     public const PLACEMENTS = [
-        'home' => [
-            'label' => 'Home Page (Horizontal Banner)',
-            'image' => null,
-            'video' => 'https://player.vimeo.com/video/1181908885?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0`',
-        ],
-        'marketplace' => [
-            'label' => 'Marketplace (Horizontal Banner)',
-            'image' => '/images/placements/marketplace.png',
-            'video' => null,
-        ],
-        'news_sidebar' => [
-            'label' => 'News Page — Right Sidebar (Vertical)',
-            'image' => '/images/placements/news_sidebar.png',
-            'video' => null,
-        ],
-        'news_detail_sidebar' => [
-            'label' => 'News Article — Right Sidebar (Vertical)',
-            'image' => '/images/placements/news_detail.png',
-            'video' => null,
-        ],
-        'business_banner' => [
-            'label' => 'Business Directory — Top Banner (Horizontal)',
-            'image' => '/images/placements/business_banner.png',
-            'video' => null,
-        ],
-        'car_detail_horizontal' => [
-            'label' => 'Car Detail (Horizontal Banner)',
-            'image' => '/images/placements/car_detail.png',
-            'video' => null,
-        ],
-        'business_profile' => [
-            'label' => 'Business Profile — Banner (Horizontal)',
-            'image' => '/images/placements/business_profile.png',
-            'video' => null,
-        ],
+        'home'                  => 'Home Page (Horizontal Banner)',
+        'marketplace'           => 'Marketplace (Horizontal Banner)',
+        'news_sidebar'          => 'News Page — Right Sidebar (Vertical)',
+        'news_detail_sidebar'   => 'News Article — Right Sidebar (Vertical)',
+        'business_banner'       => 'Business Directory — Top Banner (Horizontal)',
+        'car_detail_horizontal' => 'Car Detail (Horizontal Banner)',
+        'business_profile'      => 'Business Profile — Banner (Horizontal)',
     ];
 
     public const PRIORITIES = [

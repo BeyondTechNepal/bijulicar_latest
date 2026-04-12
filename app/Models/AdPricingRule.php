@@ -65,6 +65,6 @@ class AdPricingRule extends Model
     /** Human label for the placement */
     public function placementLabel(): string
     {
-        return Advertisement::PLACEMENTS[$this->placement] ?? ucfirst($this->placement);
+        return Advertisement::PLACEMENTS[$this->placement]['label'] ?? ucfirst($this->placement);
     }
 }

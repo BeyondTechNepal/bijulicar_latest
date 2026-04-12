@@ -52,13 +52,41 @@ class Advertisement extends Model
     // ── Constants ────────────────────────────────────────────────────────
 
     public const PLACEMENTS = [
-        'home'                  => 'Home Page (Horizontal Banner)',
-        'marketplace'           => 'Marketplace (Horizontal Banner)',
-        'news_sidebar'          => 'News Page — Right Sidebar (Vertical)',
-        'news_detail_sidebar'   => 'News Article — Right Sidebar (Vertical)',
-        'business_banner'       => 'Business Directory — Top Banner (Horizontal)',
-        'car_detail_horizontal' => 'Car Detail (Horizontal Banner)',
-        'business_profile'      => 'Business Profile — Banner (Horizontal)',
+        'home' => [
+            'label' => 'Home Page (Horizontal Banner)',
+            'image' => null,
+            'video' => null,
+        ],
+        'marketplace' => [
+            'label' => 'Marketplace (Horizontal Banner)',
+            'image' => null,
+            'video' => null,
+        ],
+        'news_sidebar' => [
+            'label' => 'News Page — Right Sidebar (Vertical)',
+            'image' => null,
+            'video' => null,
+        ],
+        'news_detail_sidebar' => [
+            'label' => 'News Article — Right Sidebar (Vertical)',
+            'image' => null,
+            'video' => null,
+        ],
+        'business_banner' => [
+            'label' => 'Business Directory — Top Banner (Horizontal)',
+            'image' => null,
+            'video' => null,
+        ],
+        'car_detail_horizontal' => [
+            'label' => 'Car Detail (Horizontal Banner)',
+            'image' => null,
+            'video' => null,
+        ],
+        'business_profile' => [
+            'label' => 'Business Profile — Banner (Horizontal)',
+            'image' => null,
+            'video' => null,
+        ],
     ];
 
     public const PRIORITIES = [
@@ -170,7 +198,7 @@ class Advertisement extends Model
 
     public function placementLabel(): string
     {
-        return self::PLACEMENTS[$this->placement] ?? ucfirst($this->placement);
+        return self::PLACEMENTS[$this->placement]['label'] ?? ucfirst($this->placement);
     }
 
     public function priorityLabel(): string

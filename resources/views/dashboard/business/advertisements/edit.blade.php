@@ -68,9 +68,6 @@
                                 </option>
                             @endforeach
                         </select>
-                        <p id="image-hint" class="text-[11px] text-slate-400 font-medium mt-1.5">
-                            <!-- Recommended image: <span id="image-hint-size" class="font-bold text-slate-600">1200×400 px</span> -->
-                        </p>
                         @error('placement')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                     </div>
 
@@ -278,16 +275,10 @@
     <script>
         const verticalPlacements = ['news_sidebar', 'news_detail_sidebar'];
         const placementSelect    = document.getElementById('placement-select');
-        const hintSize           = document.getElementById('image-hint-size');
         const startsInput        = document.getElementById('starts-at');
         const endsInput          = document.getElementById('ends-at');
         const pricingContent     = document.getElementById('pricing-content');
 
-        function updateHint() {
-            hintSize.textContent = verticalPlacements.includes(placementSelect.value)
-                ? '600×800 px (vertical)'
-                : '1200×400 px (horizontal)';
-        }
 
         function updateTierLabels() {
             const placement = placementSelect.value;
@@ -358,12 +349,11 @@
             `;
         }
 
-        placementSelect.addEventListener('change', () => { updateHint(); updateTierLabels(); updatePricing(); });
+        placementSelect.addEventListener('change', () => { updateTierLabels(); updatePricing(); });
         startsInput.addEventListener('change', updatePricing);
         endsInput.addEventListener('change', updatePricing);
         document.querySelectorAll('.priority-radio').forEach(r => r.addEventListener('change', updatePricing));
 
-        updateHint();
         updateTierLabels();
         updatePricing();
     </script>

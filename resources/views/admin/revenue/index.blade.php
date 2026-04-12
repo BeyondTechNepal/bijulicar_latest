@@ -83,7 +83,7 @@
             <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Top Placement</p>
             @if ($byPlacement->isNotEmpty())
                 <h3 class="text-lg font-black text-slate-900 mt-1 leading-tight">
-                    {{ \App\Models\Advertisement::PLACEMENTS[$byPlacement->first()->placement] ?? ucfirst($byPlacement->first()->placement) }}
+                    {{ \App\Models\Advertisement::PLACEMENTS[$byPlacement->first()->placement]['label'] ?? ucfirst($byPlacement->first()->placement) }}
                 </h3>
                 <p class="text-xs text-slate-400 font-semibold mt-2">NRs {{ number_format($byPlacement->first()->total) }}</p>
             @else
@@ -118,7 +118,7 @@
                 <div class="space-y-4">
                     @foreach ($byPlacement as $row)
                         @php
-                            $label = \App\Models\Advertisement::PLACEMENTS[$row->placement] ?? ucfirst($row->placement);
+                            $label = \App\Models\Advertisement::PLACEMENTS[$row->placement]['label'] ?? ucfirst($row->placement);
                             $pct   = $maxPlacement > 0 ? ($row->total / $maxPlacement) * 100 : 0;
                         @endphp
                         <div>

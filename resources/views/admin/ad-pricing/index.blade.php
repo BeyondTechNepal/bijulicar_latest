@@ -40,7 +40,7 @@
 
                             {{-- Display row --}}
                             <td class="px-6 py-4">
-                                <span class="font-bold text-gray-800">{{ $placementLabel }}</span>
+                                <span class="font-bold text-gray-800">{{ $placementLabel['label'] }}</span>
                             </td>
                             <td class="px-6 py-4">
                                 <span class="text-[10px] font-black px-2 py-0.5 rounded-full

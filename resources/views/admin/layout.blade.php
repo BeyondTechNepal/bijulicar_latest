@@ -204,13 +204,16 @@
                     </div>
                 @endcan
 
+                @can('map locations')
                 <a href="{{ route('admin.locations.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
                        {{ request()->routeIs('admin.locations*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     <span class="font-bold w-5 text-center">M</span>
                     <span class="hide-on-collapse">Map Locations</span>
                 </a>
+                @endcan
 
+                @can('map requests')
                 <a href="{{ route('admin.map_locations.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
                        {{ request()->routeIs('admin.map_locations*') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
@@ -224,7 +227,9 @@
                         </span>
                     @endif
                 </a>
+                @endcan
 
+                @can('advertisements')
                 {{-- Advertisements --}}
                 <a href="{{ route('admin.advertisements.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
@@ -237,7 +242,9 @@
                             class="hide-on-collapse text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-black">{{ $pendingAds }}</span>
                     @endif
                 </a>
+                @endcan
 
+                @can('ad pricing')
                 {{-- Ad Pricing --}}
                 <a href="{{ route('admin.ad-pricing.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
@@ -245,7 +252,9 @@
                     <span class="font-bold w-5 text-center">$</span>
                     <span class="hide-on-collapse">Ad Pricing</span>
                 </a>
+                @endcan
 
+                @can('revenue')
                 {{-- Revenue --}}
                 <a href="{{ route('admin.revenue.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
@@ -258,6 +267,7 @@
                     </span>
                     <span class="hide-on-collapse">Revenue</span>
                 </a>
+                @endcan
 
                 @can('contact control')
                     <div x-data="{ open: {{ request()->routeIs('admin.contact_*') ? 'true' : 'false' }} }">

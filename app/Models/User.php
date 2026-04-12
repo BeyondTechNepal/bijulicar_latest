@@ -23,7 +23,7 @@ class User extends Authenticatable
 
     protected $guard_name = 'web';
 
-    protected $fillable = ['name', 'email', 'phone', 'password', 'wants_newsletter'];
+    protected $fillable = ['name', 'email', 'phone', 'password'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -32,7 +32,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
-            'wants_newsletter' => 'boolean',
         ];
     }
 
@@ -137,6 +136,10 @@ class User extends Authenticatable
  
     public function unreadNotificationCount(): int
     {
-    return $this->notifications()->whereNull('read_at')->count();
+        return \Illuminate\Support\Facades\Cache::remember(
+            "user_unread_notifications_{$this->id}",
+            now()->addMinutes(5),
+            fn () => $this->notifications()->whereNull('read_at')->count()
+        );
     }
 }

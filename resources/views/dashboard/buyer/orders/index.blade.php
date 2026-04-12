@@ -39,14 +39,19 @@
                     EV
                 </div>
                 <div>
-                    <p class="text-sm font-black text-slate-900">{{ $order->car->displayName() }}</p>
-                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ ucfirst($order->car->condition) }} · {{ $order->car->location }}</p>
+                    @if($order->car)
+                        <p class="text-sm font-black text-slate-900">{{ $order->car->displayName() }}</p>
+                        <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ ucfirst($order->car->condition) }} · {{ $order->car->location }}</p>
+                    @else
+                        <p class="text-sm font-black text-slate-400 italic">Listing removed</p>
+                        <p class="text-[11px] text-slate-300 font-medium mt-0.5">This vehicle is no longer available</p>
+                    @endif
                 </div>
             </div>
 
             {{-- Price --}}
             <div class="col-span-2">
-                <p class="text-sm font-black text-slate-800">{{ $order->car->formattedPrice() }}</p>
+                <p class="text-sm font-black text-slate-800">NRs {{ number_format($order->total_price) }}</p>
             </div>
 
             {{-- Status badge --}}

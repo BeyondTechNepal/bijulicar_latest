@@ -15,7 +15,7 @@ class BuyerPurchaseController extends Controller
     {
         $purchases = Auth::user()
             ->purchases()
-            ->with('order.car')
+            ->with(['order.car' => fn($q) => $q->withTrashed()])
             ->latest('purchased_at')
             ->paginate(10);
 

@@ -24,7 +24,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-black text-slate-900 uppercase italic tracking-tight">
-                            {{ $review->car->displayName() }}
+                            {{ $review->car ? $review->car->displayName() : 'Listing removed' }}
                         </p>
                         <p class="text-[#f59e0b] text-base mt-1 tracking-wider">{{ $review->starDisplay() }}</p>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">

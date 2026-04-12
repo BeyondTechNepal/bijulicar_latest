@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class NotificationController extends Controller
 {
@@ -21,6 +22,8 @@ class NotificationController extends Controller
             ->unread()
             ->update(['read_at' => now()]);
 
+        Cache::forget('user_unread_notifications_' . auth()->id());
+
         return view('notifications.index', compact('notifications'));
     }
 
@@ -33,6 +36,8 @@ class NotificationController extends Controller
         abort_unless($notification->user_id === auth()->id(), 403);
 
         $notification->markAsRead();
+
+        Cache::forget('user_unread_notifications_' . auth()->id());
 
         if ($notification->url) {
             return redirect($notification->url);
@@ -49,6 +54,8 @@ class NotificationController extends Controller
         UserNotification::forUser(auth()->id())
             ->unread()
             ->update(['read_at' => now()]);
+
+        Cache::forget('user_unread_notifications_' . auth()->id());
 
         return back()->with('success', 'All notifications marked as read.');
     }

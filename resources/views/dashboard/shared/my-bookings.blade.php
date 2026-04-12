@@ -47,9 +47,23 @@
                                 <p class="text-xs text-red-500 font-bold mt-1">Reason: {{ $appt->rejection_reason }}</p>
                             @endif
                         </div>
-                        <span class="shrink-0 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border {{ $appt->statusColour() }}">
-                            {{ ucfirst($appt->status) }}
-                        </span>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border {{ $appt->statusColour() }}">
+                                {{ ucfirst($appt->status) }}
+                            </span>
+                            {{-- Cancel button — only shown while still pending --}}
+                            @if ($appt->isPending())
+                                <form method="POST" action="{{ route('booking.garage.cancel', $appt->id) }}"
+                                      onsubmit="return confirm('Cancel this appointment?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                        Cancel
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                     @endforeach
                 </div>
@@ -84,13 +98,27 @@
                                 </p>
                             @endif
                         </div>
-                        <span class="shrink-0 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border
-                           {{ $slot->isAvailable() ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : '' }}
-                           {{ $slot->isPending()   ? 'bg-amber-50 text-amber-600 border-amber-200'       : '' }}
-                           {{ $slot->isBooked()    ? 'bg-blue-50 text-blue-600 border-blue-200'          : '' }}
-                           {{ $slot->isOccupied()  ? 'bg-red-50 text-red-600 border-red-200'             : '' }}">
-                           {{ ucfirst($slot->status) }}
-                        <span>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border
+                               {{ $slot->isAvailable() ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : '' }}
+                               {{ $slot->isPending()   ? 'bg-amber-50 text-amber-600 border-amber-200'       : '' }}
+                               {{ $slot->isBooked()    ? 'bg-blue-50 text-blue-600 border-blue-200'          : '' }}
+                               {{ $slot->isOccupied()  ? 'bg-red-50 text-red-600 border-red-200'             : '' }}">
+                               {{ ucfirst($slot->status) }}
+                            </span>
+                            {{-- Cancel button — only shown while still pending --}}
+                            @if ($slot->isPending())
+                                <form method="POST" action="{{ route('booking.slot.cancel', $slot->id) }}"
+                                      onsubmit="return confirm('Cancel this slot request? The slot will be freed immediately.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                        Cancel
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                     @endforeach
                 </div>

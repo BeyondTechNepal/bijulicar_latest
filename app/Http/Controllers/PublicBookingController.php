@@ -43,6 +43,24 @@ class PublicBookingController extends Controller
         return response()->json(['message' => 'Appointment request sent!']);
     }
 
+    // ── Cancel garage appointment (Bug 9 fix) ─────────────────────────
+
+    public function cancelAppointment(GarageAppointment $appointment)
+    {
+        // Only the customer who made it can cancel
+        abort_if($appointment->customer_user_id !== auth()->id(), 403);
+
+        // Can only cancel while still pending — once approved, the garage
+        // has committed a bay, so the customer must contact them directly
+        abort_if($appointment->status !== 'pending', 422, 'Only pending appointments can be cancelled. Please contact the garage directly.');
+
+        $appointment->update(['status' => 'rejected', 'rejection_reason' => 'Cancelled by customer.']);
+
+        return redirect()
+            ->route('booking.mine')
+            ->with('success', 'Appointment cancelled.');
+    }
+
     // ── EV slot request ────────────────────────────────────────────────
 
     public function requestSlot(Request $request)
@@ -57,19 +75,39 @@ class PublicBookingController extends Controller
             return response()->json(['message' => 'You cannot request your own station slot.'], 422);
         }
 
-        // Only truly available slots can be requested
         if (!$slot->isAvailable()) {
             return response()->json(['message' => 'This slot is no longer available.'], 422);
         }
 
-        // Set to PENDING — does NOT count as occupied yet.
-        // The map still shows this slot as available until the station approves.
         $slot->update([
             'status'      => 'pending',
             'occupied_by' => auth()->id(),
         ]);
 
         return response()->json(['message' => 'Slot request sent!']);
+    }
+
+    // ── Cancel EV slot request (Bug 7 fix) ────────────────────────────
+
+    public function cancelSlot(EvStationSlot $slot)
+    {
+        // Only the customer who requested it can cancel
+        abort_if($slot->occupied_by !== auth()->id(), 403);
+
+        // Can only cancel a pending request — once booked/occupied the
+        // station has committed, so the customer must contact them directly
+        abort_if($slot->status !== 'pending', 422, 'Only pending slot requests can be cancelled. Please contact the station directly.');
+
+        // Reset slot fully back to available so the station's map turns green
+        $slot->update([
+            'status'      => 'available',
+            'occupied_by' => null,
+            'free_at'     => null,
+        ]);
+
+        return redirect()
+            ->route('booking.mine')
+            ->with('success', 'Slot request cancelled. The slot is now available again.');
     }
 
     // ── My bookings ────────────────────────────────────────────────────

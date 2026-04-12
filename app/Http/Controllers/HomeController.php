@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Car;
 use App\Models\Advertisement;
 use App\Models\User;
-use App\Models\Review;
 
 class HomeController extends Controller
 {
@@ -30,15 +29,23 @@ class HomeController extends Controller
             ->where(fn($q) => $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', today()))
             ->get();
 
-        // Featured businesses — top 3 verified businesses by active listing count
+        // Featured businesses — top 8 verified businesses by active listing count.
+        //
+        // FIX: The previous implementation called Review::avg() and Review::count()
+        // inside a PHP loop, producing 2 extra queries per business user (N+1 bomb).
+        // Now we use withAvg() and withCount() so Laravel resolves both aggregates in
+        // a single extra query each (3 total: users + avg + count), regardless of how
+        // many business users exist.
         $featuredBusinesses = User::role('business')
             ->with(['businessVerification', 'listedCars'])
+            ->withAvg('receivedReviews', 'rating')   // → $user->received_reviews_avg_rating
+            ->withCount('receivedReviews')            // → $user->received_reviews_count
             ->whereHas('businessVerification', fn($q) => $q->where('status', 'approved'))
             ->get()
             ->map(function ($user) {
                 $activeCars  = $user->listedCars->whereIn('status', ['available', 'upcoming']);
-                $avgRating   = Review::where('seller_id', $user->id)->avg('rating') ?? 0;
-                $reviewCount = Review::where('seller_id', $user->id)->count();
+                $avgRating   = $user->received_reviews_avg_rating ?? 0;
+                $reviewCount = $user->received_reviews_count ?? 0;
                 $location    = $activeCars->pluck('location')->filter()->first() ?? 'Nepal';
                 $drivetrains = $activeCars->pluck('drivetrain')->unique();
                 if ($drivetrains->count() > 1)             $spec = 'Multi-Brand';

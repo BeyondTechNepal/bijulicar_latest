@@ -100,6 +100,15 @@ class User extends Authenticatable
         return $this->hasMany(Review::class, 'buyer_id');
     }
 
+    /**
+     * Reviews written about this user as a seller / business.
+     * Used for withAvg('receivedReviews', 'rating') and withCount('receivedReviews').
+     */
+    public function receivedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'seller_id');
+    }
+
     // ── Location ──────────────────────────────────────────────────────
 
     public function location(): HasOne

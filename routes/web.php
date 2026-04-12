@@ -288,7 +288,7 @@ Route::middleware(['auth', 'role:ev-station', 'verified.account'])
         Route::get('/location', [LocationController::class, 'index'])->name('location.index');
         Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
         Route::post('/location', [LocationController::class, 'store'])->name('location.store');
-        Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
+        // Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
         Route::put('/location', [LocationController::class, 'update'])->name('location.update');
         Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
 

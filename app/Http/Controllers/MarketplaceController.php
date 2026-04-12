@@ -79,8 +79,31 @@ class MarketplaceController extends Controller
     private function applyFilters($query, Request $request): void
     {
         if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(fn($q) => $q->where('brand', 'like', "%$s%")->orWhere('model', 'like', "%$s%"));
+            $s = trim($request->search);
+
+            // Use FULLTEXT search when the term is long enough for MySQL's minimum
+            // token size (innodb_ft_min_token_size defaults to 3). Shorter terms
+            // fall back to LIKE — they're usually single-char filter taps, not
+            // real search queries, and the table is still small at that point.
+            if (mb_strlen($s) >= 3) {
+                // Boolean mode lets users type e.g. "Tesla Model 3" and match
+                // rows where all three words appear across brand/model/variant.
+                // The FULLTEXT index on (brand, model, variant) is used — no
+                // table scan.
+                $query->whereRaw(
+                    'MATCH(brand, model, variant) AGAINST(? IN BOOLEAN MODE)',
+                    ['+' . implode('* +', explode(' ', preg_replace('/\s+/', ' ', $s))) . '*']
+                );
+            } else {
+                // Short term fallback — leading wildcard is acceptable here
+                // because the result set is constrained by status already and
+                // short terms (1-2 chars) are uncommon in practice.
+                $query->where(fn($q) => $q
+                    ->where('brand', 'like', "%$s%")
+                    ->orWhere('model', 'like', "%$s%")
+                    ->orWhere('variant', 'like', "%$s%")
+                );
+            }
         }
         if ($request->filled('drivetrain') && $request->drivetrain !== 'all') {
             $request->drivetrain === 'classic'

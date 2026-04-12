@@ -193,7 +193,7 @@ class NotificationService
 
     public function orderConfirmed(Order $order): void
     {
-        $carName = $order->car->title ?? 'your car';
+        $carName = $order->car?->displayName() ?? 'your car';
 
         $this->create(
             userId: $order->buyer_id,
@@ -206,7 +206,7 @@ class NotificationService
 
     public function orderCompleted(Order $order): void
     {
-        $carName = $order->car->title ?? 'your car';
+        $carName = $order->car?->displayName() ?? 'your car';
 
         $this->create(
             userId: $order->buyer_id,
@@ -219,7 +219,7 @@ class NotificationService
 
     public function orderCancelledBySeller(Order $order): void
     {
-        $carName = $order->car->title ?? 'your car';
+        $carName = $order->car?->displayName() ?? 'your car';
 
         $this->create(
             userId: $order->buyer_id,
@@ -234,7 +234,7 @@ class NotificationService
 
     public function preOrderDepositConfirmed(PreOrder $preOrder): void
     {
-        $carName = $preOrder->car->title ?? 'your pre-ordered car';
+        $carName = $preOrder->car?->displayName() ?? 'your pre-ordered car';
 
         $this->create(
             userId: $preOrder->buyer_id,
@@ -247,7 +247,7 @@ class NotificationService
 
     public function preOrderConverted(PreOrder $preOrder): void
     {
-        $carName = $preOrder->car->title ?? 'your pre-ordered car';
+        $carName = $preOrder->car?->displayName() ?? 'your pre-ordered car';
 
         $this->create(
             userId: $preOrder->buyer_id,
@@ -260,7 +260,7 @@ class NotificationService
 
     public function preOrderCancelledBySeller(PreOrder $preOrder): void
     {
-        $carName = $preOrder->car->title ?? 'your pre-ordered car';
+        $carName = $preOrder->car?->displayName() ?? 'your pre-ordered car';
 
         $this->create(
             userId: $preOrder->buyer_id,

@@ -93,6 +93,20 @@ class BuyerPreOrderController extends Controller
 
         $preOrder->update(['status' => 'cancelled']);
 
+        // Same car-reset logic as SellerPreOrderController@cancel: if this was
+        // the last active pre-order, clear is_preorder so the car isn't stranded.
+        $car = $preOrder->car;
+        $hasOtherActivePreOrders = PreOrder::where('car_id', $car->id)
+            ->whereIn('status', ['pending_deposit', 'deposit_paid'])
+            ->exists();
+
+        if (!$hasOtherActivePreOrders && $car->is_preorder && $car->status === 'upcoming') {
+            $car->update([
+                'status'      => 'upcoming',
+                'is_preorder' => false,
+            ]);
+        }
+
         return redirect()
             ->route('buyer.preorders.index')
             ->with('success', 'Pre-order cancelled. Contact the seller regarding your deposit refund.');

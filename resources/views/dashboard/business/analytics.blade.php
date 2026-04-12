@@ -201,4 +201,94 @@
     </div>
     @endif
 
+    {{-- ── Pre-Orders ─────────────────────────────────────────────────── --}}
+    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 mt-10">Pre-Orders</p>
+
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+            <div class="text-2xl font-black text-slate-900">{{ $totalPreOrders }}</div>
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Total</div>
+        </div>
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl p-5">
+            <div class="text-2xl font-black text-amber-600">{{ $pendingDepositPreOrders }}</div>
+            <div class="text-[10px] font-black text-amber-400 uppercase tracking-widest mt-1">Awaiting Deposit</div>
+        </div>
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+            <div class="text-2xl font-black text-blue-700">{{ $depositPaidPreOrders }}</div>
+            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Deposit Paid</div>
+        </div>
+        <div class="bg-green-50 border border-green-100 rounded-2xl p-5">
+            <div class="text-2xl font-black text-green-700">{{ $convertedPreOrders }}</div>
+            <div class="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Converted</div>
+        </div>
+        <div class="bg-red-50 border border-red-100 rounded-2xl p-5">
+            <div class="text-2xl font-black text-red-600">{{ $cancelledPreOrders }}</div>
+            <div class="text-[10px] font-black text-red-400 uppercase tracking-widest mt-1">Cancelled</div>
+        </div>
+    </div>
+
+    @if($recentPreOrders->isNotEmpty())
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+
+        <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 bg-slate-50">
+            <div class="col-span-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Vehicle</div>
+            <div class="col-span-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer</div>
+            <div class="col-span-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Deposit</div>
+            <div class="col-span-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</div>
+        </div>
+
+        @foreach($recentPreOrders as $preOrder)
+        <a href="{{ route('business.preorders.show', $preOrder) }}"
+            class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-slate-100 last:border-0 items-center hover:bg-slate-50/50 transition-colors">
+
+            <div class="col-span-4 flex items-center gap-3">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase shrink-0">
+                    {{ strtoupper($preOrder->car->drivetrain) }}
+                </div>
+                <div>
+                    <p class="text-sm font-black text-slate-900 uppercase italic tracking-tight leading-tight">
+                        {{ $preOrder->car->displayName() }}
+                    </p>
+                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">
+                        Pre-Order #{{ str_pad($preOrder->id, 5, '0', STR_PAD_LEFT) }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-span-3">
+                <p class="text-sm font-bold text-slate-700">{{ $preOrder->buyer->name }}</p>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ $preOrder->buyer_phone }}</p>
+            </div>
+
+            <div class="col-span-2">
+                <p class="text-sm font-black text-slate-800">{{ $preOrder->formattedDeposit() }}</p>
+            </div>
+
+            <div class="col-span-3">
+                <span @class([
+                    'text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider',
+                    'bg-amber-100 text-amber-700'  => $preOrder->status === 'pending_deposit',
+                    'bg-blue-100 text-blue-700'    => $preOrder->status === 'deposit_paid',
+                    'bg-green-100 text-green-700'  => $preOrder->status === 'converted',
+                    'bg-red-100 text-red-600'      => $preOrder->status === 'cancelled',
+                ])>{{ ucfirst(str_replace('_', ' ', $preOrder->status)) }}</span>
+            </div>
+
+        </a>
+        @endforeach
+
+    </div>
+
+    <div class="mt-4 text-right">
+        <a href="{{ route('business.preorders.index') }}" class="text-[10px] font-black text-purple-600 uppercase tracking-widest hover:underline">View All Pre-Orders →</a>
+    </div>
+
+    @else
+    <div class="bg-white border border-dashed border-slate-200 rounded-2xl p-10 text-center">
+        <p class="text-4xl mb-3">⏳</p>
+        <p class="font-black text-slate-900 uppercase italic tracking-tight">No pre-orders yet</p>
+        <p class="text-sm text-slate-500 font-medium mt-1">Pre-orders will appear here once buyers place deposits on upcoming listings.</p>
+    </div>
+    @endif
+
 @endsection

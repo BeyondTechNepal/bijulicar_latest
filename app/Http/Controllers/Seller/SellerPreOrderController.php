@@ -128,6 +128,21 @@ class SellerPreOrderController extends Controller
         $preOrder->update(['status' => 'cancelled']);
         app(NotificationService::class)->preOrderCancelledBySeller($preOrder);
 
+        // If no other active pre-orders remain on this car, reset it so it
+        // can accept new pre-orders (or be edited to available by the seller).
+        // Without this the car stays stuck in upcoming/is_preorder=true forever.
+        $car = $preOrder->car;
+        $hasOtherActivePreOrders = PreOrder::where('car_id', $car->id)
+            ->whereIn('status', ['pending_deposit', 'deposit_paid'])
+            ->exists();
+
+        if (!$hasOtherActivePreOrders && $car->is_preorder && $car->status === 'upcoming') {
+            $car->update([
+                'status'      => 'upcoming',   // stays upcoming — seller must manually set available
+                'is_preorder' => false,         // unlocks the car for new pre-orders or status edits
+            ]);
+        }
+
         $ctx = $this->context();
         return redirect()
             ->route($ctx['prefix'] . '.preorders.index')

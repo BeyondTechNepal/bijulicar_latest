@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\PreOrder;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,6 +51,21 @@ class BusinessAnalyticsController extends Controller
             ->limit(5)
             ->get();
 
+        // Pre-order stats
+        $preOrders = PreOrder::whereHas('car', fn($q) => $q->where('seller_id', $userId));
+
+        $totalPreOrders     = (clone $preOrders)->count();
+        $pendingDepositPreOrders = (clone $preOrders)->where('status', 'pending_deposit')->count();
+        $depositPaidPreOrders   = (clone $preOrders)->where('status', 'deposit_paid')->count();
+        $convertedPreOrders     = (clone $preOrders)->where('status', 'converted')->count();
+        $cancelledPreOrders     = (clone $preOrders)->where('status', 'cancelled')->count();
+
+        $recentPreOrders = (clone $preOrders)
+            ->with('car', 'buyer')
+            ->latest()
+            ->limit(5)
+            ->get();
+
         return view('dashboard.business.analytics', compact(
             'totalListings',
             'activeListings',
@@ -63,6 +79,12 @@ class BusinessAnalyticsController extends Controller
             'totalRevenue',
             'drivetrainBreakdown',
             'recentOrders',
+            'totalPreOrders',
+            'pendingDepositPreOrders',
+            'depositPaidPreOrders',
+            'convertedPreOrders',
+            'cancelledPreOrders',
+            'recentPreOrders',
         ));
     }
 }

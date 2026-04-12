@@ -21,6 +21,7 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-6">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Vehicle</p>
 
+                @if($order->car)
                 <div class="flex items-start gap-4">
                     <div class="w-16 h-16 bg-slate-100 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
                         @if($order->car->primaryImage ?? false)
@@ -60,6 +61,19 @@
                 <div class="mt-5 pt-5 border-t border-slate-100">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Seller Notes</p>
                     <p class="text-sm text-slate-600 font-medium leading-relaxed">{{ $order->car->description }}</p>
+                </div>
+                @endif
+
+                @else
+                {{-- Car was deleted by the seller --}}
+                <div class="flex items-center gap-4 py-2">
+                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0">
+                        <span class="text-2xl opacity-20">🚗</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-400 italic">Listing removed</p>
+                        <p class="text-xs text-slate-300 font-medium mt-1">The seller has removed this vehicle listing. Your order record is preserved.</p>
+                    </div>
                 </div>
                 @endif
             </div>
@@ -126,11 +140,11 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Seller</p>
-                        <p class="text-xs font-bold text-slate-700">{{ $order->car->seller->name }}</p>
+                        <p class="text-xs font-bold text-slate-700">{{ optional(optional($order->car)->seller)->name ?? '—' }}</p>
                     </div>
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Total Price</p>
-                        <p class="text-base font-black text-slate-900">{{ $order->car->formattedPrice() }}</p>
+                        <p class="text-base font-black text-slate-900">NRs {{ number_format($order->total_price) }}</p>
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Status</p>
@@ -150,7 +164,7 @@
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Actions</p>
 
                 {{-- Write review after completed --}}
-                @if($order->status === 'completed')
+                @if($order->status === 'completed' && $order->car)
                     @php
                         $alreadyReviewed = auth()->user()->reviews()
                             ->where('car_id', $order->car_id)->exists();
@@ -214,7 +228,7 @@
                     </li>
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5">→</span>
-                        Contact {{ $order->car->seller->name }} to arrange payment.
+                        Contact {{ optional(optional($order->car)->seller)->name ?? 'the seller' }} to arrange payment.
                     </li>
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5">→</span>

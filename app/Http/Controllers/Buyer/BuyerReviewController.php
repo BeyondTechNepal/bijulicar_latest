@@ -17,7 +17,7 @@ class BuyerReviewController extends Controller
     {
         $reviews = Auth::user()
             ->reviews()
-            ->with('car')       // load car details in the same query
+            ->with(['car' => fn($q) => $q->withTrashed()])
             ->latest()
             ->paginate(10);
 
@@ -29,7 +29,12 @@ class BuyerReviewController extends Controller
      */
     public function create(Car $car)
     {
-        // Buyer must have actually purchased this car
+        // Re-fetch withTrashed so a soft-deleted car doesn't 404
+        $car = Car::withTrashed()->findOrFail($car->id);
+
+        // Cannot write a new review for a listing that has been removed
+        abort_if($car->trashed(), 403, 'This listing has been removed and can no longer be reviewed.');
+
         $hasPurchased = Auth::user()
             ->orders()
             ->where('car_id', $car->id)
@@ -38,7 +43,6 @@ class BuyerReviewController extends Controller
 
         abort_if(!$hasPurchased, 403, 'You can only review cars you have purchased.');
 
-        // Cannot review the same car twice
         $alreadyReviewed = Review::where('buyer_id', Auth::id())
             ->where('car_id', $car->id)
             ->exists();
@@ -59,7 +63,9 @@ class BuyerReviewController extends Controller
             'body'   => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $car = Car::findOrFail($request->car_id);
+        $car = Car::withTrashed()->findOrFail($request->car_id);
+
+        abort_if($car->trashed(), 403, 'This listing has been removed and can no longer be reviewed.');
 
         // Same checks as create()
         $hasPurchased = Auth::user()
@@ -94,10 +100,9 @@ class BuyerReviewController extends Controller
      */
     public function edit(Review $review)
     {
-        // Only the buyer who wrote this review can edit it
         abort_if($review->buyer_id !== Auth::id(), 403);
 
-        $review->load('car');
+        $review->load(['car' => fn($q) => $q->withTrashed()]);
 
         return view('dashboard.buyer.reviews.edit', compact('review'));
     }

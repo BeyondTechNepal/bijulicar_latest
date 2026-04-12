@@ -306,5 +306,8 @@ class NotificationService
             'url'     => $url,
             'read_at' => null,
         ]);
+
+        // Bust the cached unread count so the nav badge reflects the new notification.
+        \Illuminate\Support\Facades\Cache::forget("user_unread_notifications_{$userId}");
     }
 }

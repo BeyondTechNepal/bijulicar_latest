@@ -14,7 +14,7 @@ class BuyerOrderController extends Controller
     {
         $orders = Auth::user()
             ->orders()
-            ->with('car')
+            ->with(['car' => fn($q) => $q->withTrashed()])
             ->latest('ordered_at')
             ->paginate(10);
 
@@ -29,13 +29,12 @@ class BuyerOrderController extends Controller
     // }
     
     public function show(Order $order)
-{
-    // Use != to avoid string/int mismatch and specify guard
-    abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
-    
-    $order->load('car', 'purchase');
-    return view('dashboard.buyer.orders.show', compact('order'));
-}
+    {
+        abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
+
+        $order->load(['car' => fn($q) => $q->withTrashed(), 'purchase']);
+        return view('dashboard.buyer.orders.show', compact('order'));
+    }
 
     // public function store(Request $request)
     // {

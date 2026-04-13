@@ -104,7 +104,7 @@ class BuyerReviewController extends Controller
      */
     public function edit(Review $review)
     {
-        abort_if($review->buyer_id !== Auth::id(), 403);
+        abort_if($review->buyer_id != Auth::id(), 403);
 
         $review->load(['car' => fn($q) => $q->withTrashed()]);
 
@@ -116,7 +116,7 @@ class BuyerReviewController extends Controller
      */
     public function update(Request $request, Review $review)
     {
-        abort_if($review->buyer_id !== Auth::id(), 403);
+        abort_if($review->buyer_id != Auth::id(), 403);
 
         $request->validate([
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
@@ -140,7 +140,7 @@ class BuyerReviewController extends Controller
      */
     public function destroy(Review $review)
     {
-        abort_if($review->buyer_id !== Auth::id(), 403);
+        abort_if($review->buyer_id != Auth::id(), 403);
 
         $review->delete();
 

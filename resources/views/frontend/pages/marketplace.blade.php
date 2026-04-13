@@ -462,9 +462,14 @@
         } else if (IS_BUYER) {
             if (car.is_preorder) {
                 if (alreadyPreOrdered) {
-                    footerHtml = `<div class="mt-auto pt-3 border-t border-violet-100 flex items-center justify-center gap-2 text-[11px] font-black text-violet-600 uppercase tracking-widest bg-violet-50 rounded-b-xl -mx-6 -mb-6 px-6 py-3">
-                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        Pre-Order Placed
+                    footerHtml = `<div class="mt-auto pt-3 border-t border-violet-100 -mx-6 -mb-6 px-6 py-3 bg-violet-50 rounded-b-xl">
+                        <div class="flex items-center gap-2">
+                            ${detailsBtn}
+                            <div class="flex-1 flex items-center justify-center gap-2 text-[11px] font-black text-violet-600 uppercase tracking-widest">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                Pre-Order Placed
+                            </div>
+                        </div>
                     </div>`;
                 } else {
                     footerHtml = `<div class="flex items-center gap-2 mt-auto pt-4 border-t border-slate-100">

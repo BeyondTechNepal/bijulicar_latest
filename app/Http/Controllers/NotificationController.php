@@ -33,7 +33,7 @@ class NotificationController extends Controller
      */
     public function markRead(UserNotification $notification)
     {
-        abort_unless($notification->user_id === auth()->id(), 403);
+        abort_unless($notification->user_id == auth()->id(), 403);
 
         $notification->markAsRead();
 

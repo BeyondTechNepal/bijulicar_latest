@@ -18,18 +18,33 @@
                     drive with precision and ease.
                 </p>
                 <div class="flex space-x-5">
+                    {{-- <!-- Facebook -->
                     <a href="#"
                         class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-[#16a34a] hover:border-[#4ade80] transition-all">
                         <i class="fab fa-facebook-f text-xs"></i>
                     </a>
+                
+                    <!-- Instagram -->
                     <a href="#"
                         class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-[#16a34a] hover:border-[#4ade80] transition-all">
-                        <i class="fab fa-twitter text-xs"></i>
+                        <i class="fab fa-instagram text-xs"></i>
                     </a>
+                
+                    <!-- X (Twitter) -->
                     <a href="#"
                         class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-[#16a34a] hover:border-[#4ade80] transition-all">
-                        <i class="fab fa-linkedin-in text-xs"></i>
-                    </a>
+                        <i class="fab fa-x-twitter text-xs"></i>
+                    </a> --}}
+                
+                    <div class="flex space-x-5">
+                        @foreach($socialLinks as $link)
+                            <a href="{{ $link->url }}" target="_blank"
+                                class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-[#16a34a] hover:border-[#4ade80] transition-all">
+
+                                <i class="fab {{ $link->icon_class }} text-xs"></i>
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 

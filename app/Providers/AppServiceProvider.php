@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\SocialLink;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
 
             // Otherwise, let Spatie handle permission checks normally
             return null; // Important: return null, not false
+        });
+
+        View::composer('*', function ($view) {
+            $socialLinks = SocialLink::all();
+            $view->with('socialLinks', $socialLinks);
         });
     }
 }

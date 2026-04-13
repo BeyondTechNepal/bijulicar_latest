@@ -89,11 +89,11 @@
                         <span class="font-bold w-5 text-center">V</span>
                         <span class="hide-on-collapse flex-1">Verifications</span>
                         @php
-                            $pendingCount =
-                                \App\Models\SellerVerification::where('status', 'pending')->count() +
-                                \App\Models\BusinessVerification::where('status', 'pending')->count() +
-                                \App\Models\StationVerification::where('status', 'pending')->count() +
-                                \App\Models\GarageVerification::where('status', 'pending')->count();
+    $pendingCount =
+        \App\Models\SellerVerification::where('status', 'pending')->count() +
+        \App\Models\BusinessVerification::where('status', 'pending')->count() +
+        \App\Models\StationVerification::where('status', 'pending')->count() +
+        \App\Models\GarageVerification::where('status', 'pending')->count();
                         @endphp
                         @if ($pendingCount > 0)
                             <span
@@ -117,21 +117,16 @@
                 @endcan
 
                 @can('manage admins')
-                    <a href="{{ route('admin.admins.index') }}"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.admins*') ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    <a href="{{ route('admin.admins.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.admins*') ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                         <span class="font-bold w-5 text-center text-rose-400 group-hover:text-white">A</span>
                         <span class="hide-on-collapse flex-1">Admins</span>
-                        <span
-                            class="hide-on-collapse text-[10px] bg-rose-900/50 text-rose-300 px-1.5 py-0.5 rounded border border-rose-800">Super</span>
+                        <span class="hide-on-collapse text-[10px] bg-rose-900/50 text-rose-300 px-1.5 py-0.5 rounded border border-rose-800">Super</span>
                     </a>
                 @endcan
 
                 @can('manage admin roles')
                     {{-- admin roles --}}
-                    <a href="{{ route('admin.admin_roles.index') }}"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.admin_roles*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    <a href="{{ route('admin.admin_roles.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.admin_roles*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                         <span class="font-bold w-5 text-center">R</span>
                         <span class="hide-on-collapse">Admin Roles</span>
                     </a>
@@ -140,8 +135,7 @@
                 @can('manage admin permissions')
                     {{-- admin permissions --}}
                     <a href="{{ route('admin.admin_permissions.index') }}"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.admin_permissions*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.admin_permissions*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                         <span class="font-bold w-5 text-center">P</span>
                         <span class="hide-on-collapse">Admin Permissions</span>
                     </a>
@@ -151,11 +145,7 @@
                     <div x-data="{ open: {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') ? 'true' : 'false' }} }">
 
                         <!-- Parent -->
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all
-        {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*')
-            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20'
-            : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
 
                             <div class="flex items-center gap-3">
                                 <span class="font-bold w-5 text-center">N</span>
@@ -214,19 +204,16 @@
                 @endcan
 
                 @can('map requests')
-                <a href="{{ route('admin.map_locations.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.map_locations*') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="font-bold w-5 text-center">📍</span>
-                    <span class="hide-on-collapse flex-1">Map Requests</span>
-                    @php $pendingMapCount = \App\Models\NewLocation::where('is_active', false)->count(); @endphp
-                    @if ($pendingMapCount > 0)
-                        <span
-                            class="hide-on-collapse text-[10px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
-                            {{ $pendingMapCount }}
-                        </span>
-                    @endif
-                </a>
+                    <a href="{{ route('admin.map_locations.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.map_locations*') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        <span class="font-bold w-5 text-center">📍</span>
+                        <span class="hide-on-collapse flex-1">Map Requests</span>
+                        @php $pendingMapCount = \App\Models\NewLocation::where('is_active', false)->count(); @endphp
+                        @if ($pendingMapCount > 0)
+                            <span class="hide-on-collapse text-[10px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                {{ $pendingMapCount }}
+                            </span>
+                        @endif
+                    </a>
                 @endcan
 
                 @can('advertisements')
@@ -245,28 +232,25 @@
                 @endcan
 
                 @can('ad pricing')
-                {{-- Ad Pricing --}}
-                <a href="{{ route('admin.ad-pricing.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.ad-pricing*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="font-bold w-5 text-center">$</span>
-                    <span class="hide-on-collapse">Ad Pricing</span>
-                </a>
+                    {{-- Ad Pricing --}}
+                    <a href="{{ route('admin.ad-pricing.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.ad-pricing*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        <span class="font-bold w-5 text-center">$</span>
+                        <span class="hide-on-collapse">Ad Pricing</span>
+                    </a>
                 @endcan
 
                 @can('revenue')
-                {{-- Revenue --}}
-                <a href="{{ route('admin.revenue.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.revenue*') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="font-bold w-5 text-center">
-                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </span>
-                    <span class="hide-on-collapse">Revenue</span>
-                </a>
+                    {{-- Revenue --}}
+                    <a href="{{ route('admin.revenue.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.revenue*') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        <span class="font-bold w-5 text-center">
+                            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </span>
+                        <span class="hide-on-collapse">Revenue</span>
+                    </a>
                 @endcan
 
                 @can('contact control')
@@ -282,8 +266,8 @@
                             </div>
 
                             <!-- Arrow -->
-                            <svg :class="open ? 'rotate-90' : ''" class="w-3 h-3 transition-transform hide-on-collapse"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg :class="open ? 'rotate-90' : ''" class="w-3 h-3 transition-transform hide-on-collapse" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
@@ -291,29 +275,30 @@
                         <!-- Children -->
                         <div x-show="open" x-collapse class="mt-1 ml-6 space-y-1">
 
-                            <a href="{{ route('admin.contact_banner.index') }}"
-                                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
-            {{ request()->routeIs('admin.contact_banner*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            <a href="{{ route('admin.contact_banner.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.contact_banner*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                                 <span class="w-5 text-center">•</span>
                                 <span class="hide-on-collapse">Contact Banner</span>
                             </a>
 
-                            <a href="{{ route('admin.contact_details.index') }}"
-                                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.contact_details*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            <a href="{{ route('admin.contact_details.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all {{ request()->routeIs('admin.contact_details*') ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                                 <span class="w-5 text-center">•</span>
                                 <span class="hide-on-collapse">Contact Details</span>
                             </a>
 
                             <a href="{{ route('admin.contact_messages.index') }}"
-                                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse
-                       {{ request()->routeIs('admin.contact_messages*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.contact_messages*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                                 <span class="font-bold w-5 text-center">C</span>
                                 <span class="hide-on-collapse">Contact Messages</span>
                             </a>
-
                         </div>
                     </div>
+                    <a href="{{ route('admin.social-links.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all center-on-collapse {{ request()->routeIs('admin.social-links.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        <span class="font-bold w-5 text-center">S</span>
+                        <span class="hide-on-collapse">Social Links</span>
+                    </a>
                 @endcan
+
             </nav>
 
             <div class="p-3 border-t border-gray-800">
@@ -331,16 +316,15 @@
             <header class="bg-white border-b border-gray-200 h-16 flex items-center px-8 sticky top-0 z-40">
                 <h1 class="text-lg font-bold text-gray-800 tracking-tight">@yield('page-title', 'Dashboard')</h1>
             </header>
-
+        
             <main class="p-8">
                 @if (session('success'))
-                    <div class="mb-6 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-4 shadow-sm"
-                        role="alert">
+                    <div class="mb-6 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-4 shadow-sm" role="alert">
                         <p class="text-sm font-bold">Success</p>
                         <p class="text-xs">{{ session('success') }}</p>
                     </div>
                 @endif
-
+        
                 @yield('content')
             </main>
         </div>

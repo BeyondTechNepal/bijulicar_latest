@@ -130,6 +130,9 @@ Route::prefix('admin')
                 Route::prefix('revenue')->name('revenue.')->group(function () {
                     Route::get('/', [AdminRevenueController::class, 'index'])->name('index');
                 });
+
+                Route::resource('social-links', App\Http\Controllers\Admin\SocialLinkController::class);
+
             });
 
             // ── News (separate role group) ─────────────────────────────

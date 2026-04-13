@@ -16,6 +16,11 @@ class RequireVerifiedAccount
             return redirect()->route('login');
         }
 
+        // ── Step 1: Email must be verified before anything else ────────
+        if (!$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+
         // Buyers now require verification like sellers
         if ($user->hasRole('buyer')) {
             $verification = $user->buyerVerification;

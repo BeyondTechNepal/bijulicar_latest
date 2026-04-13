@@ -58,27 +58,28 @@ Route::get('/newsletter/verify/{token}', [NewsletterController::class, 'verify']
 // ── Auth-required routes (no verified.account check) ──────────────────
 // Verification forms and public booking must be outside verified.account
 // middleware so unverified users and all roles can reach them.
+// Email must be verified first (verified middleware) before the doc forms.
 Route::middleware(['auth'])->group(function () {
 
-    // Buyer verification
-    Route::get('/buyer/verify', [BuyerVerificationController::class, 'create'])->name('buyer.verify.create');
-    Route::post('/buyer/verify', [BuyerVerificationController::class, 'store'])->name('buyer.verify.store');
+    // Buyer verification — email must be verified first
+    Route::get('/buyer/verify', [BuyerVerificationController::class, 'create'])->name('buyer.verify.create')->middleware('verified');
+    Route::post('/buyer/verify', [BuyerVerificationController::class, 'store'])->name('buyer.verify.store')->middleware('verified');
 
     // Seller verification
-    Route::get('/seller/verify', [SellerVerificationController::class, 'create'])->name('seller.verify.create');
-    Route::post('/seller/verify', [SellerVerificationController::class, 'store'])->name('seller.verify.store');
+    Route::get('/seller/verify', [SellerVerificationController::class, 'create'])->name('seller.verify.create')->middleware('verified');
+    Route::post('/seller/verify', [SellerVerificationController::class, 'store'])->name('seller.verify.store')->middleware('verified');
 
     // Business verification
-    Route::get('/business/verify', [BusinessVerificationController::class, 'create'])->name('business.verify.create');
-    Route::post('/business/verify', [BusinessVerificationController::class, 'store'])->name('business.verify.store');
+    Route::get('/business/verify', [BusinessVerificationController::class, 'create'])->name('business.verify.create')->middleware('verified');
+    Route::post('/business/verify', [BusinessVerificationController::class, 'store'])->name('business.verify.store')->middleware('verified');
 
     // EV Station verification
-    Route::get('/ev-station/verify', [EVStationVerificationController::class, 'create'])->name('station.verify.create');
-    Route::post('/ev-station/verify', [EVStationVerificationController::class, 'store'])->name('station.verify.store');
+    Route::get('/ev-station/verify', [EVStationVerificationController::class, 'create'])->name('station.verify.create')->middleware('verified');
+    Route::post('/ev-station/verify', [EVStationVerificationController::class, 'store'])->name('station.verify.store')->middleware('verified');
 
     // Garage verification
-    Route::get('/garage/verify', [GarageVerificationController::class, 'create'])->name('garage.verify.create');
-    Route::post('/garage/verify', [GarageVerificationController::class, 'store'])->name('garage.verify.store');
+    Route::get('/garage/verify', [GarageVerificationController::class, 'create'])->name('garage.verify.create')->middleware('verified');
+    Route::post('/garage/verify', [GarageVerificationController::class, 'store'])->name('garage.verify.store')->middleware('verified');
 
     // Full notifications page
     Route::get('/notifications', [NotificationController::class, 'index'])

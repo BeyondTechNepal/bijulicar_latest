@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -15,15 +16,16 @@ use App\Models\BuyerVerification;
 use App\Models\StationVerification;
 use App\Models\PreOrder;
 use App\Models\UserNotification;
+use App\Notifications\VerifyEmailNotification;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
     protected $guard_name = 'web';
 
-    protected $fillable = ['name', 'email', 'phone', 'password'];
+    protected $fillable = ['name', 'email', 'phone', 'password', 'wants_newsletter'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -69,6 +71,11 @@ class User extends Authenticatable
             ?? $this->businessVerification
             ?? $this->stationVerification
             ?? $this->garageVerification;
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+    $this->notify(new VerifyEmailNotification);
     }
 
     // ── Car / marketplace relationships ───────────────────────────────

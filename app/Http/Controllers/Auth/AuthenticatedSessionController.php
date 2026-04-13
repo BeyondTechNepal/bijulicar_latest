@@ -11,33 +11,48 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        // Step 1: email not verified yet
+        if (!$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+
+        // Step 2: doc verification not submitted yet
+        $verification = $user->verification();
+
+        if (!$verification) {
+            return redirect(match (true) {
+                $user->hasRole('seller')     => route('seller.verify.create'),
+                $user->hasRole('business')   => route('business.verify.create'),
+                $user->hasRole('ev-station') => route('station.verify.create'),
+                $user->hasRole('garage')     => route('garage.verify.create'),
+                default                      => route('buyer.verify.create'),
+            });
+        }
+
+        // Step 3: doc submitted but pending/rejected admin review
+        if (!$verification->isApproved()) {
+            return redirect()->route('verification.pending');
+        }
+
+        // Fully onboarded — go to dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

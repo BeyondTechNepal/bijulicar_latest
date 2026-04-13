@@ -454,6 +454,7 @@
                                         @endif
 
                                         {{-- ── REGULAR ORDER FLOW ── --}}
+                                        @if ($alreadyOrdered)
                                         <div
                                             class="w-full py-3.5 rounded-xl bg-green-50 border border-green-200 text-green-700 text-[12px] font-black uppercase tracking-widest text-center">
                                             ✓ Already Ordered
@@ -462,6 +463,7 @@
                                             class="block w-full py-3.5 rounded-xl bg-slate-100 text-slate-700 text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-slate-200 transition-all">
                                             View My Orders
                                         </a>
+                                        @endif
                                     @elseif ($car->inStock())
                                         <form method="POST" action="{{ route('buyer.orders.store') }}" id="orderForm">
                                             @csrf

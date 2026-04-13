@@ -53,7 +53,8 @@ class NewUsersSeeder extends Seeder
             'map requests',
             'advertisements',
             'ad pricing',
-            'revenue'
+            'revenue',
+            'manage car listing(seller)',
         ];
 
         foreach ($webPermissions as $perm) {
@@ -72,7 +73,7 @@ class NewUsersSeeder extends Seeder
         $buyer->syncPermissions(['browse listings', 'purchase vehicle', 'write reviews', 'manage own orders']);
 
         $seller = Role::firstOrCreate(['name' => 'seller', 'guard_name' => 'web']);
-        $seller->syncPermissions(['browse listings', 'list vehicles', 'manage own listings', 'view seller analytics']);
+        $seller->syncPermissions(['browse listings', 'list vehicles', 'manage own listings', 'view seller analytics', 'manage car listing(seller)']);
 
         $business = Role::firstOrCreate(['name' => 'business', 'guard_name' => 'web']);
         $business->syncPermissions(['browse listings', 'list vehicles', 'view seller analytics', 'create advertisements', 'bulk operations', 'view business analytics']);

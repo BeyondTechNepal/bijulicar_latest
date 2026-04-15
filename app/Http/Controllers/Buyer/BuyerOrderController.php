@@ -54,15 +54,17 @@ class BuyerOrderController extends Controller
         abort_if($hasActiveOrder, 422, 'You already have an active order for this car.');
 
         $order = Order::create([
-            'buyer_id'    => $buyerId,
-            'car_id'      => $car->id,
-            'status'      => 'pending',
-            'total_price' => $car->price,
-            'buyer_name'  => $request->buyer_name,
-            'buyer_phone' => $request->buyer_phone,
-            'buyer_email' => $request->buyer_email,
-            'notes'       => $request->notes,
-            'ordered_at'  => now(),
+            'buyer_id'          => $buyerId,
+            'seller_id'         => $car->seller_id,          // snapshot — survives car deletion
+            'car_id'            => $car->id,
+            'car_snapshot_name' => $car->displayName(),      // snapshot — survives car deletion
+            'status'            => 'pending',
+            'total_price'       => $car->price,
+            'buyer_name'        => $request->buyer_name,
+            'buyer_phone'       => $request->buyer_phone,
+            'buyer_email'       => $request->buyer_email,
+            'notes'             => $request->notes,
+            'ordered_at'        => now(),
         ]);
 
         return redirect()
@@ -77,9 +79,6 @@ class BuyerOrderController extends Controller
 
         $order->update(['status' => 'cancelled']);
 
-        // ── BUG 6 FIX ───────────────────────────────────────────────────
-        // If the car was reserved for this order, free it back to available.
-        // (Mirrors what SellerOrderController@cancel already does.)
         if ($order->car && $order->car->status === 'reserved') {
             $order->car->update(['status' => 'available']);
         }

@@ -10,7 +10,9 @@ class Order extends Model
 {
     protected $fillable = [
         'buyer_id',
+        'seller_id',           // snapshot — set at order creation, survives car deletion
         'car_id',
+        'car_snapshot_name',   // snapshot — preserved even after car is deleted
         'status',
         'total_price',
         'notes',
@@ -28,7 +30,7 @@ class Order extends Model
         ];
     }
 
-    // Relationships 
+    // ── Relationships ─────────────────────────────────────────────────
 
     /** The buyer who placed this order */
     public function buyer(): BelongsTo
@@ -36,10 +38,24 @@ class Order extends Model
         return $this->belongsTo(User::class, 'buyer_id');
     }
 
-    /** The car this order is for */
+    /**
+     * The seller who owns the listing.
+     * Uses the seller_id snapshot, so this works even after car deletion.
+     */
+    public function seller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'seller_id');
+    }
+
+    /**
+     * The car this order is for.
+     * car_id is nullable (set to NULL when the car is deleted), so always
+     * guard against null before accessing car properties. Use
+     * $order->car_snapshot_name as the safe display fallback.
+     */
     public function car(): BelongsTo
     {
-        return $this->belongsTo(Car::class);
+        return $this->belongsTo(Car::class)->withTrashed();
     }
 
     /** The purchase record once payment is made */
@@ -48,12 +64,22 @@ class Order extends Model
         return $this->hasOne(Purchase::class);
     }
 
-    //  Helpers
+    // ── Helpers ───────────────────────────────────────────────────────
 
     /** Can this order still be cancelled? */
     public function isCancellable(): bool
     {
         return in_array($this->status, ['pending', 'confirmed']);
+    }
+
+    /**
+     * Human-readable car name that is safe to display at all times.
+     * Falls back to the snapshot stored at order creation if the live
+     * car record has been deleted.
+     */
+    public function carDisplayName(): string
+    {
+        return $this->car?->displayName() ?? $this->car_snapshot_name ?? 'Deleted Listing';
     }
 
     /** Returns a color string for status badges in the view */

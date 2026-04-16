@@ -227,6 +227,14 @@ Route::middleware(['auth', 'role:seller', 'verified.account'])
         Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])->name('preorders.confirm_deposit')->middleware('permission:manage own orders');
         Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])->name('preorders.convert')->middleware('permission:manage own orders');
         Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
+
+        // Map location (goes live immediately — no admin approval needed)
+        Route::get('/location', [LocationController::class, 'index'])->name('location.index');
+        Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
+        Route::post('/location', [LocationController::class, 'store'])->name('location.store');
+        Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
+        Route::put('/location', [LocationController::class, 'update'])->name('location.update');
+        Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
     });
 
 // ── BUSINESS routes ────────────────────────────────────────────────────
@@ -278,6 +286,14 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
         Route::get('/advertisements/{advertisement}/edit', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'edit'])->name('advertisements.edit')->middleware('permission:create advertisements');
         Route::patch('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'update'])->name('advertisements.update')->middleware('permission:create advertisements');
         Route::delete('/advertisements/{advertisement}', [App\Http\Controllers\Business\BusinessAdvertisementController::class, 'destroy'])->name('advertisements.destroy')->middleware('permission:create advertisements');
+
+        // Map location (goes live immediately — no admin approval needed)
+        Route::get('/location', [LocationController::class, 'index'])->name('location.index');
+        Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
+        Route::post('/location', [LocationController::class, 'store'])->name('location.store');
+        Route::get('/location/edit', [LocationController::class, 'edit'])->name('location.edit');
+        Route::put('/location', [LocationController::class, 'update'])->name('location.update');
+        Route::delete('/location', [LocationController::class, 'destroy'])->name('location.destroy');
     });
 
 // ── EV STATION routes ──────────────────────────────────────────────────

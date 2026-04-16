@@ -25,7 +25,7 @@ class BuyerOrderController extends Controller
     {
         abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
 
-        $order->load(['car' => fn($q) => $q->withTrashed(), 'purchase']);
+        $order->load(['car' => fn($q) => $q->withTrashed(), 'purchase', 'preOrder']);
         return view('dashboard.buyer.orders.show', compact('order'));
     }
 

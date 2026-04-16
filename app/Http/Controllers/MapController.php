@@ -40,9 +40,6 @@ class MapController extends Controller
                     ->orderBy('slot_number')
                     ->get(['id', 'slot_number', 'status', 'free_at']);
 
-                // Only truly 'available' slots count as open on the map.
-                // 'pending' slots (requested but not yet approved) do NOT
-                // reduce the green count — they are still awaiting approval.
                 $available = $slots->where('status', 'available')->count();
                 $pending   = $slots->where('status', 'pending')->count();
                 $booked    = $slots->where('status', 'booked')->count();
@@ -66,7 +63,7 @@ class MapController extends Controller
                     ->orderBy('bay_number')
                     ->get(['id', 'bay_number', 'status', 'estimated_finish_at']);
 
-                $freeBays    = $bays->where('status', 'available')->count();
+                $freeBays     = $bays->where('status', 'available')->count();
                 $occupiedBays = $bays->where('status', 'occupied')->count();
 
                 $nextFinish = $bays
@@ -75,10 +72,24 @@ class MapController extends Controller
                     ->sortBy('estimated_finish_at')
                     ->first();
 
-                $base['bays']          = $bays->values();
-                $base['free_bays']     = $freeBays;
-                $base['busy_bays']     = $occupiedBays;
+                $base['bays']           = $bays->values();
+                $base['free_bays']      = $freeBays;
+                $base['busy_bays']      = $occupiedBays;
                 $base['next_finish_at'] = $nextFinish?->estimated_finish_at?->toDateTimeString();
+
+            } elseif ($loc->type === 'seller') {
+                // Enrich with seller's active car listings count
+                $base['listing_count'] = \App\Models\Car::where('seller_id', $loc->user_id)
+                    ->where('status', 'available')
+                    ->count();
+                $base['profile_url'] = route('marketplace') . '?seller=' . $loc->user_id;
+
+            } elseif ($loc->type === 'business') {
+                // Enrich with business info
+                $base['listing_count'] = \App\Models\Car::where('seller_id', $loc->user_id)
+                    ->where('status', 'available')
+                    ->count();
+                $base['profile_url'] = route('businesses.show', $loc->user_id);
             }
 
             return $base;

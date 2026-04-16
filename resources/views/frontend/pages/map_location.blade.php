@@ -25,7 +25,7 @@
                         Unit <span class="text-slate-400">Locator</span>
                     </h1>
                     <p class="text-slate-300 text-sm max-w-md font-medium leading-relaxed">
-                        Find verified EV charging stations and garages across <span class="text-[#4ade80]">Nepal</span>.
+                        Find verified EV charging stations, garages, car sellers, and businesses across <span class="text-[#4ade80]">Nepal</span>.
                         Live slot availability updated in real-time.
                     </p>
                 </div>
@@ -68,7 +68,9 @@
                     </span>
                     <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                         <span id="station-count">{{ $locations->where('type', 'ev-station')->count() }}</span> Stations &amp;
-                        <span id="garage-count">{{ $locations->where('type', 'garage')->count() }}</span> Garages
+                        <span id="garage-count">{{ $locations->where('type', 'garage')->count() }}</span> Garages &amp;
+                        <span id="seller-count">{{ $locations->where('type', 'seller')->count() }}</span> Sellers &amp;
+                        <span id="business-count">{{ $locations->where('type', 'business')->count() }}</span> Businesses
                     </span>
                 </div>
             </div>
@@ -81,15 +83,32 @@
                 <div class="lg:w-80 flex flex-col gap-3 h-full overflow-y-auto">
 
                     {{-- Category tabs --}}
-                    <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex gap-1 shrink-0">
+                    <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-3 gap-1 shrink-0">
                         <button onclick="switchCategory('ev-station')" id="tab-station"
-                            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-white text-emerald-600 shadow-sm border border-slate-200">
-                            ⚡ EV Stations
+                            class="py-3 rounded-xl transition-all bg-white text-emerald-600 shadow-sm border border-slate-200 flex flex-col items-center gap-1">
+                            <span class="text-base leading-none">⚡</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider">EV Stations</span>
                         </button>
                         <button onclick="switchCategory('garage')" id="tab-garage"
-                            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-700">
-                            🔧 Garages
+                            class="py-3 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1">
+                            <span class="text-base leading-none">🔧</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider">Garages</span>
                         </button>
+                        <button onclick="switchCategory('seller-business')" id="tab-seller-business"
+                            class="py-3 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1">
+                            <span class="text-base leading-none">🚗🏢</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider">Sellers & Biz</span>
+                        </button>
+                    </div>
+
+                    {{-- Legend for seller-business tab --}}
+                    <div id="seller-biz-legend" class="hidden bg-slate-50 rounded-xl border border-slate-100 px-4 py-2.5 flex items-center gap-4 shrink-0">
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#10b981"></span>Seller
+                        </span>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#8b5cf6"></span>Business
+                        </span>
                     </div>
 
                     {{-- Filters --}}
@@ -141,6 +160,15 @@
                 {{-- ── Map canvas ───────────────────────────────────────── --}}
                 <div class="flex-1 relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-slate-100 shadow-inner">
                     <div id="map" class="absolute inset-0 z-0"></div>
+
+                    {{-- My Location GPS button --}}
+                    <button id="locate-btn" onclick="locateMe()" title="Show my location"
+                        class="absolute bottom-4 right-4 z-[999] w-11 h-11 bg-white rounded-2xl shadow-lg border border-slate-200 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-400 transition-all duration-200 group">
+                        <svg id="locate-icon" class="w-5 h-5 text-slate-500 group-hover:text-emerald-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z"/>
+                        </svg>
+                    </button>
+
                     {{-- Loading overlay --}}
                     <div id="map-loading" class="absolute inset-0 z-10 bg-slate-100 flex items-center justify-center">
                         <div class="text-center">
@@ -189,6 +217,11 @@
         .pill-red { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
         .pill-amber { background: #fffbeb; color: #d97706; border-color: #fde68a; }
         .pill-gray { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+        @keyframes locatePulse {
+            0%   { transform: scale(1); opacity: .6; }
+            70%  { transform: scale(2.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
     </style>
 
     <script>
@@ -255,24 +288,38 @@
             const filterAvailable = document.getElementById('filter-available').checked;
 
             const filtered = allLocations.filter(loc => {
-                if (loc.type !== currentCategory) return false;
+                if (currentCategory === 'seller-business') {
+                    if (loc.type !== 'seller' && loc.type !== 'business') return false;
+                } else {
+                    if (loc.type !== currentCategory) return false;
+                }
                 if (filterAvailable) {
                     if (loc.type === 'ev-station' && (loc.available_slots ?? 0) === 0) return false;
                     if (loc.type === 'garage'     && (loc.free_bays ?? 0) === 0) return false;
+                    if (loc.type === 'seller'   && (loc.listing_count ?? 0) === 0) return false;
+                    if (loc.type === 'business' && (loc.listing_count ?? 0) === 0) return false;
                 }
                 return true;
             });
 
             filtered.forEach(loc => {
                 const isEV       = loc.type === 'ev-station';
-                const hasSpace   = isEV ? (loc.available_slots > 0) : (loc.free_bays > 0);
+                const isGarage   = loc.type === 'garage';
+                const isSeller   = loc.type === 'seller';
+                const isBusiness = loc.type === 'business';
+
+                const hasSpace   = isEV ? (loc.available_slots > 0) : isGarage ? (loc.free_bays > 0) : ((loc.listing_count ?? 0) > 0);
                 const hasAvailable = loc.available_slots > 0;
                 const hasBooked    = (loc.booked_slots ?? 0) > 0;
                 const iconColor    = isEV
                     ? (hasAvailable ? '#16a34a' : hasBooked ? '#f59e0b' : '#ef4444')
-                    : (hasSpace ? '#6366f1' : '#ef4444');
+                    : isGarage
+                        ? (hasSpace ? '#6366f1' : '#ef4444')
+                        : isSeller
+                            ? '#10b981'   // green for sellers
+                            : '#8b5cf6';  // purple for businesses
 
-                const marker = L.marker([loc.latitude, loc.longitude], { icon: makeIcon(iconColor, isEV ? hasAvailable : hasSpace) })
+                const marker = L.marker([loc.latitude, loc.longitude], { icon: makeIcon(iconColor, hasSpace) })
                     .addTo(map)
                     .bindPopup(buildPopup(loc), { maxWidth: 320, minWidth: 280 });
 
@@ -286,7 +333,7 @@
                 // Dropdown option
                 const opt = document.createElement('option');
                 opt.value = loc.id;
-                opt.textContent = (isEV ? '⚡ ' : '🔧 ') + (loc.name || loc.address);
+                opt.textContent = (isEV ? '⚡ ' : isGarage ? '🔧 ' : isSeller ? '🚗 ' : '🏢 ') + (loc.name || loc.address);
                 document.getElementById('asset-selector').appendChild(opt);
             });
 
@@ -297,7 +344,10 @@
 
         // ── Build Leaflet popup HTML ───────────────────────────────────────
         function buildPopup(loc) {
-            const isEV = loc.type === 'ev-station';
+            const isEV       = loc.type === 'ev-station';
+            const isGarage   = loc.type === 'garage';
+            const isSeller   = loc.type === 'seller';
+            const isBusiness = loc.type === 'business';
 
             let availBadge = '';
             let slotGrid   = '';
@@ -359,7 +409,7 @@
                            </a>`;
                 }
 
-            } else {
+            } else if (isGarage) {
                 // Garage
                 const free = loc.free_bays ?? 0;
                 const total = loc.total_slots ?? 0;
@@ -382,6 +432,30 @@
                     : `<a href="${LOGIN_URL}" style="display:block;margin-top:12px;text-align:center;background:#0f172a;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
                            Log in to book →
                        </a>`;
+
+            } else if (isSeller) {
+                const count = loc.listing_count ?? 0;
+                availBadge = count > 0
+                    ? `<span class="slot-pill pill-green">🚗 ${count} listing${count !== 1 ? 's' : ''} available</span>`
+                    : `<span class="slot-pill pill-gray">🚗 No active listings</span>`;
+
+                bookBtn = loc.profile_url
+                    ? `<a href="${loc.profile_url}" style="display:block;margin-top:12px;text-align:center;background:#10b981;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
+                           View Listings →
+                       </a>`
+                    : '';
+
+            } else if (isBusiness) {
+                const count = loc.listing_count ?? 0;
+                availBadge = count > 0
+                    ? `<span class="slot-pill pill-green">🏢 ${count} listing${count !== 1 ? 's' : ''} available</span>`
+                    : `<span class="slot-pill pill-gray">🏢 No active listings</span>`;
+
+                bookBtn = loc.profile_url
+                    ? `<a href="${loc.profile_url}" style="display:block;margin-top:12px;text-align:center;background:#8b5cf6;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
+                           View Business →
+                       </a>`
+                    : '';
             }
 
             return `<div style="padding:14px 16px;font-family:inherit">
@@ -402,10 +476,34 @@
 
         // ── Build sidebar card HTML ────────────────────────────────────────
         function buildSidebarCard(loc) {
-            const isEV   = loc.type === 'ev-station';
-            const avail  = isEV ? (loc.available_slots ?? 0) : (loc.free_bays ?? 0);
-            const total  = loc.total_slots ?? 0;
-            const dot    = avail > 0 ? 'background:#4ade80' : 'background:#ef4444';
+            const isEV       = loc.type === 'ev-station';
+            const isGarage   = loc.type === 'garage';
+            const isSeller   = loc.type === 'seller';
+            const isBusiness = loc.type === 'business';
+
+            let avail, total, pillClass, pillLabel;
+
+            if (isEV) {
+                avail = loc.available_slots ?? 0;
+                total = loc.total_slots ?? 0;
+                pillClass = avail > 0 ? 'pill-green' : 'pill-red';
+                pillLabel = `⚡ ${avail}/${total} slots`;
+            } else if (isGarage) {
+                avail = loc.free_bays ?? 0;
+                total = loc.total_slots ?? 0;
+                pillClass = avail > 0 ? 'pill-green' : 'pill-red';
+                pillLabel = `🔧 ${avail}/${total} bays`;
+            } else if (isSeller) {
+                avail = loc.listing_count ?? 0;
+                pillClass = avail > 0 ? 'pill-green' : 'pill-gray';
+                pillLabel = `🚗 ${avail} listing${avail !== 1 ? 's' : ''}`;
+            } else {
+                avail = loc.listing_count ?? 0;
+                pillClass = avail > 0 ? 'pill-green' : 'pill-gray';
+                pillLabel = `🏢 ${avail} listing${avail !== 1 ? 's' : ''}`;
+            }
+
+            const dot = avail > 0 ? 'background:#4ade80' : 'background:#ef4444';
 
             return `<div class="loc-card" onclick="focusLocation(${loc.id})">
                         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -414,10 +512,7 @@
                         </div>
                         <p style="font-size:10px;color:#94a3b8;font-weight:600;margin:0 0 6px;padding-left:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(loc.address)}</p>
                         <div style="padding-left:15px">
-                            ${isEV
-                                ? `<span class="slot-pill ${avail > 0 ? 'pill-green' : 'pill-red'}">⚡ ${avail}/${total} slots</span>`
-                                : `<span class="slot-pill ${avail > 0 ? 'pill-green' : 'pill-red'}">🔧 ${avail}/${total} bays</span>`
-                            }
+                            <span class="slot-pill ${pillClass}">${pillLabel}</span>
                         </div>
                     </div>`;
         }
@@ -581,17 +676,30 @@
         function switchCategory(category) {
             currentCategory = category;
 
-            document.getElementById('tab-station').className =
-                'flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ' +
-                (category === 'ev-station'
-                    ? 'bg-white text-emerald-600 shadow-sm border border-slate-200'
-                    : 'text-slate-500 hover:text-slate-700');
+            const tabs = {
+                'tab-station':        'ev-station',
+                'tab-garage':         'garage',
+                'tab-seller-business':'seller-business',
+            };
+            const activeColors = {
+                'ev-station':      'text-emerald-600',
+                'garage':          'text-indigo-600',
+                'seller-business': 'text-violet-600',
+            };
+            const activeBase  = 'py-3 rounded-xl transition-all bg-white shadow-sm border border-slate-200 flex flex-col items-center gap-1';
+            const inactiveBase = 'py-3 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1';
 
-            document.getElementById('tab-garage').className =
-                'flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ' +
-                (category === 'garage'
-                    ? 'bg-white text-indigo-600 shadow-sm border border-slate-200'
-                    : 'text-slate-500 hover:text-slate-700');
+            Object.entries(tabs).forEach(([id, cat]) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.className = cat === category
+                    ? `${activeBase} ${activeColors[cat]}`
+                    : inactiveBase;
+            });
+
+            // Show colour legend only on seller-business tab
+            const legend = document.getElementById('seller-biz-legend');
+            if (legend) legend.classList.toggle('hidden', category !== 'seller-business');
 
             renderMarkers();
         }
@@ -632,6 +740,82 @@
             if (diff <= 0) return 'soon';
             if (diff < 60) return `${diff} min`;
             return `${Math.round(diff / 60)}h`;
+        }
+
+        // ── Current location (GPS) ─────────────────────────────────────────
+        let userLocationMarker  = null;
+        let userLocationCircle  = null;
+
+        function locateMe() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser.');
+                return;
+            }
+
+            const btn  = document.getElementById('locate-btn');
+            const icon = document.getElementById('locate-icon');
+
+            // Pulse the button while locating
+            btn.classList.add('animate-pulse');
+            icon.classList.remove('text-slate-500');
+            icon.classList.add('text-emerald-500');
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    btn.classList.remove('animate-pulse');
+
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const acc = pos.coords.accuracy;
+
+                    // Remove previous marker/circle
+                    if (userLocationMarker) map.removeLayer(userLocationMarker);
+                    if (userLocationCircle) map.removeLayer(userLocationCircle);
+
+                    // Accuracy circle
+                    userLocationCircle = L.circle([lat, lng], {
+                        radius: acc,
+                        color: '#3b82f6',
+                        fillColor: '#3b82f6',
+                        fillOpacity: 0.08,
+                        weight: 1,
+                    }).addTo(map);
+
+                    // Blue pulsing dot — Google Maps style
+                    const dotIcon = L.divIcon({
+                        className: '',
+                        html: `<div style="position:relative;width:20px;height:20px">
+                                   <div style="position:absolute;inset:0;background:#3b82f6;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(59,130,246,.5)"></div>
+                                   <div style="position:absolute;inset:-5px;background:rgba(59,130,246,0.25);border-radius:50%;animation:locatePulse 2s ease-out infinite"></div>
+                               </div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10],
+                        popupAnchor: [0, -14],
+                    });
+
+                    userLocationMarker = L.marker([lat, lng], { icon: dotIcon })
+                        .addTo(map)
+                        .bindPopup('<div style="font-size:11px;font-weight:800;color:#0f172a;padding:4px 8px">📍 You are here</div>');
+
+                    map.setView([lat, lng], 15, { animate: true });
+                    userLocationMarker.openPopup();
+
+                    // Keep the button highlighted to show location is active
+                    btn.classList.add('bg-emerald-50', 'border-emerald-400');
+                },
+                (err) => {
+                    btn.classList.remove('animate-pulse');
+                    icon.classList.remove('text-emerald-500');
+                    icon.classList.add('text-slate-500');
+                    const msgs = {
+                        1: 'Location access denied. Please allow location in your browser.',
+                        2: 'Could not determine your location.',
+                        3: 'Location request timed out.',
+                    };
+                    alert(msgs[err.code] || 'Location unavailable.');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+            );
         }
 
         // ── Boot ───────────────────────────────────────────────────────────

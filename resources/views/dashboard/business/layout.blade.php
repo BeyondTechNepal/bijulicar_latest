@@ -170,6 +170,21 @@
 
                 <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Explore</p>
 
+                <a href="{{ route('business.location.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                {{ request()->routeIs('business.location*') ? 'bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Map Location
+                    @php $hasLoc = auth()->user()->location()->exists(); @endphp
+                    @if ($hasLoc)
+                        <span class="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    @endif
+                </a>
+
                 <a href="{{ route('marketplace') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

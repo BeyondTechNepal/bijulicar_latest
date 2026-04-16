@@ -27,6 +27,10 @@
 
     {{-- import for font awesome icons --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    {{-- import for spreadsheet --}}
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
 </head>
 
 <body class="flex flex-col min-h-screen bg-white">

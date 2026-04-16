@@ -48,7 +48,7 @@
                         <div>
                             <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Phone Number</label>
                             <input type="text" name="buyer_phone"
-                                value="{{ old('buyer_phone') }}"
+                                value="{{ old('buyer_phone', auth()->user()->phone) }}"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4ade80]/40 focus:border-[#4ade80] transition"
                                 placeholder="98XXXXXXXX" required>
                             @error('buyer_phone')<p class="text-xs text-red-500 font-medium mt-1">{{ $message }}</p>@enderror

@@ -481,6 +481,7 @@
                                                         class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Full
                                                         Name <span class="text-red-400">*</span></label>
                                                     <input type="text" name="buyer_name" required
+                                                        value="{{ old('buyer_name', auth()->user()->name) }}"
                                                         placeholder="Your full name"
                                                         class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_name') border-red-400 @enderror">
                                                     @error('buyer_name')
@@ -494,7 +495,7 @@
                                                         class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Phone
                                                         Number <span class="text-red-400">*</span></label>
                                                     <input type="tel" name="buyer_phone"
-                                                        value="{{ old('buyer_phone') }}" required
+                                                        value="{{ old('buyer_phone', auth()->user()->phone) }}" required
                                                         placeholder="e.g. 98XXXXXXXX"
                                                         class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_phone') border-red-400 @enderror">
                                                     @error('buyer_phone')
@@ -508,6 +509,7 @@
                                                         class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Email
                                                         Address <span class="text-red-400">*</span></label>
                                                     <input type="email" name="buyer_email" required
+                                                        value="{{ old('buyer_email', auth()->user()->email) }}"
                                                         placeholder="you@gmail.com"
                                                         class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all font-medium @error('buyer_email') border-red-400 @enderror">
                                                     @error('buyer_email')

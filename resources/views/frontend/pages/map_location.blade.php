@@ -77,38 +77,33 @@
 
             {{-- Map container --}}
             <div class="bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3"
-                 style="height: 680px;">
+                 style="height: 760px;">
 
                 {{-- ── Sidebar ──────────────────────────────────────────── --}}
-                <div class="lg:w-80 flex flex-col gap-3 h-full overflow-y-auto">
+                <div class="lg:w-[420px] flex flex-col gap-3 h-full overflow-hidden">
 
                     {{-- Category tabs --}}
-                    <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-3 gap-1 shrink-0">
-                        <button onclick="switchCategory('ev-station')" id="tab-station"
-                            class="py-3 rounded-xl transition-all bg-white text-emerald-600 shadow-sm border border-slate-200 flex flex-col items-center gap-1">
-                            <span class="text-base leading-none">⚡</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider">EV Stations</span>
+                    <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-3 gap-1.5 shrink-0">
+                        <button onclick="switchCategory('ev-fuel')" id="tab-ev-fuel"
+                            class="py-3.5 rounded-xl transition-all bg-white text-emerald-600 shadow-sm border border-slate-200 flex flex-col items-center gap-1.5">
+                            <span class="text-lg leading-none">⚡⛽</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">EV & Petrol</span>
                         </button>
                         <button onclick="switchCategory('garage')" id="tab-garage"
-                            class="py-3 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1">
-                            <span class="text-base leading-none">🔧</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider">Garages</span>
+                            class="py-3.5 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1.5">
+                            <span class="text-lg leading-none">🔧</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Garages</span>
                         </button>
                         <button onclick="switchCategory('seller-business')" id="tab-seller-business"
-                            class="py-3 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1">
-                            <span class="text-base leading-none">🚗🏢</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider">Sellers & Biz</span>
+                            class="py-3.5 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1.5">
+                            <span class="text-lg leading-none">🚗🏢</span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Sellers & Biz</span>
                         </button>
                     </div>
 
-                    {{-- Legend for seller-business tab --}}
-                    <div id="seller-biz-legend" class="hidden bg-slate-50 rounded-xl border border-slate-100 px-4 py-2.5 flex items-center gap-4 shrink-0">
-                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
-                            <span class="w-3 h-3 rounded-full inline-block" style="background:#10b981"></span>Seller
-                        </span>
-                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
-                            <span class="w-3 h-3 rounded-full inline-block" style="background:#8b5cf6"></span>Business
-                        </span>
+                    {{-- Legend pills — shown per tab --}}
+                    <div id="tab-legend" class="hidden bg-slate-50 rounded-xl border border-slate-100 px-4 py-2.5 shrink-0">
+                        {{-- filled by switchCategory() --}}
                     </div>
 
                     {{-- Filters --}}
@@ -126,6 +121,19 @@
                             <input type="checkbox" id="show-markers" checked onchange="filterMarkers()"
                                 class="rounded border-slate-300 text-emerald-600 w-4 h-4">
                         </label>
+
+                        {{-- Petrol pump radius — only on EV & Fuel tab --}}
+                        <div id="fuel-radius-wrap" class="hidden p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-slate-600 uppercase">⛽ Pump search radius</span>
+                                <span id="fuel-radius-label" class="text-[10px] font-black text-emerald-600">7 km</span>
+                            </div>
+                            <input type="range" id="fuel-radius" min="1" max="20" value="7" step="1"
+                                oninput="document.getElementById('fuel-radius-label').textContent=this.value+' km'"
+                                onchange="loadPetrolPumps()"
+                                class="w-full accent-emerald-500 cursor-pointer">
+                            <p class="text-[9px] text-slate-400 font-semibold">Requires your location · Powered by OpenStreetMap</p>
+                        </div>
                     </div>
 
                     {{-- Focus navigation --}}
@@ -145,6 +153,9 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Fuel status toast --}}
+                    <div id="fuel-status" class="hidden shrink-0 bg-orange-50 border border-orange-200 text-orange-700 text-[10px] font-bold px-4 py-2.5 rounded-xl"></div>
 
                     {{-- Location list --}}
                     <div class="flex-1 overflow-y-auto space-y-2 pr-0.5" id="location-list">
@@ -235,7 +246,7 @@
 
         // ── State ──────────────────────────────────────────────────────────
         let allLocations   = [];
-        let currentCategory = 'ev-station';
+        let currentCategory = 'ev-fuel';
         let currentMarkers  = [];
         let markersVisible  = true;
         let activeLocation  = null;  // currently open in modal
@@ -288,7 +299,9 @@
             const filterAvailable = document.getElementById('filter-available').checked;
 
             const filtered = allLocations.filter(loc => {
-                if (currentCategory === 'seller-business') {
+                if (currentCategory === 'ev-fuel') {
+                    if (loc.type !== 'ev-station') return false;
+                } else if (currentCategory === 'seller-business') {
                     if (loc.type !== 'seller' && loc.type !== 'business') return false;
                 } else {
                     if (loc.type !== currentCategory) return false;
@@ -465,7 +478,7 @@
                         ${slotGrid}
                         ${bookBtn}
                         <div style="margin-top:10px;padding-top:10px;border-top:1px solid #f1f5f9">
-                            <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.latitude},${loc.longitude}"
+                            <a href="${buildGmapsUrl(loc.latitude, loc.longitude)}"
                                target="_blank" rel="noopener noreferrer"
                                style="font-size:10px;font-weight:800;color:#16a34a;text-decoration:none;text-transform:uppercase;letter-spacing:.06em">
                                Open in Google Maps ↗
@@ -677,17 +690,17 @@
             currentCategory = category;
 
             const tabs = {
-                'tab-station':        'ev-station',
+                'tab-ev-fuel':        'ev-fuel',
                 'tab-garage':         'garage',
                 'tab-seller-business':'seller-business',
             };
             const activeColors = {
-                'ev-station':      'text-emerald-600',
+                'ev-fuel':         'text-emerald-600',
                 'garage':          'text-indigo-600',
                 'seller-business': 'text-violet-600',
             };
-            const activeBase  = 'py-3 rounded-xl transition-all bg-white shadow-sm border border-slate-200 flex flex-col items-center gap-1';
-            const inactiveBase = 'py-3 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1';
+            const activeBase   = 'py-3.5 rounded-xl transition-all bg-white shadow-sm border border-slate-200 flex flex-col items-center gap-1.5';
+            const inactiveBase = 'py-3.5 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1.5';
 
             Object.entries(tabs).forEach(([id, cat]) => {
                 const el = document.getElementById(id);
@@ -697,11 +710,49 @@
                     : inactiveBase;
             });
 
-            // Show colour legend only on seller-business tab
-            const legend = document.getElementById('seller-biz-legend');
-            if (legend) legend.classList.toggle('hidden', category !== 'seller-business');
+            // Legend
+            const legend = document.getElementById('tab-legend');
+            const fuelWrap = document.getElementById('fuel-radius-wrap');
+
+            if (category === 'ev-fuel') {
+                legend.innerHTML = `
+                    <div class="flex items-center flex-wrap gap-3">
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#16a34a"></span>EV (available)
+                        </span>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#f59e0b"></span>EV (partial)
+                        </span>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#f97316"></span>Petrol pump
+                        </span>
+                    </div>`;
+                legend.classList.remove('hidden');
+                if (fuelWrap) fuelWrap.classList.remove('hidden');
+            } else if (category === 'seller-business') {
+                legend.innerHTML = `
+                    <div class="flex items-center flex-wrap gap-3">
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#10b981"></span>Seller
+                        </span>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#8b5cf6"></span>Business
+                        </span>
+                    </div>`;
+                legend.classList.remove('hidden');
+                if (fuelWrap) fuelWrap.classList.add('hidden');
+            } else {
+                legend.classList.add('hidden');
+                if (fuelWrap) fuelWrap.classList.add('hidden');
+            }
+
+            // Clear petrol pump markers when switching away
+            if (category !== 'ev-fuel') clearPetrolMarkers();
 
             renderMarkers();
+
+            // Auto-load petrol pumps if we have location
+            if (category === 'ev-fuel' && userLat !== null) loadPetrolPumps();
         }
 
         function filterMarkers() {
@@ -742,20 +793,54 @@
             return `${Math.round(diff / 60)}h`;
         }
 
-        // ── Current location (GPS) ─────────────────────────────────────────
+        // ── User location state ────────────────────────────────────────────
+        let userLat             = null;
+        let userLng             = null;
         let userLocationMarker  = null;
         let userLocationCircle  = null;
+
+        // Build Google Maps directions URL — includes origin if we have location
+        function buildGmapsUrl(destLat, destLng) {
+            const dest = `${destLat},${destLng}`;
+            if (userLat !== null && userLng !== null) {
+                return `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${dest}`;
+            }
+            return `https://www.google.com/maps/dir/?api=1&destination=${dest}`;
+        }
+
+        function placeUserDot(lat, lng, acc) {
+            if (userLocationMarker) map.removeLayer(userLocationMarker);
+            if (userLocationCircle) map.removeLayer(userLocationCircle);
+
+            userLat = lat; userLng = lng;
+
+            userLocationCircle = L.circle([lat, lng], {
+                radius: acc,
+                color: '#3b82f6', fillColor: '#3b82f6',
+                fillOpacity: 0.08, weight: 1,
+            }).addTo(map);
+
+            const dotIcon = L.divIcon({
+                className: '',
+                html: `<div style="position:relative;width:20px;height:20px">
+                           <div style="position:absolute;inset:0;background:#3b82f6;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(59,130,246,.5)"></div>
+                           <div style="position:absolute;inset:-5px;background:rgba(59,130,246,0.25);border-radius:50%;animation:locatePulse 2s ease-out infinite"></div>
+                       </div>`,
+                iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -14],
+            });
+
+            userLocationMarker = L.marker([lat, lng], { icon: dotIcon })
+                .addTo(map)
+                .bindPopup('<div style="font-size:11px;font-weight:800;color:#0f172a;padding:4px 8px">📍 You are here</div>');
+        }
 
         function locateMe() {
             if (!navigator.geolocation) {
                 alert('Geolocation is not supported by your browser.');
                 return;
             }
-
             const btn  = document.getElementById('locate-btn');
             const icon = document.getElementById('locate-icon');
-
-            // Pulse the button while locating
             btn.classList.add('animate-pulse');
             icon.classList.remove('text-slate-500');
             icon.classList.add('text-emerald-500');
@@ -763,62 +848,140 @@
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     btn.classList.remove('animate-pulse');
-
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    const acc = pos.coords.accuracy;
-
-                    // Remove previous marker/circle
-                    if (userLocationMarker) map.removeLayer(userLocationMarker);
-                    if (userLocationCircle) map.removeLayer(userLocationCircle);
-
-                    // Accuracy circle
-                    userLocationCircle = L.circle([lat, lng], {
-                        radius: acc,
-                        color: '#3b82f6',
-                        fillColor: '#3b82f6',
-                        fillOpacity: 0.08,
-                        weight: 1,
-                    }).addTo(map);
-
-                    // Blue pulsing dot — Google Maps style
-                    const dotIcon = L.divIcon({
-                        className: '',
-                        html: `<div style="position:relative;width:20px;height:20px">
-                                   <div style="position:absolute;inset:0;background:#3b82f6;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(59,130,246,.5)"></div>
-                                   <div style="position:absolute;inset:-5px;background:rgba(59,130,246,0.25);border-radius:50%;animation:locatePulse 2s ease-out infinite"></div>
-                               </div>`,
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10],
-                        popupAnchor: [0, -14],
-                    });
-
-                    userLocationMarker = L.marker([lat, lng], { icon: dotIcon })
-                        .addTo(map)
-                        .bindPopup('<div style="font-size:11px;font-weight:800;color:#0f172a;padding:4px 8px">📍 You are here</div>');
-
+                    const { latitude: lat, longitude: lng, accuracy: acc } = pos.coords;
+                    placeUserDot(lat, lng, acc);
                     map.setView([lat, lng], 15, { animate: true });
                     userLocationMarker.openPopup();
-
-                    // Keep the button highlighted to show location is active
                     btn.classList.add('bg-emerald-50', 'border-emerald-400');
+                    // Auto-load petrol pumps if on the right tab
+                    if (currentCategory === 'ev-fuel') loadPetrolPumps();
                 },
                 (err) => {
                     btn.classList.remove('animate-pulse');
                     icon.classList.remove('text-emerald-500');
                     icon.classList.add('text-slate-500');
-                    const msgs = {
-                        1: 'Location access denied. Please allow location in your browser.',
-                        2: 'Could not determine your location.',
-                        3: 'Location request timed out.',
-                    };
+                    const msgs = { 1: 'Location access denied.', 2: 'Could not determine your location.', 3: 'Location request timed out.' };
                     alert(msgs[err.code] || 'Location unavailable.');
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
             );
         }
 
-        // ── Boot ───────────────────────────────────────────────────────────
+        // ── Overpass API — Petrol Pumps ────────────────────────────────────
+        let petrolMarkers = [];
+        let petrolLoading = false;
+
+        function clearPetrolMarkers() {
+            petrolMarkers.forEach(m => map.removeLayer(m));
+            petrolMarkers = [];
+        }
+
+        async function loadPetrolPumps() {
+            if (userLat === null || userLng === null) {
+                // Prompt user to share location first
+                const statusEl = document.getElementById('fuel-status');
+                if (statusEl) {
+                    statusEl.textContent = '📍 Enable your location first to find nearby petrol pumps.';
+                    statusEl.classList.remove('hidden');
+                }
+                return;
+            }
+            if (petrolLoading) return;
+            petrolLoading = true;
+
+            const radiusKm = parseInt(document.getElementById('fuel-radius')?.value ?? 7);
+            const radiusM  = radiusKm * 1000;
+
+            // Show loading state in sidebar
+            const statusEl = document.getElementById('fuel-status');
+            if (statusEl) {
+                statusEl.textContent = `⛽ Loading petrol pumps within ${radiusKm} km…`;
+                statusEl.classList.remove('hidden');
+            }
+
+            clearPetrolMarkers();
+
+            const query = `[out:json][timeout:25];(node["amenity"="fuel"](around:${radiusM},${userLat},${userLng});way["amenity"="fuel"](around:${radiusM},${userLat},${userLng}););out center;`;
+
+            try {
+                const res  = await fetch('https://overpass-api.de/api/interpreter', {
+                    method: 'POST', body: query,
+                });
+                const data = await res.json();
+                const pumps = data.elements ?? [];
+
+                pumps.forEach(el => {
+                    const lat = el.lat ?? el.center?.lat;
+                    const lng = el.lon ?? el.center?.lon;
+                    if (!lat || !lng) return;
+
+                    const name    = el.tags?.name || el.tags?.brand || el.tags?.operator || 'Petrol Pump';
+                    const brand   = el.tags?.brand ?? '';
+                    const hours   = el.tags?.opening_hours ?? '';
+                    const address = [el.tags?.['addr:street'], el.tags?.['addr:city']].filter(Boolean).join(', ') || '';
+                    const destUrl = buildGmapsUrl(lat, lng);
+
+                    const pumpIcon = L.divIcon({
+                        className: '',
+                        html: `<div style="position:relative;width:32px;height:32px">
+                                   <div style="background:#f97316;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25)"></div>
+                                   <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);font-size:13px;line-height:1">⛽</span>
+                               </div>`,
+                        iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -36],
+                    });
+
+                    const popup = `<div style="padding:14px 16px;font-family:inherit">
+                        <p style="font-size:13px;font-weight:900;color:#0f172a;margin:0 0 2px">${name}</p>
+                        ${address ? `<p style="font-size:11px;color:#64748b;font-weight:600;margin:0 0 8px">${address}</p>` : ''}
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
+                            ${brand ? `<span class="slot-pill pill-amber">⛽ ${brand}</span>` : '<span class="slot-pill pill-amber">⛽ Petrol Pump</span>'}
+                            ${hours ? `<span class="slot-pill pill-gray">🕐 ${hours}</span>` : ''}
+                        </div>
+                        <div style="padding-top:10px;border-top:1px solid #f1f5f9">
+                            <a href="${destUrl}" target="_blank" rel="noopener noreferrer"
+                               style="font-size:10px;font-weight:800;color:#f97316;text-decoration:none;text-transform:uppercase;letter-spacing:.06em">
+                               Get Directions ↗
+                            </a>
+                        </div>
+                    </div>`;
+
+                    const m = L.marker([lat, lng], { icon: pumpIcon }).addTo(map).bindPopup(popup, { maxWidth: 300, minWidth: 260 });
+                    petrolMarkers.push(m);
+                });
+
+                if (statusEl) {
+                    statusEl.textContent = pumps.length > 0
+                        ? `⛽ ${pumps.length} petrol pump${pumps.length !== 1 ? 's' : ''} found within ${radiusKm} km`
+                        : `⛽ No petrol pumps found within ${radiusKm} km`;
+                    setTimeout(() => statusEl.classList.add('hidden'), 5000);
+                }
+            } catch (e) {
+                console.error('Overpass error:', e);
+                if (statusEl) {
+                    statusEl.textContent = '⚠️ Could not load petrol pumps. Check your connection.';
+                }
+            } finally {
+                petrolLoading = false;
+            }
+        }
+
+        // ── Boot — auto-detect location on page load ───────────────────────
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const { latitude: lat, longitude: lng, accuracy: acc } = pos.coords;
+                    placeUserDot(lat, lng, acc);
+                    map.setView([lat, lng], 14, { animate: false });
+                    const btn = document.getElementById('locate-btn');
+                    if (btn) btn.classList.add('bg-emerald-50', 'border-emerald-400');
+                    // Load petrol pumps since we start on ev-fuel tab
+                    loadPetrolPumps();
+                },
+                () => { /* silent — user can still click the locate button */ },
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+            );
+        }
+
         loadLocations();
     </script>
 

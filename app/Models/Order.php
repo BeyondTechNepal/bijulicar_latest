@@ -64,6 +64,12 @@ class Order extends Model
         return $this->hasOne(Purchase::class);
     }
 
+    /** The pre-order this order was converted from (if any) */
+    public function preOrder(): HasOne
+    {
+        return $this->hasOne(PreOrder::class);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────
 
     /** Can this order still be cancelled? */

@@ -142,9 +142,22 @@
                         <p class="text-xs font-bold text-slate-400">Seller</p>
                         <p class="text-xs font-bold text-slate-700">{{ optional(optional($order->car)->seller)->name ?? '—' }}</p>
                     </div>
-                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <p class="text-xs font-bold text-slate-400">Total Price</p>
-                        <p class="text-base font-black text-slate-900">NRs {{ number_format($order->total_price) }}</p>
+                    <div class="pt-3 border-t border-slate-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-xs font-bold text-slate-400">Total Price</p>
+                            <p class="text-base font-black text-slate-900">NRs {{ number_format($order->total_price) }}</p>
+                        </div>
+                        @if($order->preOrder && $order->preOrder->deposit_amount)
+                            @php $remaining = $order->total_price - $order->preOrder->deposit_amount; @endphp
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-xs font-bold text-[#16a34a]">Deposit Paid</p>
+                                <p class="text-sm font-black text-[#16a34a]">− NRs {{ number_format($order->preOrder->deposit_amount) }}</p>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                                <p class="text-xs font-black text-slate-700 uppercase tracking-wider">To Pay Now</p>
+                                <p class="text-base font-black text-slate-900">NRs {{ number_format($remaining) }}</p>
+                            </div>
+                        @endif
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Status</p>

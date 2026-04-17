@@ -129,8 +129,7 @@
                                 <span id="fuel-radius-label" class="text-[10px] font-black text-emerald-600">7 km</span>
                             </div>
                             <input type="range" id="fuel-radius" min="1" max="20" value="7" step="1"
-                                oninput="document.getElementById('fuel-radius-label').textContent=this.value+' km'"
-                                onchange="loadPetrolPumps()"
+                                oninput="document.getElementById('fuel-radius-label').textContent = this.value + ' km'; debouncedLoadPumps();"
                                 class="w-full accent-emerald-500 cursor-pointer">
                             <p class="text-[9px] text-slate-400 font-semibold">Requires your location · Powered by OpenStreetMap</p>
                         </div>
@@ -250,6 +249,11 @@
         let currentMarkers  = [];
         let markersVisible  = true;
         let activeLocation  = null;  // currently open in modal
+
+        const debouncedLoadPumps = (() => {
+            let t;
+            return () => { clearTimeout(t); t = setTimeout(loadPetrolPumps, 600); };
+        })();
 
         // ── Map init ───────────────────────────────────────────────────────
         const map = L.map('map').setView([27.7172, 85.3240], 13);
@@ -870,100 +874,88 @@
         // ── Overpass API — Petrol Pumps ────────────────────────────────────
         let petrolMarkers = [];
         let petrolLoading = false;
-
-        function clearPetrolMarkers() {
-            petrolMarkers.forEach(m => map.removeLayer(m));
-            petrolMarkers = [];
+        let petrolAbort   = null;   // AbortController for in-flight requests
+ 
+function clearPetrolMarkers() {
+    petrolMarkers.forEach(m => map.removeLayer(m));
+    petrolMarkers = [];
+}
+ 
+async function loadPetrolPumps() {
+    const statusEl = document.getElementById('fuel-status');
+ 
+    if (!userLat || !userLng) {
+        if (statusEl) statusEl.textContent = '📍 Enable your location first to find nearby petrol pumps.';
+        return;
+    }
+    if (petrolLoading) {
+        // Cancel the previous in-flight request if user changes the slider fast
+        petrolAbort?.abort();
+    }
+ 
+    petrolLoading  = true;
+    petrolAbort    = new AbortController();
+ 
+    clearPetrolMarkers();
+ 
+    const radiusKm = parseInt(document.getElementById('fuel-radius')?.value ?? 10);
+ 
+    if (statusEl) statusEl.textContent = `⛽ Loading petrol pumps within ${radiusKm} km…`;
+ 
+    try {
+        // ✅ Now calls YOUR backend — not Overpass directly
+        const res = await fetch(
+            `/api/petrol-pumps?lat=${userLat}&lng=${userLng}&radius=${radiusKm}`,
+            { signal: petrolAbort.signal }
+        );
+ 
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+ 
+        const { pumps } = await res.json();
+ 
+        pumps.forEach(pump => {
+            const pumpIcon = L.divIcon({
+                className : 'custom-icon',
+                html      : `<div style="position:relative;width:32px;height:32px">
+                               <div style="background:#f97316;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25)"></div>
+                               <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px">⛽</span>
+                             </div>`,
+                iconSize  : [32, 42],
+                iconAnchor: [16, 42],
+            });
+ 
+            const name    = pump.name   || pump.brand || 'Petrol Pump';
+            const hours   = pump.opening_hours ? `<div style="font-size:11px;color:#64748b;margin-top:4px">🕐 ${pump.opening_hours}</div>` : '';
+            const phone   = pump.phone         ? `<div style="font-size:11px;color:#64748b;margin-top:2px">📞 ${pump.phone}</div>` : '';
+ 
+            const popup = `
+                <div style="padding:14px;min-width:200px">
+                    <div style="font-weight:900;font-size:13px;color:#ea580c">${name}</div>
+                    ${hours}${phone}
+                    <div style="font-size:10px;color:#94a3b8;margin-top:6px">OSM #${pump.osm_id}</div>
+                </div>`;
+ 
+            const m = L.marker([pump.latitude, pump.longitude], { icon: pumpIcon })
+                       .addTo(map)
+                       .bindPopup(popup, { maxWidth: 300, minWidth: 220 });
+ 
+            petrolMarkers.push(m);
+        });
+ 
+        if (statusEl) {
+            statusEl.textContent = pumps.length > 0
+                ? `⛽ ${pumps.length} petrol pump${pumps.length !== 1 ? 's' : ''} found within ${radiusKm} km`
+                : `⛽ No petrol pumps found within ${radiusKm} km`;
         }
-
-        async function loadPetrolPumps() {
-            if (userLat === null || userLng === null) {
-                // Prompt user to share location first
-                const statusEl = document.getElementById('fuel-status');
-                if (statusEl) {
-                    statusEl.textContent = '📍 Enable your location first to find nearby petrol pumps.';
-                    statusEl.classList.remove('hidden');
-                }
-                return;
-            }
-            if (petrolLoading) return;
-            petrolLoading = true;
-
-            const radiusKm = parseInt(document.getElementById('fuel-radius')?.value ?? 7);
-            const radiusM  = radiusKm * 1000;
-
-            // Show loading state in sidebar
-            const statusEl = document.getElementById('fuel-status');
-            if (statusEl) {
-                statusEl.textContent = `⛽ Loading petrol pumps within ${radiusKm} km…`;
-                statusEl.classList.remove('hidden');
-            }
-
-            clearPetrolMarkers();
-
-            const query = `[out:json][timeout:25];(node["amenity"="fuel"](around:${radiusM},${userLat},${userLng});way["amenity"="fuel"](around:${radiusM},${userLat},${userLng}););out center;`;
-
-            try {
-                const res  = await fetch('https://overpass-api.de/api/interpreter', {
-                    method: 'POST', body: query,
-                });
-                const data = await res.json();
-                const pumps = data.elements ?? [];
-
-                pumps.forEach(el => {
-                    const lat = el.lat ?? el.center?.lat;
-                    const lng = el.lon ?? el.center?.lon;
-                    if (!lat || !lng) return;
-
-                    const name    = el.tags?.name || el.tags?.brand || el.tags?.operator || 'Petrol Pump';
-                    const brand   = el.tags?.brand ?? '';
-                    const hours   = el.tags?.opening_hours ?? '';
-                    const address = [el.tags?.['addr:street'], el.tags?.['addr:city']].filter(Boolean).join(', ') || '';
-                    const destUrl = buildGmapsUrl(lat, lng);
-
-                    const pumpIcon = L.divIcon({
-                        className: '',
-                        html: `<div style="position:relative;width:32px;height:32px">
-                                   <div style="background:#f97316;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25)"></div>
-                                   <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);font-size:13px;line-height:1">⛽</span>
-                               </div>`,
-                        iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -36],
-                    });
-
-                    const popup = `<div style="padding:14px 16px;font-family:inherit">
-                        <p style="font-size:13px;font-weight:900;color:#0f172a;margin:0 0 2px">${name}</p>
-                        ${address ? `<p style="font-size:11px;color:#64748b;font-weight:600;margin:0 0 8px">${address}</p>` : ''}
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
-                            ${brand ? `<span class="slot-pill pill-amber">⛽ ${brand}</span>` : '<span class="slot-pill pill-amber">⛽ Petrol Pump</span>'}
-                            ${hours ? `<span class="slot-pill pill-gray">🕐 ${hours}</span>` : ''}
-                        </div>
-                        <div style="padding-top:10px;border-top:1px solid #f1f5f9">
-                            <a href="${destUrl}" target="_blank" rel="noopener noreferrer"
-                               style="font-size:10px;font-weight:800;color:#f97316;text-decoration:none;text-transform:uppercase;letter-spacing:.06em">
-                               Get Directions ↗
-                            </a>
-                        </div>
-                    </div>`;
-
-                    const m = L.marker([lat, lng], { icon: pumpIcon }).addTo(map).bindPopup(popup, { maxWidth: 300, minWidth: 260 });
-                    petrolMarkers.push(m);
-                });
-
-                if (statusEl) {
-                    statusEl.textContent = pumps.length > 0
-                        ? `⛽ ${pumps.length} petrol pump${pumps.length !== 1 ? 's' : ''} found within ${radiusKm} km`
-                        : `⛽ No petrol pumps found within ${radiusKm} km`;
-                    setTimeout(() => statusEl.classList.add('hidden'), 5000);
-                }
-            } catch (e) {
-                console.error('Overpass error:', e);
-                if (statusEl) {
-                    statusEl.textContent = '⚠️ Could not load petrol pumps. Check your connection.';
-                }
-            } finally {
-                petrolLoading = false;
-            }
-        }
+ 
+    } catch (err) {
+        if (err.name === 'AbortError') return; // Ignore cancelled requests
+        console.error('Petrol pumps error:', err);
+        if (statusEl) statusEl.textContent = '⚠️ Could not load petrol pumps. Check your connection.';
+    } finally {
+        petrolLoading = false;
+    }
+}
 
         // ── Boot — auto-detect location on page load ───────────────────────
         if (navigator.geolocation) {

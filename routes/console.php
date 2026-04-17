@@ -19,3 +19,13 @@ Schedule::command('ads:sync-status')
     ->timezone('Asia/Kathmandu')
     ->withoutOverlapping()      // safe guard: skip if previous run hasn't finished
     ->runInBackground();
+
+// ── Petrol pump cache refresh ──────────────────────────────────────────────
+// Runs on the 1st of every month at 02:00 Nepal time
+// Re-fetches all Nepal tiles from Overpass into your DB
+// --force clears stale tiles so everything is refreshed
+Schedule::command('pumps:seed-nepal --force')
+    ->monthlyOn(1, '02:00')        // 1st of month, 2am — quiet traffic time
+    ->timezone('Asia/Kathmandu')
+    ->withoutOverlapping()
+    ->runInBackground();

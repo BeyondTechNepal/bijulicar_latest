@@ -438,8 +438,8 @@
                             @foreach ($recentCars as $car)
                                 @php
                                     $dtColors = [
-                                        'ev' => ['badge' => 'bg-[#4ade80] text-black', 'label' => '⚡ EV'],
-                                        'hybrid' => ['badge' => 'bg-blue-500 text-white', 'label' => '🔋 Hybrid'],
+                                        'ev' => ['badge' => 'bg-[#4ade80] text-black', 'label' => ' EV'],
+                                        'hybrid' => ['badge' => 'bg-blue-500 text-white', 'label' => ' Hybrid'],
                                         'petrol' => [
                                             'badge' => 'bg-black/60 backdrop-blur-md text-white',
                                             'label' => 'Petrol',

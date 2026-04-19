@@ -9,8 +9,12 @@ class CarController extends Controller
 {
     public function show(Car $car)
     {
-        // Only show available cars to the public
-        abort_if(in_array($car->status, ['sold', 'inactive']), 404);
+        // Block truly inactive/deleted listings, but let sold cars through
+        // so buyers who arrive via homepage "Recently Added" see a proper
+        // "Sold Out" page instead of a confusing 404.
+        abort_if($car->status === 'inactive', 404);
+
+        $isSoldOut = $car->status === 'sold';
 
         $car->load([
             'seller',
@@ -32,7 +36,7 @@ class CarController extends Controller
 
         // Check if logged-in buyer already ordered this car
         $alreadyOrdered = false;
-        if (auth()->check() && auth()->user()->hasRole('buyer')) {
+        if (!$isSoldOut && auth()->check() && auth()->user()->hasRole('buyer')) {
             $alreadyOrdered = auth()->user()->orders()
                 ->where('car_id', $car->id)
                 ->whereIn('status', ['pending', 'confirmed'])
@@ -40,7 +44,7 @@ class CarController extends Controller
         }
 
         $alreadyPreOrdered = false;
-        if (auth()->check() && auth()->user()->hasRole('buyer')) {
+        if (!$isSoldOut && auth()->check() && auth()->user()->hasRole('buyer')) {
             $alreadyPreOrdered = \App\Models\PreOrder::where('buyer_id', auth()->id())
                 ->where('car_id', $car->id)
                 ->whereIn('status', ['pending_deposit', 'deposit_paid'])
@@ -63,6 +67,7 @@ class CarController extends Controller
 
         return view('frontend.pages.car_detail', compact(
             'car',
+            'isSoldOut',
             'otherListings',
             'avgRating',
             'reviewCount',

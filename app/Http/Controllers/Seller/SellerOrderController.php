@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\HomeController;
 use App\Models\Order;
 use App\Models\Purchase;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class SellerOrderController extends Controller
@@ -71,6 +73,11 @@ class SellerOrderController extends Controller
 
             if ($car && ! $car->trashed() && $car->stock_quantity <= 1) {
                 $car->update(['status' => 'sold']);
+
+                // Bust the homepage caches so "Recently Added" no longer shows
+                // this listing and fleet counts stay accurate.
+                Cache::forget(HomeController::CACHE_RECENT_CARS);
+                Cache::forget(HomeController::CACHE_FLEET_COUNTS);
 
                 // 3. Find every other *pending* order for the same car and
                 //    flip them to sold_out so those buyers get honest feedback
@@ -171,6 +178,10 @@ class SellerOrderController extends Controller
             if ($order->car_id && $order->car && ! $order->car->trashed()) {
                 if (in_array($order->car->status, ['reserved', 'sold'])) {
                     $order->car->update(['status' => 'available']);
+
+                    // Car is available again — refresh homepage caches.
+                    Cache::forget(HomeController::CACHE_RECENT_CARS);
+                    Cache::forget(HomeController::CACHE_FLEET_COUNTS);
                 }
 
                 // If we just cancelled a *confirmed* order, any sold_out sibling

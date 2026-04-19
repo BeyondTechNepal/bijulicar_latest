@@ -62,7 +62,11 @@
                             min="1"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
                         <p class="text-[10px] text-slate-400 font-medium mt-1">
-                            Listed price: {{ $order->car->formattedPrice() }} — change if different amount was agreed.
+                            @if($order->total_price < $order->car->price)
+                                Negotiated price: NRs {{ number_format($order->total_price) }} — listed at {{ $order->car->formattedPrice() }}
+                            @else
+                                Listed price: {{ $order->car->formattedPrice() }} — change if different amount was agreed.
+                            @endif
                         </p>
                         @error('amount_paid')
                             <p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>
@@ -160,7 +164,7 @@
                     @endif
                     <div class="pt-3 border-t-2 border-dashed border-slate-100 flex items-center justify-between">
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Listed Price</p>
-                        <p class="text-xl font-black text-slate-900">{{ $order->car->formattedPrice() }}</p>
+                        <p class="text-xl font-black text-slate-900">NRs {{ number_format($order->total_price) }}</p>
                     </div>
                 </div>
             </div>

@@ -62,7 +62,7 @@ class Negotiation extends Model
 
     public function isClosed(): bool
     {
-        return in_array($this->status, ['accepted', 'declined', 'expired', 'cancelled']);
+        return in_array($this->status, ['accepted', 'declined', 'expired', 'cancelled', 'ordered']);
     }
 
     /** Max 3 rounds of counter-offers allowed */
@@ -86,6 +86,7 @@ class Negotiation extends Model
             'declined'       => 'red',
             'expired'        => 'gray',
             'cancelled'      => 'gray',
+            'ordered'        => 'green',
             default          => 'gray',
         };
     }
@@ -99,6 +100,7 @@ class Negotiation extends Model
             'declined'       => 'Declined',
             'expired'        => 'Expired',
             'cancelled'      => 'Cancelled',
+            'ordered'        => 'Completed',
             default          => ucfirst($this->status),
         };
     }

@@ -162,7 +162,7 @@
             </div>
 
             <div class="col-span-2">
-                <p class="text-sm font-black text-slate-800">{{ $order->car->formattedPrice() }}</p>
+                <p class="text-sm font-black text-slate-800">NRs {{ number_format($order->total_price) }}</p>
             </div>
 
             <div class="col-span-2">

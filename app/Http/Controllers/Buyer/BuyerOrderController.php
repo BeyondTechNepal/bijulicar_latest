@@ -78,9 +78,9 @@ class BuyerOrderController extends Controller
             'ordered_at'        => now(),
         ]);
 
-        // Close the negotiation now that the order is placed
+        // Mark the negotiation as converted to an order
         if ($acceptedNegotiation) {
-            $acceptedNegotiation->update(['status' => 'cancelled']);
+            $acceptedNegotiation->update(['status' => 'ordered']);
         }
 
         $suffix = $acceptedNegotiation

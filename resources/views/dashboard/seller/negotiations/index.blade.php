@@ -54,6 +54,7 @@
                         'declined'       => 'bg-red-100 text-red-600',
                         'expired'        => 'bg-slate-100 text-slate-500',
                         'cancelled'      => 'bg-slate-100 text-slate-500',
+                        'ordered'        => 'bg-green-100 text-green-700',
                     ];
                 @endphp
                 <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider {{ $colors[$neg->status] ?? 'bg-slate-100 text-slate-500' }}">

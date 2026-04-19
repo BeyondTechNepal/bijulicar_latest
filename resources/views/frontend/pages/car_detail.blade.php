@@ -406,6 +406,19 @@
                         @endif
 
                         <div class="mt-5 pt-5 border-t border-slate-100 space-y-3">
+                            @if ($isSoldOut)
+                                {{-- ── SOLD OUT — car confirmed to another buyer ── --}}
+                                <div class="w-full py-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[12px] font-black uppercase tracking-widest text-center">
+                                    ✕ Sold Out
+                                </div>
+                                <p class="text-center text-[11px] text-slate-400 font-medium">
+                                    This car has been sold to another buyer.
+                                </p>
+                                <a href="{{ route('marketplace.index') }}"
+                                    class="block w-full py-3.5 rounded-xl bg-slate-900 text-white text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-[#16a34a] transition-all">
+                                    Browse Other Listings
+                                </a>
+                            @else
                             @auth
                                 @if (auth()->user()->hasRole('buyer'))
                                     {{-- ── PRE-ORDER FLOW ── --}}
@@ -577,6 +590,7 @@
                                     Create Free Account
                                 </a>
                             @endauth
+                            @endif {{-- end $isSoldOut --}}
                         </div>
 
                     </div>

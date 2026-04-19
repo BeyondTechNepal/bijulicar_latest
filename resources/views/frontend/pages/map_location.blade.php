@@ -77,10 +77,10 @@
 
             {{-- Map container --}}
             <div class="bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3"
-                 style="height: 760px;">
+                 style="height: auto; min-height: 760px;">
 
                 {{-- ── Sidebar ──────────────────────────────────────────── --}}
-                <div class="lg:w-[420px] flex flex-col gap-3 h-full overflow-hidden">
+                <div class="lg:w-[420px] flex flex-col gap-3 lg:h-full overflow-hidden">
 
                     {{-- Category tabs --}}
                     <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-4 gap-1.5 shrink-0">
@@ -162,7 +162,7 @@
                     <div id="fuel-status" class="hidden shrink-0 bg-orange-50 border border-orange-200 text-orange-700 text-[10px] font-bold px-4 py-2.5 rounded-xl"></div>
 
                     {{-- Location list --}}
-                    <div class="flex-1 overflow-y-auto space-y-2 pr-0.5" id="location-list">
+                    <div class="lg:flex-1 overflow-y-auto space-y-2 pr-0.5 max-h-64 lg:max-h-none" id="location-list">
                         {{-- Filled by JS --}}
                     </div>
 
@@ -173,7 +173,8 @@
                 </div>
 
                 {{-- ── Map canvas ───────────────────────────────────────── --}}
-                <div class="flex-1 relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-slate-100 shadow-inner">
+                <div class="flex-1 relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-slate-100 shadow-inner"
+                     style="min-height: 420px;">
                     <div id="map" class="absolute inset-0 z-0"></div>
 
                     {{-- Petrol pump loading overlay --}}
@@ -780,8 +781,12 @@
                 if (fuelWrap) fuelWrap.classList.add('hidden');
             }
 
-            // Clear petrol pump markers when switching away from petrol tab
-            if (category !== 'petrol') clearPetrolMarkers();
+            // Clear petrol pump markers and status when switching away from petrol tab
+            if (category !== 'petrol') {
+                clearPetrolMarkers();
+                const fuelStatus = document.getElementById('fuel-status');
+                if (fuelStatus) fuelStatus.classList.add('hidden');
+            }
 
             renderMarkers();
 

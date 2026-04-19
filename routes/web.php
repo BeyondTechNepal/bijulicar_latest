@@ -188,6 +188,14 @@ Route::middleware(['auth', 'role:buyer', 'verified.account'])
         Route::get('/preorders/{preOrder}', [BuyerPreOrderController::class, 'show'])->name('preorders.show')->middleware('permission:manage own orders');
         Route::patch('/preorders/{preOrder}/cancel', [BuyerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
 
+        // Negotiations
+        Route::get('/negotiations', [\App\Http\Controllers\Buyer\BuyerNegotiationController::class, 'index'])->name('negotiations.index');
+        Route::post('/negotiations', [\App\Http\Controllers\Buyer\BuyerNegotiationController::class, 'store'])->name('negotiations.store');
+        Route::get('/negotiations/{negotiation}', [\App\Http\Controllers\Buyer\BuyerNegotiationController::class, 'show'])->name('negotiations.show');
+        Route::patch('/negotiations/{negotiation}/accept', [\App\Http\Controllers\Buyer\BuyerNegotiationController::class, 'accept'])->name('negotiations.accept');
+        Route::patch('/negotiations/{negotiation}/counter', [\App\Http\Controllers\Buyer\BuyerNegotiationController::class, 'counter'])->name('negotiations.counter');
+        Route::patch('/negotiations/{negotiation}/cancel', [\App\Http\Controllers\Buyer\BuyerNegotiationController::class, 'cancel'])->name('negotiations.cancel');
+
         // Reviews
         Route::get('/reviews', [BuyerReviewController::class, 'index'])->name('reviews.index')->middleware('permission:write reviews');
         Route::get('/reviews/create/{car}', [BuyerReviewController::class, 'create'])->name('reviews.create')->middleware('permission:write reviews');
@@ -228,6 +236,13 @@ Route::middleware(['auth', 'role:seller', 'verified.account'])
         Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])->name('preorders.convert')->middleware('permission:manage own orders');
         Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
 
+        // Negotiations
+        Route::get('/negotiations', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'index'])->name('negotiations.index');
+        Route::get('/negotiations/{negotiation}', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'show'])->name('negotiations.show');
+        Route::patch('/negotiations/{negotiation}/accept', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'accept'])->name('negotiations.accept');
+        Route::patch('/negotiations/{negotiation}/counter', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'counter'])->name('negotiations.counter');
+        Route::patch('/negotiations/{negotiation}/decline', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'decline'])->name('negotiations.decline');
+
         // Map location (goes live immediately — no admin approval needed)
         Route::get('/location', [LocationController::class, 'index'])->name('location.index');
         Route::get('/location/create', [LocationController::class, 'create'])->name('location.create');
@@ -267,6 +282,13 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
         Route::patch('/preorders/{preOrder}/confirm-deposit', [SellerPreOrderController::class, 'confirmDeposit'])->name('preorders.confirm_deposit')->middleware('permission:manage own orders');
         Route::post('/preorders/{preOrder}/convert', [SellerPreOrderController::class, 'convert'])->name('preorders.convert')->middleware('permission:manage own orders');
         Route::patch('/preorders/{preOrder}/cancel', [SellerPreOrderController::class, 'cancel'])->name('preorders.cancel')->middleware('permission:manage own orders');
+
+        // Negotiations
+        Route::get('/negotiations', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'index'])->name('negotiations.index');
+        Route::get('/negotiations/{negotiation}', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'show'])->name('negotiations.show');
+        Route::patch('/negotiations/{negotiation}/accept', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'accept'])->name('negotiations.accept');
+        Route::patch('/negotiations/{negotiation}/counter', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'counter'])->name('negotiations.counter');
+        Route::patch('/negotiations/{negotiation}/decline', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'decline'])->name('negotiations.decline');
 
         // Analytics
         Route::get('/analytics', [App\Http\Controllers\Business\BusinessAnalyticsController::class, 'index'])->name('analytics')->middleware('permission:view business analytics');

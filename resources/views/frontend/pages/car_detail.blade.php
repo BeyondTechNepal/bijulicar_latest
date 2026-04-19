@@ -400,9 +400,53 @@
                         <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Asking Price</p>
                         <p class="text-4xl font-black text-slate-900 italic tracking-tight">NRs
                             {{ number_format($car->price) }}</p>
-                        @if ($car->price_negotiable)
-                            <p class="text-[11px] font-black text-green-600 uppercase tracking-widest mt-1">✓ Price is
-                                negotiable</p>
+                        @if ($car->price_negotiable && !$isSoldOut)
+                            @auth
+                                @if (auth()->user()->hasRole('buyer') && !$alreadyOrdered)
+                                    @if ($activeNegotiation?->isAccepted())
+                                        {{-- Accepted — show agreed price banner --}}
+                                        <div class="mt-2 bg-green-50 border border-green-200 rounded-xl p-3">
+                                            <p class="text-[10px] font-black text-green-600 uppercase tracking-widest">🤝 Offer Accepted</p>
+                                            <p class="text-xl font-black text-green-700 mt-0.5">NRs {{ number_format($activeNegotiation->offered_price) }}</p>
+                                            <p class="text-[10px] text-green-500 font-medium">Place your order below at this agreed price.</p>
+                                        </div>
+                                    @elseif ($activeNegotiation?->isActive())
+                                        {{-- Active negotiation in progress --}}
+                                        <div class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                                            <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest">⏳ Negotiation in Progress</p>
+                                            <p class="text-[11px] text-amber-700 font-medium mt-1">Your offer of NRs {{ number_format($activeNegotiation->offered_price) }} is {{ $activeNegotiation->statusLabel() }}.</p>
+                                            <a href="{{ route('buyer.negotiations.show', $activeNegotiation) }}" class="inline-block mt-1.5 text-[10px] font-black text-amber-700 uppercase tracking-widest underline">View Negotiation →</a>
+                                        </div>
+                                    @else
+                                        {{-- No active negotiation — show offer button --}}
+                                        <p class="text-[11px] font-black text-green-600 uppercase tracking-widest mt-1">✓ Price is negotiable</p>
+                                        <button onclick="document.getElementById('negotiationPanel').classList.toggle('hidden')"
+                                            class="mt-2 w-full py-2.5 rounded-xl bg-green-50 border border-green-200 text-green-700 text-[11px] font-black uppercase tracking-widest hover:bg-green-100 transition-all">
+                                            Make an Offer
+                                        </button>
+                                        <div id="negotiationPanel" class="hidden mt-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Your Offer Price (NRs)</p>
+                                            <form method="POST" action="{{ route('buyer.negotiations.store') }}">
+                                                @csrf
+                                                <input type="hidden" name="car_id" value="{{ $car->id }}">
+                                                <input type="number" name="offered_price" required min="1" max="{{ $car->price - 1 }}"
+                                                    placeholder="e.g. {{ number_format($car->price * 0.9, 0, '.', '') }}"
+                                                    class="w-full bg-white border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-green-400 mb-2">
+                                                <textarea name="message" rows="2" placeholder="Optional message to seller..."
+                                                    class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-green-400 resize-none mb-3"></textarea>
+                                                <button type="submit"
+                                                    class="w-full py-3 rounded-xl bg-green-600 text-white text-[12px] font-black uppercase italic tracking-widest hover:bg-green-700 transition-all">
+                                                    Send Offer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                @else
+                                    <p class="text-[11px] font-black text-green-600 uppercase tracking-widest mt-1">✓ Price is negotiable</p>
+                                @endif
+                            @else
+                                <p class="text-[11px] font-black text-green-600 uppercase tracking-widest mt-1">✓ Price is negotiable</p>
+                            @endauth
                         @endif
 
                         <div class="mt-5 pt-5 border-t border-slate-100 space-y-3">
@@ -481,6 +525,17 @@
                                         <form method="POST" action="{{ route('buyer.orders.store') }}" id="orderForm">
                                             @csrf
                                             <input type="hidden" name="car_id" value="{{ $car->id }}">
+
+                                            {{-- Show negotiated price if applicable --}}
+                                            @if ($activeNegotiation?->isAccepted())
+                                            <div class="mb-3 pb-3 border-b border-slate-100 flex items-center justify-between">
+                                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Price</span>
+                                                <div class="text-right">
+                                                    <span class="text-base font-black text-green-700">NRs {{ number_format($activeNegotiation->offered_price) }}</span>
+                                                    <p class="text-[10px] text-slate-400 font-medium">Negotiated ✓</p>
+                                                </div>
+                                            </div>
+                                            @endif
 
                                             {{-- Contact details section --}}
                                             <div class="mb-3 pb-3 border-b border-slate-100">

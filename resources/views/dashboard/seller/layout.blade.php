@@ -116,6 +116,20 @@
                     </a>
                 @endcan
 
+                <a href="{{ route('seller.negotiations.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                {{ request()->routeIs('seller.negotiations*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+                    </svg>
+                    Negotiations
+                    @php $pendingOffers = \App\Models\Negotiation::where('seller_id', auth()->id())->where('status','pending_seller')->count(); @endphp
+                    @if($pendingOffers > 0)
+                        <span class="ml-auto text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingOffers }}</span>
+                    @endif
+                </a>
+
 
                 <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Visibility</p>
 

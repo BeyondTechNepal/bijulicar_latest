@@ -328,6 +328,34 @@ class NotificationService
         );
     }
 
+    public function negotiationAcceptedByBuyer(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'a listing';
+
+        $this->create(
+            userId: $negotiation->seller_id,
+            type:   'negotiation_accepted',
+            title:  'Offer accepted — ' . $carName,
+            body:   'The buyer accepted your counter offer of NRs ' . number_format($negotiation->offered_price)
+                  . '. They can now place their order at this price.',
+            url:    route('seller.negotiations.show', $negotiation->id),
+        );
+    }
+
+    public function negotiationCounteredByBuyer(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'a listing';
+
+        $this->create(
+            userId: $negotiation->seller_id,
+            type:   'negotiation_countered',
+            title:  'Counter offer on — ' . $carName,
+            body:   'The buyer countered with NRs ' . number_format($negotiation->offered_price)
+                  . '. Accept, counter, or decline from your dashboard.',
+            url:    route('seller.negotiations.show', $negotiation->id),
+        );
+    }
+
     // ── Pre-Order ──────────────────────────────────────────────────────
 
     public function preOrderDepositConfirmed(PreOrder $preOrder): void

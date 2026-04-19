@@ -1,81 +1,110 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Buyer;
 
-use App\Models\Advertisement;
+use App\Http\Controllers\Controller;
 use App\Models\Car;
+use App\Models\Negotiation;
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class CarController extends Controller
+class BuyerOrderController extends Controller
 {
-    public function show(Car $car)
+    public function index()
     {
-        // Block truly inactive/deleted listings, but let sold cars through
-        // so buyers who arrive via homepage "Recently Added" see a proper
-        // "Sold Out" page instead of a confusing 404.
-        abort_if($car->status === 'inactive', 404);
+        $orders = Auth::user()
+            ->orders()
+            ->with(['car' => fn($q) => $q->withTrashed()])
+            ->latest('ordered_at')
+            ->paginate(10);
 
-        $isSoldOut = $car->status === 'sold';
+        return view('dashboard.buyer.orders.index', compact('orders'));
+    }
 
-        $car->load([
-            'seller',
-            'images',
-            'reviews' => fn($q) => $q->with('buyer')->latest()->take(10),
+    public function show(Order $order)
+    {
+        abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
+
+        $order->load(['car' => fn($q) => $q->withTrashed(), 'purchase', 'preOrder']);
+        return view('dashboard.buyer.orders.show', compact('order'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'car_id'      => ['required', 'exists:cars,id'],
+            'buyer_name'  => ['required', 'string', 'max:100'],
+            'buyer_phone' => ['required', 'string', 'max:20'],
+            'buyer_email' => ['required', 'email', 'max:255'],
+            'notes'       => ['nullable', 'string', 'max:500'],
         ]);
 
-        // Other listings by the same seller (excluding current)
-        $otherListings = Car::where('seller_id', $car->seller_id)
-            ->where('id', '!=', $car->id)
-            ->where('status', 'available')
-            ->with('primaryImage')
-            ->latest()
-            ->take(3)
-            ->get();
+        $car     = Car::findOrFail($request->car_id);
+        $buyerId = Auth::guard('web')->id();
 
-        $avgRating   = $car->reviews->avg('rating');
-        $reviewCount = $car->reviews->count();
+        abort_if(!$car->isAvailable(), 422, 'This car is no longer available.');
+        abort_if(!$car->inStock(),     422, 'This car is currently out of stock.');
+        abort_if($car->seller_id == $buyerId, 422, 'You cannot order your own listing.');
 
-        // Check if logged-in buyer already ordered this car
-        $alreadyOrdered = false;
-        if (!$isSoldOut && auth()->check() && auth()->user()->hasRole('buyer')) {
-            $alreadyOrdered = auth()->user()->orders()
-                ->where('car_id', $car->id)
-                ->whereIn('status', ['pending', 'confirmed'])
-                ->exists();
+        $hasActiveOrder = Order::where('buyer_id', $buyerId)
+            ->where('car_id', $car->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        abort_if($hasActiveOrder, 422, 'You already have an active order for this car.');
+
+        // Check for an accepted negotiation — use that price instead of listed price
+        $acceptedNegotiation = Negotiation::where('buyer_id', $buyerId)
+            ->where('car_id', $car->id)
+            ->where('status', 'accepted')
+            ->first();
+
+        $finalPrice = $acceptedNegotiation
+            ? $acceptedNegotiation->offered_price
+            : $car->price;
+
+        $order = Order::create([
+            'buyer_id'          => $buyerId,
+            'seller_id'         => $car->seller_id,
+            'car_id'            => $car->id,
+            'car_snapshot_name' => $car->displayName(),
+            'status'            => 'pending',
+            'total_price'       => $finalPrice,
+            'buyer_name'        => $request->buyer_name,
+            'buyer_phone'       => $request->buyer_phone,
+            'buyer_email'       => $request->buyer_email,
+            'notes'             => $request->notes,
+            'ordered_at'        => now(),
+        ]);
+
+        // Close the negotiation now that the order is placed
+        if ($acceptedNegotiation) {
+            $acceptedNegotiation->update(['status' => 'cancelled']);
         }
 
-        $alreadyPreOrdered = false;
-        if (!$isSoldOut && auth()->check() && auth()->user()->hasRole('buyer')) {
-            $alreadyPreOrdered = \App\Models\PreOrder::where('buyer_id', auth()->id())
-                ->where('car_id', $car->id)
-                ->whereIn('status', ['pending_deposit', 'deposit_paid'])
-                ->exists();
+        $suffix = $acceptedNegotiation
+            ? ' Negotiated price of NRs ' . number_format($finalPrice) . ' applied.'
+            : '';
+
+        return redirect()
+            ->route('buyer.orders.show', $order->id)
+            ->with('success', 'Order placed! The seller will confirm shortly.' . $suffix);
+    }
+
+    public function cancel(Order $order)
+    {
+        abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
+        abort_if(!$order->isCancellable(), 422, 'This order can no longer be cancelled.');
+
+        $order->update(['status' => 'cancelled']);
+
+        if ($order->car && $order->car->status === 'reserved') {
+            $order->car->update(['status' => 'available']);
         }
 
-        // Check if buyer already reviewed this car
-        $alreadyReviewed = false;
-        $hasPurchased    = false;
-        if (auth()->check() && auth()->user()->hasRole('buyer')) {
-            $hasPurchased    = auth()->user()->orders()
-                ->where('car_id', $car->id)
-                ->where('status', 'completed')
-                ->exists();
-            $alreadyReviewed = $car->reviews->contains('buyer_id', auth()->id());
-        }
-
-        // ── Sidebar ads for the car detail page (priority DESC) ──────────
-        $carDetailAds = Advertisement::liveForPlacement('car_detail_horizontal')->get();
-
-        return view('frontend.pages.car_detail', compact(
-            'car',
-            'isSoldOut',
-            'otherListings',
-            'avgRating',
-            'reviewCount',
-            'alreadyOrdered',
-            'alreadyReviewed',
-            'hasPurchased',
-            'alreadyPreOrdered',
-            'carDetailAds'
-        ));
+        return redirect()
+            ->route('buyer.orders.index')
+            ->with('success', 'Order cancelled. The listing is available again.');
     }
 }

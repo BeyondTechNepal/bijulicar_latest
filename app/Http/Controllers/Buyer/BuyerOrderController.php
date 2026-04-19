@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Car;
+use App\Models\Negotiation;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,13 +54,23 @@ class BuyerOrderController extends Controller
 
         abort_if($hasActiveOrder, 422, 'You already have an active order for this car.');
 
+        // Check for an accepted negotiation — use that price instead of listed price
+        $acceptedNegotiation = Negotiation::where('buyer_id', $buyerId)
+            ->where('car_id', $car->id)
+            ->where('status', 'accepted')
+            ->first();
+
+        $finalPrice = $acceptedNegotiation
+            ? $acceptedNegotiation->offered_price
+            : $car->price;
+
         $order = Order::create([
             'buyer_id'          => $buyerId,
-            'seller_id'         => $car->seller_id,          // snapshot — survives car deletion
+            'seller_id'         => $car->seller_id,
             'car_id'            => $car->id,
-            'car_snapshot_name' => $car->displayName(),      // snapshot — survives car deletion
+            'car_snapshot_name' => $car->displayName(),
             'status'            => 'pending',
-            'total_price'       => $car->price,
+            'total_price'       => $finalPrice,
             'buyer_name'        => $request->buyer_name,
             'buyer_phone'       => $request->buyer_phone,
             'buyer_email'       => $request->buyer_email,
@@ -67,9 +78,18 @@ class BuyerOrderController extends Controller
             'ordered_at'        => now(),
         ]);
 
+        // Close the negotiation now that the order is placed
+        if ($acceptedNegotiation) {
+            $acceptedNegotiation->update(['status' => 'cancelled']);
+        }
+
+        $suffix = $acceptedNegotiation
+            ? ' Negotiated price of NRs ' . number_format($finalPrice) . ' applied.'
+            : '';
+
         return redirect()
             ->route('buyer.orders.show', $order->id)
-            ->with('success', 'Order placed! The seller will confirm shortly.');
+            ->with('success', 'Order placed! The seller will confirm shortly.' . $suffix);
     }
 
     public function cancel(Order $order)

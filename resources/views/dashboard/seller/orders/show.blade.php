@@ -175,8 +175,15 @@
                         <p class="text-xs font-bold text-slate-700">{{ $order->buyer->name }}</p>
                     </div>
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <p class="text-xs font-bold text-slate-400">Listed Price</p>
-                        <p class="text-base font-black text-slate-900">{{ $order->car->formattedPrice() }}</p>
+                        <p class="text-xs font-bold text-slate-400">
+                            {{ $order->total_price < $order->car->price ? 'Negotiated Price' : 'Order Price' }}
+                        </p>
+                        <div class="text-right">
+                            <p class="text-base font-black text-slate-900">NRs {{ number_format($order->total_price) }}</p>
+                            @if($order->total_price < $order->car->price)
+                                <p class="text-[10px] text-slate-400 font-medium line-through">NRs {{ number_format($order->car->price) }} listed</p>
+                            @endif
+                        </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Status</p>

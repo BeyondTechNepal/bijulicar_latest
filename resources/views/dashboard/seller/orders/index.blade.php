@@ -52,7 +52,10 @@
 
             {{-- Price --}}
             <div class="col-span-1">
-                <p class="text-sm font-black text-slate-800">{{ $order->car->formattedPrice() }}</p>
+                <p class="text-sm font-black text-slate-800">NRs {{ number_format($order->total_price) }}</p>
+                @if($order->total_price < $order->car->price)
+                    <p class="text-[10px] text-green-600 font-bold">Negotiated</p>
+                @endif
             </div>
 
             {{-- Status --}}

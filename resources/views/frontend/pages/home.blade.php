@@ -437,19 +437,19 @@
                             @foreach ($recentCars as $car)
                                 @php
                                     $dtColors = [
-                                        'ev' => ['badge' => 'bg-[rgba(46,204,113,0.2)] text-black', 'label' => '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i>EV'],
+                                        'ev' => ['badge' => 'bg-[rgba(46,204,113,0.2)] text-white', 'label' => '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i>EV'],
                                         'hybrid' => [
-                                            'badge' => 'bg-[rgba(52,152,219,0.2)] text-black', 
+                                            'badge' => 'bg-[rgba(52,152,219,0.2)] text-white', 
                                             'label' => '<i class="fa-solid fa-leaf" style="color: rgb(46, 204, 113);"></i>/<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i> Hybrid'
                                         ],
 
                                         'petrol' => [
-                                            'badge' => 'bg-[rgba(231,76,60,0.2)] text-black', 
+                                            'badge' => 'bg-[rgba(231,76,60,0.2)] text-white', 
                                             'label' => '<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>Petrol'
                                         ],
 
                                         'diesel' => [
-                                            'badge' => 'bg-[rgba(241,196,15,0.2)] text-black', 
+                                            'badge' => 'bg-[rgba(241,196,15,0.2)] text-white', 
                                             'label' => '<i class="fa-solid fa-oil-can mr-1" style="color: rgb(241, 196, 15);"></i>Diesel'
                                         ],
                                     ];

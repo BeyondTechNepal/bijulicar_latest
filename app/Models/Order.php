@@ -79,6 +79,16 @@ class Order extends Model
     }
 
     /**
+     * Returns true when this order was automatically closed because the
+     * seller confirmed a different buyer's order for the same single-stock
+     * listing.
+     */
+    public function isSoldOut(): bool
+    {
+        return $this->status === 'sold_out';
+    }
+
+    /**
      * Human-readable car name that is safe to display at all times.
      * Falls back to the snapshot stored at order creation if the live
      * car record has been deleted.
@@ -96,7 +106,21 @@ class Order extends Model
             'confirmed' => 'blue',
             'completed' => 'green',
             'cancelled' => 'red',
+            'sold_out'  => 'gray',
             default     => 'gray',
+        };
+    }
+
+    /** Human-readable label for the status badge */
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            'pending'   => 'Pending',
+            'confirmed' => 'Confirmed',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            'sold_out'  => 'Sold Out',
+            default     => ucfirst($this->status),
         };
     }
 }

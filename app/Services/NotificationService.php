@@ -230,6 +230,45 @@ class NotificationService
         );
     }
 
+    /**
+     * Fired when a seller confirms a different buyer's order for the same
+     * single-stock listing. The buyer whose order is now sold_out is notified
+     * immediately so they are not left waiting.
+     */
+    public function orderSoldOut(Order $order): void
+    {
+        $carName = $order->carDisplayName();
+
+        $this->create(
+            userId: $order->buyer_id,
+            type:   'order_sold_out',
+            title:  'Car no longer available — ' . $carName,
+            body:   'Unfortunately the seller has confirmed another buyer\'s order for this car. '
+                  . 'This listing is now sold out and your order has been closed. '
+                  . 'Browse other listings to find your next car.',
+            url:    route('buyer.orders.show', $order->id),
+        );
+    }
+
+    /**
+     * Fired when a previously confirmed order is cancelled, making the car
+     * available again. Any buyers whose orders were set to sold_out are
+     * notified that their order is back in pending state.
+     */
+    public function orderReinstated(Order $order): void
+    {
+        $carName = $order->carDisplayName();
+
+        $this->create(
+            userId: $order->buyer_id,
+            type:   'order_reinstated',
+            title:  'Good news — ' . $carName . ' is available again',
+            body:   'The confirmed order for this car was cancelled. Your order is now back to pending '
+                  . 'and the seller can review it. Stay tuned!',
+            url:    route('buyer.orders.show', $order->id),
+        );
+    }
+
     // ── Pre-Order ──────────────────────────────────────────────────────
 
     public function preOrderDepositConfirmed(PreOrder $preOrder): void

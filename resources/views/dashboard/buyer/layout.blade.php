@@ -84,6 +84,22 @@
                     My Pre-Orders
                 </a>
 
+                <a href="{{ route('buyer.negotiations.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+            {{ request()->routeIs('buyer.negotiations*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+                    </svg>
+                    Negotiations
+                    @php
+                        $pendingNegotiations = auth()->user()?->negotiations()->where('status','pending_buyer')->count();
+                    @endphp
+                    @if($pendingNegotiations > 0)
+                        <span class="ml-auto bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $pendingNegotiations }}</span>
+                    @endif
+                </a>
+
                 @can('purchase vehicle')
                     <a href="{{ route('buyer.purchases.index') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all

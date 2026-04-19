@@ -269,6 +269,93 @@ class NotificationService
         );
     }
 
+    // ── Negotiation ────────────────────────────────────────────────────
+
+    public function negotiationOfferReceived(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'a listing';
+
+        $this->create(
+            userId: $negotiation->seller_id,
+            type:   'negotiation_offer_received',
+            title:  'New offer on — ' . $carName,
+            body:   'A buyer offered NRs ' . number_format($negotiation->offered_price)
+                  . ' (listed at NRs ' . number_format($negotiation->listed_price) . '). '
+                  . 'Accept, counter, or decline from your dashboard.',
+            url:    route('seller.negotiations.show', $negotiation->id),
+        );
+    }
+
+    public function negotiationAcceptedBySeller(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'your offer';
+
+        $this->create(
+            userId: $negotiation->buyer_id,
+            type:   'negotiation_accepted',
+            title:  'Offer accepted — ' . $carName,
+            body:   'The seller accepted your offer of NRs ' . number_format($negotiation->offered_price)
+                  . '. You can now place your order at this price.',
+            url:    route('buyer.negotiations.show', $negotiation->id),
+        );
+    }
+
+    public function negotiationCounteredBySeller(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'your offer';
+
+        $this->create(
+            userId: $negotiation->buyer_id,
+            type:   'negotiation_countered',
+            title:  'Counter offer on — ' . $carName,
+            body:   'The seller countered with NRs ' . number_format($negotiation->offered_price)
+                  . '. Accept or send another counter offer from your dashboard.',
+            url:    route('buyer.negotiations.show', $negotiation->id),
+        );
+    }
+
+    public function negotiationDeclinedBySeller(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'your offer';
+
+        $this->create(
+            userId: $negotiation->buyer_id,
+            type:   'negotiation_declined',
+            title:  'Offer declined — ' . $carName,
+            body:   'The seller declined your offer of NRs ' . number_format($negotiation->offered_price)
+                  . '. You can still order at the listed price of NRs ' . number_format($negotiation->listed_price) . '.',
+            url:    route('cars.show', $negotiation->car_id),
+        );
+    }
+
+    public function negotiationAcceptedByBuyer(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'a listing';
+
+        $this->create(
+            userId: $negotiation->seller_id,
+            type:   'negotiation_accepted',
+            title:  'Offer accepted — ' . $carName,
+            body:   'The buyer accepted your counter offer of NRs ' . number_format($negotiation->offered_price)
+                  . '. They can now place their order at this price.',
+            url:    route('seller.negotiations.show', $negotiation->id),
+        );
+    }
+
+    public function negotiationCounteredByBuyer(\App\Models\Negotiation $negotiation): void
+    {
+        $carName = $negotiation->car?->displayName() ?? 'a listing';
+
+        $this->create(
+            userId: $negotiation->seller_id,
+            type:   'negotiation_countered',
+            title:  'Counter offer on — ' . $carName,
+            body:   'The buyer countered with NRs ' . number_format($negotiation->offered_price)
+                  . '. Accept, counter, or decline from your dashboard.',
+            url:    route('seller.negotiations.show', $negotiation->id),
+        );
+    }
+
     // ── Pre-Order ──────────────────────────────────────────────────────
 
     public function preOrderDepositConfirmed(PreOrder $preOrder): void

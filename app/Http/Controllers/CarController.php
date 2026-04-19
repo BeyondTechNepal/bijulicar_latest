@@ -34,6 +34,15 @@ class CarController extends Controller
         $avgRating   = $car->reviews->avg('rating');
         $reviewCount = $car->reviews->count();
 
+        // Check active/accepted negotiation for this buyer+car
+        $activeNegotiation = null;
+        if (!$isSoldOut && auth()->check() && auth()->user()->hasRole('buyer')) {
+            $activeNegotiation = \App\Models\Negotiation::where('buyer_id', auth()->id())
+                ->where('car_id', $car->id)
+                ->whereIn('status', ['pending_seller', 'pending_buyer', 'accepted'])
+                ->first();
+        }
+
         // Check if logged-in buyer already ordered this car
         $alreadyOrdered = false;
         if (!$isSoldOut && auth()->check() && auth()->user()->hasRole('buyer')) {
@@ -68,6 +77,7 @@ class CarController extends Controller
         return view('frontend.pages.car_detail', compact(
             'car',
             'isSoldOut',
+            'activeNegotiation',
             'otherListings',
             'avgRating',
             'reviewCount',

@@ -127,7 +127,7 @@
                                 class="rounded border-slate-300 text-emerald-600 w-4 h-4">
                         </label>
 
-                        {{-- Petrol pump radius — only on EV & Fuel tab --}}
+                        {{-- Petrol pump radius — only on Petrol tab --}}
                         <div id="fuel-radius-wrap" class="hidden p-3 bg-white border border-slate-200 rounded-xl space-y-2">
                             <div class="flex items-center justify-between">
                                 <span class="text-[10px] font-bold text-slate-600 uppercase">⛽ Pump search radius</span>
@@ -140,8 +140,8 @@
                         </div>
                     </div>
 
-                    {{-- Focus navigation --}}
-                    <div class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 shrink-0">
+                    {{-- FIX: Jump to location — hidden on petrol tab via JS --}}
+                    <div id="jump-to-location-wrap" class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 shrink-0">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 block italic">
                             Jump to location
                         </label>
@@ -731,9 +731,11 @@
             });
 
             // Legend
-            const legend   = document.getElementById('tab-legend');
-            const fuelWrap = document.getElementById('fuel-radius-wrap');
+            const legend    = document.getElementById('tab-legend');
+            const fuelWrap  = document.getElementById('fuel-radius-wrap');
             const availWrap = document.getElementById('filter-available-wrap');
+            // FIX: grab jump-to-location wrapper to hide on petrol tab
+            const jumpWrap  = document.getElementById('jump-to-location-wrap');
 
             // "Available only" is only meaningful for EV and Garage tabs
             if (availWrap) {
@@ -755,6 +757,8 @@
                     </div>`;
                 legend.classList.remove('hidden');
                 if (fuelWrap) fuelWrap.classList.add('hidden');
+                // FIX: show jump-to-location on ev tab
+                if (jumpWrap) jumpWrap.classList.remove('hidden');
             } else if (category === 'petrol') {
                 legend.innerHTML = `
                     <div class="flex items-center flex-wrap gap-3">
@@ -764,6 +768,8 @@
                     </div>`;
                 legend.classList.remove('hidden');
                 if (fuelWrap) fuelWrap.classList.remove('hidden');
+                // FIX: hide jump-to-location on petrol tab (pumps come from OSM, not our DB)
+                if (jumpWrap) jumpWrap.classList.add('hidden');
             } else if (category === 'seller-business') {
                 legend.innerHTML = `
                     <div class="flex items-center flex-wrap gap-3">
@@ -776,9 +782,14 @@
                     </div>`;
                 legend.classList.remove('hidden');
                 if (fuelWrap) fuelWrap.classList.add('hidden');
+                // FIX: show jump-to-location on seller-business tab
+                if (jumpWrap) jumpWrap.classList.remove('hidden');
             } else {
+                // garage
                 legend.classList.add('hidden');
                 if (fuelWrap) fuelWrap.classList.add('hidden');
+                // FIX: show jump-to-location on garage tab
+                if (jumpWrap) jumpWrap.classList.remove('hidden');
             }
 
             // Clear petrol pump markers and status when switching away from petrol tab
@@ -794,9 +805,14 @@
             if (category === 'petrol' && userLat !== null) loadPetrolPumps();
         }
 
+        // FIX: filterMarkers now also toggles petrol pump markers
         function filterMarkers() {
             markersVisible = document.getElementById('show-markers').checked;
             currentMarkers.forEach(({ marker }) => {
+                markersVisible ? marker.addTo(map) : map.removeLayer(marker);
+            });
+            // Also toggle petrol pump markers so "Show all pins" works on the petrol tab
+            petrolMarkers.forEach(marker => {
                 markersVisible ? marker.addTo(map) : map.removeLayer(marker);
             });
         }
@@ -910,96 +926,97 @@
         let petrolMarkers = [];
         let petrolLoading = false;
         let petrolAbort   = null;   // AbortController for in-flight requests
- 
-function clearPetrolMarkers() {
-    petrolMarkers.forEach(m => map.removeLayer(m));
-    petrolMarkers = [];
-}
- 
-async function loadPetrolPumps() {
-    const statusEl  = document.getElementById('fuel-status');
-    const loadingEl = document.getElementById('pump-loading');
-    const loadLbl   = document.getElementById('pump-loading-label');
 
-    if (!userLat || !userLng) {
-        if (statusEl) { statusEl.textContent = '📍 Enable your location first to find nearby petrol pumps.'; statusEl.classList.remove('hidden'); }
-        return;
-    }
-    if (petrolLoading) {
-        petrolAbort?.abort();
-    }
-
-    petrolLoading = true;
-    petrolAbort   = new AbortController();
-
-    clearPetrolMarkers();
-
-    const radiusKm = parseInt(document.getElementById('fuel-radius')?.value ?? 10);
-
-    if (loadLbl)   loadLbl.textContent = `Loading pumps within ${radiusKm} km…`;
-    if (loadingEl) loadingEl.classList.remove('hidden');
-    if (statusEl)  { statusEl.textContent = `⛽ Loading petrol pumps within ${radiusKm} km…`; statusEl.classList.remove('hidden'); }
-
-    try {
-        const res = await fetch(
-            `/api/petrol-pumps?lat=${userLat}&lng=${userLng}&radius=${radiusKm}`,
-            { signal: petrolAbort.signal }
-        );
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const { pumps } = await res.json();
-
-        pumps.forEach(pump => {
-            const pumpIcon = L.divIcon({
-                className : 'custom-icon',
-                html      : `<div style="position:relative;width:32px;height:32px">
-                               <div style="background:#f97316;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25)"></div>
-                               <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:font-size:14px">⛽</span>
-                             </div>`,
-                iconSize  : [32, 42],
-                iconAnchor: [16, 42],
-            });
-
-            const name   = pump.name   || pump.brand || 'Petrol Pump';
-            const hours  = pump.opening_hours ? `<div style="font-size:11px;color:#64748b;margin-top:4px">🕐 ${pump.opening_hours}</div>` : '';
-            const phone  = pump.phone         ? `<div style="font-size:11px;color:#64748b;margin-top:2px">📞 ${pump.phone}</div>` : '';
-            const gmaps  = buildGmapsUrl(pump.latitude, pump.longitude);
-
-            const popup = `
-                <div style="padding:14px;min-width:220px;font-family:inherit">
-                    <div style="font-weight:900;font-size:13px;color:#ea580c">${escHtml(name)}</div>
-                    ${hours}${phone}
-                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #f1f5f9">
-                        <a href="${gmaps}" target="_blank" rel="noopener noreferrer"
-                           style="font-size:10px;font-weight:800;color:#16a34a;text-decoration:none;text-transform:uppercase;letter-spacing:.06em">
-                           Open in Google Maps ↗
-                        </a>
-                    </div>
-                </div>`;
-
-            const m = L.marker([pump.latitude, pump.longitude], { icon: pumpIcon })
-                       .addTo(map)
-                       .bindPopup(popup, { maxWidth: 300, minWidth: 220 });
-
-            petrolMarkers.push(m);
-        });
-
-        if (statusEl) {
-            statusEl.textContent = pumps.length > 0
-                ? `⛽ ${pumps.length} petrol pump${pumps.length !== 1 ? 's' : ''} found within ${radiusKm} km`
-                : `⛽ No petrol pumps found within ${radiusKm} km`;
+        function clearPetrolMarkers() {
+            petrolMarkers.forEach(m => map.removeLayer(m));
+            petrolMarkers = [];
         }
 
-    } catch (err) {
-        if (err.name === 'AbortError') return;
-        console.error('Petrol pumps error:', err);
-        if (statusEl) { statusEl.textContent = '⚠️ Could not load petrol pumps. Check your connection.'; statusEl.classList.remove('hidden'); }
-    } finally {
-        petrolLoading = false;
-        if (loadingEl) loadingEl.classList.add('hidden');
-    }
-}
+        async function loadPetrolPumps() {
+            const statusEl  = document.getElementById('fuel-status');
+            const loadingEl = document.getElementById('pump-loading');
+            const loadLbl   = document.getElementById('pump-loading-label');
+
+            if (!userLat || !userLng) {
+                if (statusEl) { statusEl.textContent = '📍 Enable your location first to find nearby petrol pumps.'; statusEl.classList.remove('hidden'); }
+                return;
+            }
+            if (petrolLoading) {
+                petrolAbort?.abort();
+            }
+
+            petrolLoading = true;
+            petrolAbort   = new AbortController();
+
+            clearPetrolMarkers();
+
+            const radiusKm = parseInt(document.getElementById('fuel-radius')?.value ?? 10);
+
+            if (loadLbl)   loadLbl.textContent = `Loading pumps within ${radiusKm} km…`;
+            if (loadingEl) loadingEl.classList.remove('hidden');
+            if (statusEl)  { statusEl.textContent = `⛽ Loading petrol pumps within ${radiusKm} km…`; statusEl.classList.remove('hidden'); }
+
+            try {
+                const res = await fetch(
+                    `/api/petrol-pumps?lat=${userLat}&lng=${userLng}&radius=${radiusKm}`,
+                    { signal: petrolAbort.signal }
+                );
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const { pumps } = await res.json();
+
+                pumps.forEach(pump => {
+                    // FIX: corrected icon — emoji centred over unrotated overlay, pin shape rotated separately
+                    const pumpIcon = L.divIcon({
+                        className : '',
+                        html      : `<div style="position:relative;width:32px;height:42px">
+                                       <div style="position:absolute;bottom:0;left:0;background:#f97316;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25)"></div>
+                                       <span style="position:absolute;bottom:5px;left:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1">⛽</span>
+                                     </div>`,
+                        iconSize  : [32, 42],
+                        iconAnchor: [16, 42],
+                    });
+
+                    const name   = pump.name   || pump.brand || 'Petrol Pump';
+                    const hours  = pump.opening_hours ? `<div style="font-size:11px;color:#64748b;margin-top:4px">🕐 ${pump.opening_hours}</div>` : '';
+                    const phone  = pump.phone         ? `<div style="font-size:11px;color:#64748b;margin-top:2px">📞 ${pump.phone}</div>` : '';
+                    const gmaps  = buildGmapsUrl(pump.latitude, pump.longitude);
+
+                    const popup = `
+                        <div style="padding:14px;min-width:220px;font-family:inherit">
+                            <div style="font-weight:900;font-size:13px;color:#ea580c">${escHtml(name)}</div>
+                            ${hours}${phone}
+                            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #f1f5f9">
+                                <a href="${gmaps}" target="_blank" rel="noopener noreferrer"
+                                   style="font-size:10px;font-weight:800;color:#16a34a;text-decoration:none;text-transform:uppercase;letter-spacing:.06em">
+                                   Open in Google Maps ↗
+                                </a>
+                            </div>
+                        </div>`;
+
+                    const m = L.marker([pump.latitude, pump.longitude], { icon: pumpIcon })
+                               .addTo(map)
+                               .bindPopup(popup, { maxWidth: 300, minWidth: 220 });
+
+                    petrolMarkers.push(m);
+                });
+
+                if (statusEl) {
+                    statusEl.textContent = pumps.length > 0
+                        ? `⛽ ${pumps.length} petrol pump${pumps.length !== 1 ? 's' : ''} found within ${radiusKm} km`
+                        : `⛽ No petrol pumps found within ${radiusKm} km`;
+                }
+
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                console.error('Petrol pumps error:', err);
+                if (statusEl) { statusEl.textContent = '⚠️ Could not load petrol pumps. Check your connection.'; statusEl.classList.remove('hidden'); }
+            } finally {
+                petrolLoading = false;
+                if (loadingEl) loadingEl.classList.add('hidden');
+            }
+        }
 
         // ── Boot — auto-detect location on page load ───────────────────────
         if (navigator.geolocation) {

@@ -284,7 +284,7 @@
                 <p id="results-count" class="text-[11px] font-black text-slate-400 uppercase tracking-widest"></p>
                 <div class="flex items-center gap-3">
                     <span class="text-[10px] font-bold text-slate-400 uppercase italic">Sort:</span>
-                    <button data-sort="newest"    class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Newest</button>
+                    <button data-sort="newest" class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Newest</button>
                     <button data-sort="price_asc" class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↑</button>
                     <button data-sort="price_desc"class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↓</button>
                 </div>
@@ -427,16 +427,24 @@
     // ── Build a single car card ───────────────────────────────────────────
     function buildCard(car) {
         const dtBadge = {
-            ev:     'bg-[#4ade80] text-black',
-            hybrid: 'bg-blue-500 text-white',
-            petrol: 'bg-slate-600 text-white',
-            diesel: 'bg-slate-600 text-white',
+            ev:     'bg-[rgba(46,204,113,0.2)] text-white',
+            hybrid: 'bg-[rgba(52,152,219,0.2)] text-white',
+            petrol: 'bg-[rgba(231,76,60,0.2)] text-white',
+            diesel: 'bg-[rgba(241,196,15,0.2)] text-white',
         }[car.drivetrain] ?? 'bg-slate-600 text-white';
-        const dtLabel = car.drivetrain === 'ev' ? '⚡ EV' : car.drivetrain.charAt(0).toUpperCase() + car.drivetrain.slice(1);
+        const dtMap = {
+            ev: '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i>EV',
+            hybrid: '<i class="fa-solid fa-leaf" style="color: rgb(46, 204, 113);"></i>/<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>Hybrid',
+            petrol: '<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>Petrol',
+            diesel: '<i class="fa-solid fa-oil-can mr-1" style="color: rgb(241, 196, 15);"></i>Diesel'
+        };
+
+        const dtLabel = dtMap[car.drivetrain] 
+            ?? (car.drivetrain.charAt(0).toUpperCase() + car.drivetrain.slice(1));
 
         const imgHtml = car.primary_image
             ? `<img src="${car.primary_image}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" alt="${car.name}">`
-            : `<div class="w-full h-full flex items-center justify-center"><span class="text-5xl opacity-10">⚡</span></div>`;
+            : `<div class="w-full h-full flex items-center justify-center"><span class="text-5xl opacity-10"><i class="fa-solid fa-leaf" style="color: rgb(46, 204, 113);"></i></span></div>`;
 
         const specBadges = [
             car.mileage     ? `<span class="text-[10px] font-black px-2 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">${car.mileage} km</span>` : '',

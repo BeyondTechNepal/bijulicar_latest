@@ -398,8 +398,7 @@
                     <div>
                         <div class="flex items-center gap-3 mb-4">
                             <span class="w-2 h-2 rounded-full bg-[#4ade80] animate-pulse"></span>
-                            <span class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold">Marketplace
-                                Live</span>
+                            <span class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold">Marketplace Live</span>
                         </div>
                         <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
                             Recently <span class="text-slate-300">Added</span>
@@ -438,15 +437,20 @@
                             @foreach ($recentCars as $car)
                                 @php
                                     $dtColors = [
-                                        'ev' => ['badge' => 'bg-[#4ade80] text-black', 'label' => ' EV'],
-                                        'hybrid' => ['badge' => 'bg-blue-500 text-white', 'label' => ' Hybrid'],
-                                        'petrol' => [
-                                            'badge' => 'bg-black/60 backdrop-blur-md text-white',
-                                            'label' => 'Petrol',
+                                        'ev' => ['badge' => 'bg-[rgba(46,204,113,0.2)] text-black', 'label' => '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i>EV'],
+                                        'hybrid' => [
+                                            'badge' => 'bg-[rgba(52,152,219,0.2)] text-black', 
+                                            'label' => '<i class="fa-solid fa-leaf" style="color: rgb(46, 204, 113);"></i>/<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i> Hybrid'
                                         ],
+
+                                        'petrol' => [
+                                            'badge' => 'bg-[rgba(231,76,60,0.2)] text-black', 
+                                            'label' => '<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>Petrol'
+                                        ],
+
                                         'diesel' => [
-                                            'badge' => 'bg-black/60 backdrop-blur-md text-white',
-                                            'label' => 'Diesel',
+                                            'badge' => 'bg-[rgba(241,196,15,0.2)] text-black', 
+                                            'label' => '<i class="fa-solid fa-oil-can mr-1" style="color: rgb(241, 196, 15);"></i>Diesel'
                                         ],
                                     ];
                                     $dtc = $dtColors[$car->drivetrain] ?? $dtColors['petrol'];
@@ -461,11 +465,11 @@
                                         <div class="absolute top-5 left-5 z-10 flex gap-2 flex-wrap">
                                             <span
                                                 class="text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider {{ $dtc['badge'] }}">
-                                                {{ $dtc['label'] }}
+                                                {!! $dtc['label'] !!}
                                             </span>
                                             @if ($sellerRole === 'business')
-                                                <span
-                                                    class="bg-[#4ade80] text-black text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+                                                <span class="inline-flex items-center bg-green-100 text-green-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+                                                    <i class="fa-regular fa-circle-check mr-1.5 text-green-500"></i>
                                                     Verified Dealer
                                                 </span>
                                             @endif

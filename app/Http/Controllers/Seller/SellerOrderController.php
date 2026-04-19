@@ -58,14 +58,45 @@ class SellerOrderController extends Controller
         abort_if($order->seller_id != Auth::guard('web')->id(), 403);
         abort_if($order->status !== 'pending', 422, 'Only pending orders can be confirmed.');
 
-        $order->update(['status' => 'confirmed']);
-        app(NotificationService::class)->orderConfirmed($order);
+        DB::transaction(function () use ($order) {
+            // 1. Confirm this order.
+            $order->update(['status' => 'confirmed']);
+
+            // 2. If the car still exists and has only 1 unit in stock, the
+            //    stock is now spoken for. Mark the listing as sold immediately
+            //    so it shows "Out of Stock" on the marketplace.
+            $car = $order->car_id
+                ? $order->car()->withTrashed()->lockForUpdate()->first()
+                : null;
+
+            if ($car && ! $car->trashed() && $car->stock_quantity <= 1) {
+                $car->update(['status' => 'sold']);
+
+                // 3. Find every other *pending* order for the same car and
+                //    flip them to sold_out so those buyers get honest feedback
+                //    instead of waiting indefinitely.
+                $rivalOrders = Order::where('car_id', $order->car_id)
+                    ->where('id', '!=', $order->id)
+                    ->where('status', 'pending')
+                    ->get();
+
+                foreach ($rivalOrders as $rival) {
+                    $rival->update(['status' => 'sold_out']);
+
+                    // Notify each displaced buyer immediately.
+                    app(NotificationService::class)->orderSoldOut($rival);
+                }
+            }
+
+            // 4. Notify the confirmed buyer as before.
+            app(NotificationService::class)->orderConfirmed($order);
+        });
 
         $prefix = $this->context()['prefix'];
 
         return redirect()
             ->route($prefix . '.orders.show', $order->id)
-            ->with('success', 'Order confirmed. Once you receive payment, mark it as completed.');
+            ->with('success', 'Order confirmed. Other pending orders for this listing have been automatically marked as sold out.');
     }
 
     public function completeForm(Order $order)
@@ -129,16 +160,34 @@ class SellerOrderController extends Controller
         abort_if($order->seller_id != Auth::guard('web')->id(), 403);
         abort_if(!$order->isCancellable(), 422, 'This order can no longer be cancelled.');
 
-        $order->update(['status' => 'cancelled']);
-        $order->load(['car' => fn($q) => $q->withTrashed(), 'buyer']);
-        app(NotificationService::class)->orderCancelledBySeller($order);
+        DB::transaction(function () use ($order) {
+            $wasConfirmed = $order->status === 'confirmed';
 
-        // Only update car status if the car record still exists and isn't deleted
-        if ($order->car_id && $order->car && ! $order->car->trashed()) {
-            if ($order->car->status === 'reserved') {
-                $order->car->update(['status' => 'available']);
+            $order->update(['status' => 'cancelled']);
+            $order->load(['car' => fn($q) => $q->withTrashed(), 'buyer']);
+            app(NotificationService::class)->orderCancelledBySeller($order);
+
+            // Only update car status if the car record still exists and isn't deleted
+            if ($order->car_id && $order->car && ! $order->car->trashed()) {
+                if (in_array($order->car->status, ['reserved', 'sold'])) {
+                    $order->car->update(['status' => 'available']);
+                }
+
+                // If we just cancelled a *confirmed* order, any sold_out sibling
+                // orders should revert to pending — the car is available again.
+                if ($wasConfirmed) {
+                    $soldOutOrders = Order::where('car_id', $order->car_id)
+                        ->where('id', '!=', $order->id)
+                        ->where('status', 'sold_out')
+                        ->get();
+
+                    foreach ($soldOutOrders as $sibling) {
+                        $sibling->update(['status' => 'pending']);
+                        app(NotificationService::class)->orderReinstated($sibling);
+                    }
+                }
             }
-        }
+        });
 
         $prefix = $this->context()['prefix'];
 

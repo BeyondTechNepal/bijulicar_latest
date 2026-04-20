@@ -234,14 +234,10 @@
                                         Out of Stock
                                     </div>
                                 @else
-                                    <form method="POST" action="{{ route('buyer.orders.store') }}" class="mt-4">
-                                        @csrf
-                                        <input type="hidden" name="car_id" value="{{ $car->id }}">
-                                        <button type="submit"
-                                            class="w-full py-2.5 rounded-xl {{ $accentBg[$i] }} text-white text-[11px] font-black uppercase tracking-widest hover:opacity-90 transition-all">
-                                            Order This Car
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('cars.show', $car->id) }}#place-order"
+                                        class="mt-4 block w-full py-2.5 rounded-xl {{ $accentBg[$i] }} text-white text-[11px] font-black uppercase tracking-widest hover:opacity-90 transition-all text-center">
+                                        Order This Car
+                                    </a>
                                 @endif
                             @endif
                         @endauth

@@ -200,77 +200,8 @@
      {{-- ── Sponsored banners (marketplace placement) ─────────────────── --}}
     @if ($marketplaceAds->isNotEmpty())
         <section class="bg-[#f1f5f9] pt-10 pb-0">
-            <div class="max-w-7xl mx-auto px-6 space-y-5">
-                @foreach ($marketplaceAds as $ad)
-                    @php $target = $ad->link_url ?: ($ad->car_id ? route('marketplace') : null); @endphp
-                    <div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm group bg-slate-900">
-                        <div class="flex flex-col md:flex-row min-h-[200px]">
-
-                            {{-- Left: text content --}}
-                            <div class="flex-1 flex flex-col justify-center px-8 py-8 md:py-10 z-10">
-                                <p class="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-3">Sponsored
-                                </p>
-                                <h3
-                                    class="text-2xl md:text-3xl font-black text-white uppercase italic tracking-tight leading-tight mb-3">
-                                    {{ $ad->title }}
-                                </h3>
-                                @if ($ad->description)
-                                    <p class="text-slate-400 text-sm font-medium mb-4 max-w-md leading-relaxed">
-                                        {{ $ad->description }}</p>
-                                @endif
-
-                                {{-- Car details if linked --}}
-                                @if ($ad->car)
-                                    <div class="flex flex-wrap gap-2 mb-5">
-                                        <span
-                                            class="text-[10px] font-black px-3 py-1.5 bg-white/10 text-white rounded-lg uppercase tracking-wider">
-                                            {{ $ad->car->displayName() }}
-                                        </span>
-                                        <span
-                                            class="text-[10px] font-black px-3 py-1.5 bg-[#4ade80]/20 text-[#4ade80] rounded-lg uppercase tracking-wider border border-[#4ade80]/20">
-                                            {{ $ad->car->formattedPrice() }}
-                                        </span>
-                                        <span
-                                            class="text-[10px] font-black px-3 py-1.5 bg-white/10 text-white rounded-lg uppercase tracking-wider">
-                                            {{ strtoupper($ad->car->drivetrain) }}
-                                        </span>
-                                        @if ($ad->car->range_km)
-                                            <span
-                                                class="text-[10px] font-black px-3 py-1.5 bg-white/10 text-white rounded-lg uppercase tracking-wider">
-                                                {{ $ad->car->range_km }} km range
-                                            </span>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                @if ($target)
-                                    <a href="{{ $target }}"
-                                        class="self-start px-6 py-2.5 bg-white text-slate-900 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#4ade80] transition-all">
-                                        {{ $ad->car ? 'View Listing →' : 'Learn More →' }}
-                                    </a>
-                                @endif
-                            </div>
-
-                            {{-- Right: banner image (if provided) --}}
-                            @if ($ad->image)
-                                <div class="md:w-2/5 shrink-0 relative min-h-[180px] md:min-h-0">
-                                    <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}"
-                                        class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 absolute inset-0">
-                                    {{-- Gradient fade into text side --}}
-                                    <div
-                                        class="hidden md:block absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-900 to-transparent z-10">
-                                    </div>
-                                </div>
-                            @else
-                                {{-- No image: subtle dot pattern background --}}
-                                <div class="hidden md:block md:w-1/4 shrink-0 opacity-5"
-                                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;">
-                                </div>
-                            @endif
-
-                        </div>
-                    </div>
-                @endforeach
+            <div class="max-w-7xl mx-auto px-6">
+                <x-ads.horizontal-banner :ads="$marketplaceAds" />
             </div>
         </section>
     @endif

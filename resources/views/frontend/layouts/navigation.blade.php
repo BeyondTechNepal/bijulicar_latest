@@ -65,13 +65,13 @@
 
                     <!-- {{-- Dashboard quick-link --}}
                     <a href="{{ $dashRoute }}"
-                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold text-green-700 bg-green-50 hover:bg-green-100 transition-all">
+                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold text-green-700 bg-green-50 hover:bg-green-100 transition-all active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         Dashboard
-                    </a> -->
+                    </a> -->>
 
                     {{-- Avatar + dropdown --}}
                     <div class="relative" id="userMenuWrapper">
@@ -80,9 +80,15 @@
 
                             {{-- Avatar with unread notification badge --}}
                             <div class="relative">
-                                <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-[11px] font-black uppercase tracking-wide shrink-0">
-                                    {{ strtoupper(substr($user->name, 0, 2)) }}
-                                </div>
+                                @if($user->profile_photo)
+                                    <img src="{{ Storage::url($user->profile_photo) }}"
+                                         alt="{{ $user->name }}"
+                                         class="w-8 h-8 rounded-lg object-cover shrink-0">
+                                @else
+                                    <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-[11px] font-black uppercase tracking-wide shrink-0">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    </div>
+                                @endif
                                 @if ($unreadCount > 0)
                                     <span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center leading-none">
                                         {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -105,9 +111,20 @@
                             class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] border border-slate-100 py-2 invisible opacity-0 scale-95 transition-all duration-200 origin-top-right z-50">
 
                             {{-- User info --}}
-                            <div class="px-4 py-3 border-b border-slate-100">
-                                <p class="text-[13px] font-bold text-slate-900 truncate">{{ $user->name }}</p>
-                                <p class="text-[11px] text-slate-400 truncate">{{ $user->email }}</p>
+                            <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+                                @if($user->profile_photo)
+                                    <img src="{{ Storage::url($user->profile_photo) }}"
+                                         alt="{{ $user->name }}"
+                                         class="w-9 h-9 rounded-xl object-cover shrink-0">
+                                @else
+                                    <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white text-xs font-black uppercase shrink-0">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    </div>
+                                @endif
+                                <div class="min-w-0">
+                                    <p class="text-[13px] font-bold text-slate-900 truncate">{{ $user->name }}</p>
+                                    <p class="text-[11px] text-slate-400 truncate">{{ $user->email }}</p>
+                                </div>
                             </div>
 
                             {{-- My Dashboard --}}
@@ -223,9 +240,15 @@
                     {{-- Mobile user card --}}
                     <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl mb-2">
                         <div class="relative">
-                            <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[12px] font-black uppercase shrink-0">
-                                {{ strtoupper(substr($user->name, 0, 2)) }}
-                            </div>
+                            @if($user->profile_photo)
+                                <img src="{{ Storage::url($user->profile_photo) }}"
+                                     alt="{{ $user->name }}"
+                                     class="w-10 h-10 rounded-xl object-cover shrink-0">
+                            @else
+                                <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[12px] font-black uppercase shrink-0">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </div>
+                            @endif
                             @if ($unreadCount > 0)
                                 <span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center leading-none">
                                     {{ $unreadCount > 9 ? '9+' : $unreadCount }}

@@ -263,10 +263,16 @@
                             <div class="p-6 pb-4 flex items-start justify-between">
                                 <div class="flex items-center gap-4">
                                     {{-- Avatar --}}
-                                    <div
-                                        class="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-lg font-black uppercase shrink-0 group-hover:bg-[#16a34a] transition-colors duration-300">
-                                        {{ $biz['initials'] }}
-                                    </div>
+                                    @if($biz['profile_photo'])
+                                        <img src="{{ $biz['profile_photo'] }}"
+                                             alt="{{ $biz['name'] }}"
+                                             class="w-14 h-14 rounded-2xl object-cover shrink-0 group-hover:ring-2 group-hover:ring-[#16a34a] transition-all duration-300">
+                                    @else
+                                        <div
+                                            class="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-lg font-black uppercase shrink-0 group-hover:bg-[#16a34a] transition-colors duration-300">
+                                            {{ $biz['initials'] }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <div class="flex items-center gap-2">
                                             <h3 class="text-[15px] font-black text-slate-900 leading-tight">

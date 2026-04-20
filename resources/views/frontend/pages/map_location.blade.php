@@ -1035,7 +1035,44 @@
             );
         }
 
-        loadLocations();
+        // ── Deep-link: ?user_id=X — switch to business tab & open that pin ──
+        const _origLoadLocations = loadLocations;
+        async function loadLocationsWithDeepLink() {
+            try {
+                const res = await fetch('/api/map-locations');
+                allLocations = await res.json();
+                document.getElementById('map-loading').classList.add('hidden');
+
+                const params = new URLSearchParams(window.location.search);
+                const targetUserId = params.get('user_id');
+
+                if (targetUserId) {
+                    // Switch to the seller-business tab first so business pins render
+                    switchCategory('seller-business');
+                }
+
+                renderMarkers();
+
+                if (targetUserId) {
+                    const targetLoc = allLocations.find(l => String(l.user_id) === String(targetUserId) && l.type === 'business');
+                    if (targetLoc) {
+                        setTimeout(() => {
+                            const found = currentMarkers.find(m => String(m.id) === String(targetLoc.id));
+                            if (found) {
+                                map.setView(found.marker.getLatLng(), 17, { animate: true });
+                                found.marker.openPopup();
+                            }
+                        }, 250);
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load locations:', e);
+                document.getElementById('map-loading').innerHTML =
+                    '<p class="text-xs font-black text-red-400 uppercase tracking-widest">Failed to load. Refresh page.</p>';
+            }
+        }
+
+        loadLocationsWithDeepLink();
     </script>
 
 @endsection

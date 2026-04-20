@@ -38,6 +38,20 @@
                         </span>
                     </div>
                     <div class="flex flex-wrap items-center gap-4 mt-2">
+                        @if($mapLocation)
+                        <a href="{{ route('map_location') }}?user_id={{ $user->id }}"
+                           class="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-[#4ade80] transition-colors group"
+                           title="View on map">
+                            <svg class="w-3.5 h-3.5 group-hover:text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
+                            {{ $location }}
+                            <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                        @else
                         <span class="flex items-center gap-1.5 text-xs font-bold text-slate-400">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -45,6 +59,7 @@
                             </svg>
                             {{ $location }}
                         </span>
+                        @endif
                         @php
                             $tagColors = [
                                 'EV Dealer'   => 'text-green-400 bg-green-400/10 border-green-400/20',
@@ -83,18 +98,36 @@
         </div>
 
         {{-- Contact info strip --}}
-        @if($contact)
-        <div class="mt-8 flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 w-fit">
-            <div class="w-8 h-8 bg-[#4ade80]/10 rounded-xl flex items-center justify-center">
-                <svg class="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
+        @if($contact || $email)
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+            @if($contact)
+            <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5">
+                <div class="w-8 h-8 bg-[#4ade80]/10 rounded-xl flex items-center justify-center">
+                    <svg class="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone</p>
+                    <p class="text-sm font-black text-white">{{ $contact }}</p>
+                </div>
             </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contact</p>
-                <p class="text-sm font-black text-white">{{ $contact }}</p>
+            @endif
+            @if($email)
+            <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5">
+                <div class="w-8 h-8 bg-blue-400/10 rounded-xl flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</p>
+                    <a href="mailto:{{ $email }}" class="text-sm font-black text-white hover:text-blue-400 transition-colors">{{ $email }}</a>
+                </div>
             </div>
+            @endif
         </div>
         @endif
     </div>

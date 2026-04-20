@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Advertisement;
+use App\Models\NewLocation;
 use App\Models\User;
 use App\Models\Car;
 use App\Models\Review;
@@ -132,6 +133,11 @@ class BusinessDirectoryController extends Controller
 
         $businessName = $user->businessVerification->business_name ?? $user->name;
         $contact      = $user->businessVerification->contact ?? null;
+        $email        = $user->email ?? null;
+        $mapLocation  = NewLocation::where('user_id', $user->id)
+                            ->where('type', 'business')
+                            ->where('is_active', true)
+                            ->first();
 
         $drivetrains = $activeCars->pluck('drivetrain')->unique();
         if ($drivetrains->count() > 1) {
@@ -163,6 +169,8 @@ class BusinessDirectoryController extends Controller
             'reviewCount',
             'businessName',
             'contact',
+            'email',
+            'mapLocation',
             'spec',
             'location',
             'businessNews',

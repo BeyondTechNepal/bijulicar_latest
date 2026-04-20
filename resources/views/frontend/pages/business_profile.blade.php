@@ -24,9 +24,15 @@
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
             <div class="flex items-center gap-6">
                 {{-- Big Avatar --}}
-                <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-3xl bg-white/10 border border-white/10 flex items-center justify-center text-3xl font-black uppercase text-white shrink-0">
-                    {{ strtoupper(substr($businessName, 0, 2)) }}
-                </div>
+                @if($user->profile_photo)
+                    <img src="{{ Storage::url($user->profile_photo) }}"
+                         alt="{{ $businessName }}"
+                         class="w-20 h-20 lg:w-24 lg:h-24 rounded-3xl object-cover border border-white/10 shrink-0">
+                @else
+                    <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-3xl bg-white/10 border border-white/10 flex items-center justify-center text-3xl font-black uppercase text-white shrink-0">
+                        {{ strtoupper(substr($businessName, 0, 2)) }}
+                    </div>
+                @endif
                 <div>
                     <div class="flex items-center gap-3 flex-wrap">
                         <h1 class="text-3xl lg:text-4xl font-black text-white tracking-tight">{{ $businessName }}</h1>
@@ -320,10 +326,16 @@
                 @foreach($allReviews as $review)
                     <div class="bg-white rounded-2xl border border-slate-100 p-6">
                         <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-xs font-black uppercase shrink-0">
-                                    {{ strtoupper(substr($review->buyer->name ?? 'U', 0, 2)) }}
-                                </div>
+                                <div class="flex items-center gap-3">
+                                @if($review->buyer && $review->buyer->profile_photo)
+                                    <img src="{{ Storage::url($review->buyer->profile_photo) }}"
+                                         alt="{{ $review->buyer->name }}"
+                                         class="w-10 h-10 rounded-xl object-cover shrink-0">
+                                @else
+                                    <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white text-xs font-black uppercase shrink-0">
+                                        {{ strtoupper(substr($review->buyer->name ?? 'U', 0, 2)) }}
+                                    </div>
+                                @endif
                                 <div>
                                     <p class="text-[13px] font-black text-slate-900">{{ $review->buyer->name ?? 'Anonymous' }}</p>
                                     @if($review->car)

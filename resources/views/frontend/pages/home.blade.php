@@ -649,8 +649,12 @@
                                         <div class="relative z-10 flex flex-col h-full">
                                             <div class="flex items-start justify-between mb-5">
                                                 <div
-                                                    class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-black text-white group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/30 transition-all duration-300">
-                                                    {{ $biz['initials'] }}
+                                                    class="w-14 h-14 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-black text-white group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/30 transition-all duration-300 overflow-hidden shrink-0">
+                                                    @if(!empty($biz['profile_photo']))
+                                                        <img src="{{ $biz['profile_photo'] }}" alt="{{ $biz['name'] }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        {{ $biz['initials'] }}
+                                                    @endif
                                                 </div>
                                                 <span
                                                     class="flex items-center gap-1.5 text-[10px] font-black text-[#4ade80] bg-[#4ade80]/10 border border-[#4ade80]/20 px-2.5 py-1 rounded-full">

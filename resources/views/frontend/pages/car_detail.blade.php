@@ -663,8 +663,12 @@
                         <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Listed By</p>
                         <div class="flex items-center gap-3">
                             <div
-                                class="w-11 h-11 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[13px] font-black uppercase shrink-0">
-                                {{ strtoupper(substr($car->seller->name, 0, 2)) }}
+                                class="w-11 h-11 rounded-xl bg-slate-900 flex items-center justify-center text-white text-[13px] font-black uppercase shrink-0 overflow-hidden">
+                                @if($car->seller->profile_photo)
+                                    <img src="{{ Storage::url($car->seller->profile_photo) }}" alt="{{ $car->seller->name }}" class="w-full h-full object-cover">
+                                @else
+                                    {{ strtoupper(substr($car->seller->name, 0, 2)) }}
+                                @endif
                             </div>
                             <div>
                                 @if ($car->seller->hasRole('business') && $car->seller->businessVerification?->isApproved())

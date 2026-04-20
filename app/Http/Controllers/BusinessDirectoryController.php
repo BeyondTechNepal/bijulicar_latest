@@ -62,6 +62,7 @@ class BusinessDirectoryController extends Controller
                 'name'            => $user->businessVerification->business_name ?? $user->name,
                 'contact'         => $user->businessVerification->contact ?? null,
                 'initials'        => strtoupper(substr($user->businessVerification->business_name ?? $user->name, 0, 2)),
+                'profile_photo'   => $user->profile_photo ? \Illuminate\Support\Facades\Storage::url($user->profile_photo) : null,
                 'active_listings' => $activeCars->count(),
                 'avg_rating'      => round($avgRating, 1),
                 'review_count'    => $reviewCount,

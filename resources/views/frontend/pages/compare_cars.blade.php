@@ -248,26 +248,40 @@
 
         {{-- ── VERDICT BANNER ── --}}
         @php
-            $cheapest = $selected->sortBy('price')->first();
-            $bestRange = $selected->filter(fn($c) => $c->range_km)->sortByDesc('range_km')->first();
-            $highestMileage = $selected->sortByDesc('mileage')->first();
             $verdictItems = [];
-            $cheapIdx = $selected->search(fn($c) => $c->id === $cheapest->id);
-            $verdictItems[] = ['label' => 'Best Value', 'car' => $cheapest->brand . ' ' . $cheapest->model, 'detail' => 'NRs ' . number_format($cheapest->price), 'idx' => $cheapIdx];
-            if ($bestRange) {
-                $rangeIdx = $selected->search(fn($c) => $c->id === $bestRange->id);
-                $verdictItems[] = ['label' => 'Longest Range', 'car' => $bestRange->brand . ' ' . $bestRange->model, 'detail' => number_format($bestRange->range_km) . ' km', 'idx' => $rangeIdx];
-            }
-            $mileageIdx = $selected->search(fn($c) => $c->id === $highestMileage->id);
 
-            $verdictItems[] = [
-                'label' => 'Highest Mileage',
-                'car' => $highestMileage->brand . ' ' . $highestMileage->model,
-                'detail' => number_format($highestMileage->mileage) . ' km',
-                'idx' => $mileageIdx
-            ];
+            // Best Value — only show if there's a unique cheapest
+            $minPrice = $selected->min('price');
+            $cheapestCars = $selected->filter(fn($c) => $c->price === $minPrice);
+            if ($cheapestCars->count() === 1) {
+                $cheapest = $cheapestCars->first();
+                $cheapIdx = $selected->search(fn($c) => $c->id === $cheapest->id);
+                $verdictItems[] = ['label' => 'Best Value', 'car' => $cheapest->brand . ' ' . $cheapest->model, 'detail' => 'NRs ' . number_format($cheapest->price), 'idx' => $cheapIdx];
+            }
+
+            // Longest Range — only show if there's a unique best
+            $evCarsWithRange = $selected->filter(fn($c) => $c->range_km);
+            if ($evCarsWithRange->count() >= 1) {
+                $maxRange = $evCarsWithRange->max('range_km');
+                $bestRangeCars = $evCarsWithRange->filter(fn($c) => $c->range_km == $maxRange);
+                if ($bestRangeCars->count() === 1) {
+                    $bestRange = $bestRangeCars->first();
+                    $rangeIdx = $selected->search(fn($c) => $c->id === $bestRange->id);
+                    $verdictItems[] = ['label' => 'Longest Range', 'car' => $bestRange->brand . ' ' . $bestRange->model, 'detail' => number_format($bestRange->range_km) . ' km', 'idx' => $rangeIdx];
+                }
+            }
+
+            // Highest Mileage — only show if there's a unique highest
+            $maxMileage = $selected->max('mileage');
+            $highestMileageCars = $selected->filter(fn($c) => $c->mileage == $maxMileage);
+            if ($highestMileageCars->count() === 1) {
+                $highestMileage = $highestMileageCars->first();
+                $mileageIdx = $selected->search(fn($c) => $c->id === $highestMileage->id);
+                $verdictItems[] = ['label' => 'Highest Mileage', 'car' => $highestMileage->brand . ' ' . $highestMileage->model, 'detail' => number_format($highestMileage->mileage) . ' km', 'idx' => $mileageIdx];
+            }
         @endphp
 
+        @if (count($verdictItems) > 0)
         <div class="bg-slate-900 rounded-2xl p-6 mb-8">
             <p class="text-[10px] font-black text-[#4ade80] uppercase tracking-widest mb-4">Quick Verdict</p>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -281,6 +295,12 @@
                 @endforeach
             </div>
         </div>
+        @else
+        <div class="bg-slate-900 rounded-2xl p-6 mb-8 text-center">
+            <p class="text-[10px] font-black text-[#4ade80] uppercase tracking-widest mb-2">Quick Verdict</p>
+            <p class="text-slate-400 text-sm font-medium">These vehicles are evenly matched — no clear winner across price, range, or mileage.</p>
+        </div>
+        @endif
 
         {{-- ── PRICE BAR CHART ── --}}
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
@@ -296,7 +316,7 @@
                     <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                         <div class="{{ $accentBg[$i] }} h-full rounded-full" style="width: {{ $pct }}%; transition: width 1s ease"></div>
                     </div>
-                    @if ($car->id === $cheapest->id && $cols > 1)
+                    @if ($car->price === $minPrice && $cheapestCars->count() === 1 && $cols > 1)
                         <p class="text-[10px] font-bold text-green-600 mt-1">↓ Lowest price</p>
                     @endif
                 </div>
@@ -320,7 +340,7 @@
                         <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                             <div class="{{ $accentBg[$i] }} h-full rounded-full" style="width: {{ $pct }}%; transition: width 1s ease"></div>
                         </div>
-                        @if ($pct === 100 && $evCars->count() > 1)
+                        @if ($car->range_km == $maxRange && $evCars->filter(fn($c) => $c->range_km == $maxRange)->count() === 1 && $evCars->count() > 1)
                             <p class="text-[10px] font-bold text-green-600 mt-1">↑ Best range</p>
                         @endif
                     </div>

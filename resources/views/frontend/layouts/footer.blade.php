@@ -51,18 +51,34 @@
             <div class="lg:col-span-2">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Vehicle Types</h4>
                 <ul class="space-y-4 text-sm font-bold text-slate-600">
-                    <li><a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition"><span><i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i></span>
-                            Electric</a></li>
-                    <li><a href="#"
-                            class="flex items-center gap-2 hover:text-[#16a34a] transition"><span><i class="fa-solid fa-leaf" style="color: rgb(46, 204, 113);"></i>/<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i></span></span> Hybrid</a>
-                    </li>
-                    <li><a href="#"
-                            class="flex items-center gap-2 hover:text-[#16a34a] transition"><span><i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>/<i class="fa-solid fa-oil-can mr-1" style="color: rgb(241, 196, 15);"></i></span>
-                            Traditional</a></li>
-                    <li><a href="#"
-                            class="flex items-center gap-2 hover:text-[#16a34a] transition"><span></span> All
-                            Inventory</a></li>
-                </ul>
+    <li>
+        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+            <span><i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i></span>
+            Electric
+        </a>
+    </li>
+
+    <li>
+        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+            <span><i class="fa-solid fa-bolt-lightning mr-1" style="color: rgb(52, 152, 219);"></i></span>
+            Hybrid
+        </a>
+    </li>
+
+    <li>
+        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+            <span><i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i></span>
+            Traditional
+        </a>
+    </li>
+
+    <li>
+        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+            <span><i class="fa-solid fa-car-side mr-1" style="color: rgb(100, 116, 139);"></i></span>
+            All Inventory
+        </a>
+    </li>
+</ul>
             </div>
 
             <div class="lg:col-span-2">

@@ -138,7 +138,7 @@
                             <span class="cover-badge absolute top-1 left-1 text-[9px] font-black px-1.5 py-0.5 bg-[#4ade80] text-black rounded-lg uppercase tracking-wider {{ $image->is_primary ? '' : 'hidden' }}">Cover</span>
                             <button type="button"
                                 data-delete-url="{{ route($prefix . '.car-images.destroy', $image) }}"
-                                data-image-id="{{ $image->id }}"
+                                data-img-id="{{ $image->id }}"
                                 onclick="deleteImage(this)"
                                 class="delete-btn absolute top-1 right-1 w-6 h-6 bg-white/80 hover:bg-red-500 rounded-lg flex items-center justify-center transition-all border border-slate-200 hover:border-red-500 group/btn">
                                 <svg class="w-3 h-3 text-slate-400 group-hover/btn:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -224,7 +224,7 @@
                         .then(r => r.json())
                         .then(data => {
                             if (data.ok) {
-                                document.getElementById('img-wrap-' + btn.dataset.imageId)?.remove();
+                                document.getElementById('img-wrap-' + btn.dataset.imgId)?.remove();
                                 refreshSavedCoverBadge(data.new_primary_id);
                                 updateCountLabel();
                             } else {

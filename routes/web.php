@@ -219,6 +219,7 @@ Route::middleware(['auth', 'role:seller', 'verified.account'])
         Route::get('/cars/{car}/edit', [SellerCarController::class, 'edit'])->name('cars.edit')->middleware('permission:manage car listing(seller)');
         Route::patch('/cars/{car}', [SellerCarController::class, 'update'])->name('cars.update')->middleware('permission:manage car listing(seller)');
         Route::delete('/cars/{car}', [SellerCarController::class, 'destroy'])->name('cars.destroy')->middleware('permission:manage car listing(seller)');
+        Route::delete('/car-images/{image}', [SellerCarController::class, 'destroyImage'])->name('car-images.destroy')->middleware('permission:manage car listing(seller)');
 
         // Orders
         Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index')->middleware('permission:manage own orders');
@@ -266,6 +267,7 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
         Route::get('/cars/{car}/edit', [SellerCarController::class, 'edit'])->name('cars.edit')->middleware('permission:browse listings');
         Route::patch('/cars/{car}', [SellerCarController::class, 'update'])->name('cars.update')->middleware('permission:browse listings');
         Route::delete('/cars/{car}', [SellerCarController::class, 'destroy'])->name('cars.destroy')->middleware('permission:browse listings');
+        Route::delete('/car-images/{image}', [SellerCarController::class, 'destroyImage'])->name('car-images.destroy')->middleware('permission:browse listings');
 
         // Orders
         Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index')->middleware('permission:manage own orders');

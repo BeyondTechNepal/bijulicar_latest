@@ -247,6 +247,39 @@ class SellerCarController extends Controller
     }
 
     /**
+     * Instantly delete a single car image via AJAX (no page reload needed).
+     */
+    public function destroyImage(CarImage $image)
+    {
+        // Make sure the car belongs to this seller
+        abort_if($image->car->seller_id != Auth::id(), 403);
+
+        $car = $image->car;
+        $wasPrimary = $image->is_primary;
+
+        $image->delete(); // model booted() deletes storage file too
+
+        // If we just deleted the primary, promote the next image
+        if ($wasPrimary) {
+            $next = $car->images()->orderBy('sort_order')->first();
+            if ($next) {
+                $next->update(['is_primary' => true]);
+                $car->update(['primary_image' => $next->path]);
+            } else {
+                $car->update(['primary_image' => null]);
+            }
+        }
+
+        // Return the new cover image id so the UI can update the badge
+        $newPrimaryId = $car->images()->where('is_primary', true)->value('id');
+
+        return response()->json([
+            'ok'             => true,
+            'new_primary_id' => $newPrimaryId,
+        ]);
+    }
+
+    /**
      * Soft-delete a listing. Images are kept so that existing orders
      * can still reference them. Use forceDelete() to permanently remove.
      */

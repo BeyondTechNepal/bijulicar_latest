@@ -114,39 +114,196 @@
                     @error('description')<p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>@enderror
                 </div>
 
-                {{-- Existing images --}}
-                @if($car->images->isNotEmpty())
-                <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Current Photos</p>
-                    <p class="text-xs text-slate-400 font-medium mb-4">Check the box on any photo to remove it.</p>
-                    <div class="grid grid-cols-4 gap-3">
+                {{-- ── Photo Manager ──────────────────────────────────────────── --}}
+                {{--
+                    New images use per-file hidden <input type="file" name="new_images[]"> appended
+                    to the form — the only reliable cross-browser way to submit programmatic files.
+                    Saved images are deleted instantly via AJAX (no save needed).
+                --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6" id="photo-manager">
+                    <div class="flex items-center justify-between mb-1">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Photos</p>
+                        <span class="text-[10px] font-bold text-slate-400" id="photo-count-label"></span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium mb-4">The first photo is the <span class="font-black text-slate-600">Cover</span>. Click <svg class="w-3 h-3 inline-block text-slate-400 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> on a saved photo to delete it instantly.</p>
+
+                    {{-- Size-error banner --}}
+                    <div id="size-error" class="hidden mb-3 px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-500"></div>
+
+                    {{-- Saved images --}}
+                    <div class="grid grid-cols-4 gap-3 mb-3" id="saved-images-grid">
                         @foreach($car->images as $image)
-                        <div class="relative group">
+                        <div class="relative group" id="img-wrap-{{ $image->id }}" data-image-id="{{ $image->id }}">
                             <img src="{{ $image->url() }}" class="w-full h-24 object-cover rounded-xl" alt="{{ $image->alt }}">
-                            @if($image->is_primary)
-                                <span class="absolute top-1 left-1 text-[9px] font-black px-1.5 py-0.5 bg-[#4ade80] text-black rounded-lg uppercase tracking-wider">Cover</span>
-                            @endif
-                            <label class="absolute top-1 right-1 cursor-pointer">
-                                <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" class="sr-only peer">
-                                <div class="w-6 h-6 bg-white/80 peer-checked:bg-red-500 rounded-lg flex items-center justify-center transition-all border border-slate-200 peer-checked:border-red-500">
-                                    <svg class="w-3 h-3 text-white hidden peer-checked:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    <svg class="w-3 h-3 text-slate-400 block peer-checked:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </div>
-                            </label>
+                            <span class="cover-badge absolute top-1 left-1 text-[9px] font-black px-1.5 py-0.5 bg-[#4ade80] text-black rounded-lg uppercase tracking-wider {{ $image->is_primary ? '' : 'hidden' }}">Cover</span>
+                            <button type="button"
+                                data-delete-url="{{ route($prefix . '.car-images.destroy', $image) }}"
+                                data-image-id="{{ $image->id }}"
+                                onclick="deleteImage(this)"
+                                class="delete-btn absolute top-1 right-1 w-6 h-6 bg-white/80 hover:bg-red-500 rounded-lg flex items-center justify-center transition-all border border-slate-200 hover:border-red-500 group/btn">
+                                <svg class="w-3 h-3 text-slate-400 group-hover/btn:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
                         </div>
                         @endforeach
                     </div>
-                </div>
-                @endif
 
-                {{-- Add new images --}}
-                <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Add More Photos</p>
-                    <p class="text-xs text-slate-400 font-medium mb-4">JPG, PNG or WebP, max 3MB each.</p>
-                    <input type="file" name="new_images[]" multiple accept="image/*"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-600 focus:outline-none focus:border-[#16a34a] transition-all file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-[#16a34a] file:transition-all file:uppercase">
-                    @error('new_images.*')<p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>@enderror
+                    {{-- Pending-upload previews (before saving) --}}
+                    <div class="grid grid-cols-4 gap-3 mb-3 hidden" id="new-previews-grid"></div>
+
+                    {{-- Drop zone --}}
+                    <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-5 text-center hover:border-[#16a34a] transition-colors cursor-pointer" id="upload-area">
+                        <svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <p class="text-xs font-bold text-slate-400">Click or drag photos here</p>
+                        <p class="text-[10px] text-slate-300 mt-1">JPG, PNG or WebP · max 3 MB each · up to 8 total</p>
+                        <input type="file" multiple accept="image/*" id="photo-picker"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    </div>
+                    @error('new_images.*')<p class="text-red-500 text-xs font-bold mt-2">{{ $message }}</p>@enderror
                 </div>
+
+                <script>
+                (function () {
+                    const MAX_TOTAL  = 8;
+                    const MB3        = 3 * 1024 * 1024;
+                    const csrfToken  = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+
+                    const picker     = document.getElementById('photo-picker');
+                    const previewGrid= document.getElementById('new-previews-grid');
+                    const uploadArea = document.getElementById('upload-area');
+                    const sizeError  = document.getElementById('size-error');
+                    const theForm    = picker.closest('form');
+
+                    // uid → { hiddenInput, wrapEl }
+                    const newSlots = {};
+                    let   uidSeq   = 0;
+
+                    // ── Counts ────────────────────────────────────────────────────
+                    function savedCount()   { return document.querySelectorAll('#saved-images-grid [data-image-id]').length; }
+                    function pendingCount() { return Object.keys(newSlots).length; }
+
+                    function updateCountLabel() {
+                        const el = document.getElementById('photo-count-label');
+                        if (el) el.textContent = (savedCount() + pendingCount()) + ' / ' + MAX_TOTAL + ' photos';
+                    }
+
+                    // ── Cover badge helpers ───────────────────────────────────────
+                    function refreshSavedCoverBadge(newPrimaryId) {
+                        document.querySelectorAll('#saved-images-grid [data-image-id]').forEach(el => {
+                            const badge = el.querySelector('.cover-badge');
+                            if (!badge) return;
+                            badge.classList.toggle('hidden', parseInt(el.dataset.imageId) !== newPrimaryId);
+                        });
+                        syncNewPreviewCoverBadge();
+                    }
+
+                    function syncNewPreviewCoverBadge() {
+                        previewGrid.querySelectorAll('.preview-wrap').forEach((el, i) => {
+                            const badge = el.querySelector('.new-cover-badge');
+                            if (!badge) return;
+                            badge.classList.toggle('hidden', !(i === 0 && savedCount() === 0));
+                        });
+                    }
+
+                    function showSizeError(names) {
+                        sizeError.textContent = 'Skipped (over 3 MB): ' + names.join(', ');
+                        sizeError.classList.remove('hidden');
+                        clearTimeout(sizeError._t);
+                        sizeError._t = setTimeout(() => sizeError.classList.add('hidden'), 5000);
+                    }
+
+                    // ── Delete saved image via AJAX ───────────────────────────────
+                    window.deleteImage = function (btn) {
+                        if (btn.disabled) return;
+                        btn.disabled = true;
+                        btn.innerHTML = '<svg class="w-3 h-3 text-slate-400 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>';
+
+                        fetch(btn.dataset.deleteUrl, {
+                            method: 'DELETE',
+                            headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.ok) {
+                                document.getElementById('img-wrap-' + btn.dataset.imageId)?.remove();
+                                refreshSavedCoverBadge(data.new_primary_id);
+                                updateCountLabel();
+                            } else {
+                                btn.disabled = false;
+                            }
+                        })
+                        .catch(() => { btn.disabled = false; });
+                    };
+
+                    // ── Add new images ────────────────────────────────────────────
+                    function addFiles(files) {
+                        const tooBig = [];
+                        Array.from(files).forEach(file => {
+                            if (!file.type.match(/image\/(jpeg|png|webp)/)) return;
+                            if (file.size > MB3) { tooBig.push(file.name); return; }
+                            if (savedCount() + pendingCount() >= MAX_TOTAL) return;
+
+                            const uid = ++uidSeq;
+
+                            // Per-file hidden input — the reliable way to submit files programmatically
+                            const hidden = document.createElement('input');
+                            hidden.type  = 'file';
+                            hidden.name  = 'new_images[]';
+                            hidden.style.display = 'none';
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            hidden.files = dt.files;
+                            theForm.appendChild(hidden);
+
+                            // Preview card
+                            const wrap = document.createElement('div');
+                            wrap.className = 'relative group preview-wrap';
+                            const reader = new FileReader();
+                            reader.onload = ev => {
+                                wrap.innerHTML = `
+                                    <img src="${ev.target.result}" class="w-full h-24 object-cover rounded-xl">
+                                    <span class="new-cover-badge hidden absolute top-1 left-1 text-[9px] font-black px-1.5 py-0.5 bg-[#4ade80] text-black rounded-lg uppercase tracking-wider">Cover</span>
+                                    <button type="button" onclick="removePending(${uid})"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-white/80 hover:bg-red-500 rounded-lg flex items-center justify-center transition-all border border-slate-200 hover:border-red-500 group/btn">
+                                        <svg class="w-3 h-3 text-slate-400 group-hover/btn:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>`;
+                                syncNewPreviewCoverBadge();
+                            };
+                            reader.readAsDataURL(file);
+                            previewGrid.appendChild(wrap);
+
+                            newSlots[uid] = { hidden, wrap };
+                        });
+
+                        if (tooBig.length) showSizeError(tooBig);
+                        updateCountLabel();
+                        if (pendingCount() > 0) previewGrid.classList.remove('hidden');
+                        picker.value = '';
+                    }
+
+                    window.removePending = function (uid) {
+                        const slot = newSlots[uid];
+                        if (!slot) return;
+                        slot.hidden.remove();
+                        slot.wrap.remove();
+                        delete newSlots[uid];
+                        syncNewPreviewCoverBadge();
+                        updateCountLabel();
+                        if (pendingCount() === 0) previewGrid.classList.add('hidden');
+                    };
+
+                    picker.addEventListener('change', () => addFiles(picker.files));
+
+                    uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.classList.add('border-[#16a34a]'); });
+                    uploadArea.addEventListener('dragleave', ()  => uploadArea.classList.remove('border-[#16a34a]'));
+                    uploadArea.addEventListener('drop', e => {
+                        e.preventDefault();
+                        uploadArea.classList.remove('border-[#16a34a]');
+                        addFiles(e.dataTransfer.files);
+                    });
+
+                    updateCountLabel();
+                }());
+                </script>
 
             </div>
 

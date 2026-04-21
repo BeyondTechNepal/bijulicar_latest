@@ -123,14 +123,142 @@
                     @error('description')<p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>@enderror
                 </div>
 
-                {{-- Images --}}
-                <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Photos</p>
-                    <p class="text-xs text-slate-400 font-medium mb-4">Upload up to 8 photos. First image becomes the cover. JPG, PNG or WebP, max 3MB each.</p>
-                    <input type="file" name="images[]" multiple accept="image/*"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-600 focus:outline-none focus:border-[#16a34a] transition-all file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-[#16a34a] file:transition-all file:uppercase">
-                    @error('images.*')<p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>@enderror
+                {{-- ── Photo Upload ───────────────────────────────────────────── --}}
+                {{--
+                    HOW THIS WORKS (no DataTransfer.files assignment — browsers block it):
+                    Each accepted file gets its own hidden <input type="file" name="images[]">
+                    appended to the <form>. On remove, that input is deleted from the DOM.
+                    The form then submits the real file objects natively, no JS hacks needed.
+                --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6" id="photo-panel">
+                    <div class="flex items-center justify-between mb-1">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Photos</p>
+                        <span class="text-[10px] font-bold text-slate-400" id="photo-count-label">0 / 8 photos</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium mb-4">The first photo becomes the <span class="font-black text-slate-600">Cover</span>. JPG, PNG or WebP · max 3 MB each.</p>
+
+                    {{-- Size-error banner (hidden by default) --}}
+                    <div id="size-error" class="hidden mb-3 px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-500"></div>
+
+                    {{-- Preview grid --}}
+                    <div class="grid grid-cols-4 gap-3 mb-3 hidden" id="preview-grid"></div>
+
+                    {{-- Drop zone / trigger --}}
+                    <div class="relative border-2 border-dashed border-slate-200 rounded-xl p-5 text-center hover:border-[#16a34a] transition-colors cursor-pointer" id="upload-area">
+                        <svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <p class="text-xs font-bold text-slate-400">Click or drag photos here</p>
+                        <p class="text-[10px] text-slate-300 mt-1">Up to 8 photos · max 3 MB each</p>
+                        {{-- Invisible trigger input – only used to open the file picker --}}
+                        <input type="file" multiple accept="image/*" id="photo-picker"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    </div>
+                    @error('images.*')<p class="text-red-500 text-xs font-bold mt-2">{{ $message }}</p>@enderror
                 </div>
+
+                <script>
+                (function () {
+                    const MAX        = 8;
+                    const MB3        = 3 * 1024 * 1024;
+                    const picker     = document.getElementById('photo-picker');
+                    const previewGrid= document.getElementById('preview-grid');
+                    const uploadArea = document.getElementById('upload-area');
+                    const countLabel = document.getElementById('photo-count-label');
+                    const sizeError  = document.getElementById('size-error');
+                    // The real <form> — hidden inputs get appended here
+                    const theForm    = picker.closest('form');
+
+                    // uid → { hiddenInput, wrapEl }
+                    const slots = {};
+                    let   uidSeq = 0;
+
+                    function slotCount()  { return Object.keys(slots).length; }
+
+                    function updateLabel() {
+                        countLabel.textContent = slotCount() + ' / ' + MAX + ' photos';
+                    }
+
+                    function syncCoverBadge() {
+                        previewGrid.querySelectorAll('.preview-wrap').forEach((el, i) => {
+                            el.querySelector('.cover-badge').classList.toggle('hidden', i !== 0);
+                        });
+                    }
+
+                    function showSizeError(names) {
+                        sizeError.textContent = 'Skipped (over 3 MB): ' + names.join(', ');
+                        sizeError.classList.remove('hidden');
+                        clearTimeout(sizeError._t);
+                        sizeError._t = setTimeout(() => sizeError.classList.add('hidden'), 5000);
+                    }
+
+                    function addFiles(files) {
+                        const tooBig = [];
+                        Array.from(files).forEach(file => {
+                            if (!file.type.match(/image\/(jpeg|png|webp)/)) return;
+                            if (file.size > MB3) { tooBig.push(file.name); return; }
+                            if (slotCount() >= MAX) return;
+
+                            const uid = ++uidSeq;
+
+                            // Hidden input that actually carries the file in the form POST
+                            const hidden = document.createElement('input');
+                            hidden.type  = 'file';
+                            hidden.name  = 'images[]';
+                            hidden.style.display = 'none';
+                            // Attach the file via a fresh DataTransfer (setting on a NEW input works)
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            hidden.files = dt.files;
+                            theForm.appendChild(hidden);
+
+                            // Preview card
+                            const wrap = document.createElement('div');
+                            wrap.className = 'relative group preview-wrap';
+                            const reader = new FileReader();
+                            reader.onload = ev => {
+                                wrap.innerHTML = `
+                                    <img src="${ev.target.result}" class="w-full h-24 object-cover rounded-xl">
+                                    <span class="cover-badge hidden absolute top-1 left-1 text-[9px] font-black px-1.5 py-0.5 bg-[#4ade80] text-black rounded-lg uppercase tracking-wider">Cover</span>
+                                    <button type="button" data-uid="${uid}"
+                                        onclick="removePhoto(${uid})"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-white/80 hover:bg-red-500 rounded-lg flex items-center justify-center transition-all border border-slate-200 hover:border-red-500 group/btn">
+                                        <svg class="w-3 h-3 text-slate-400 group-hover/btn:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>`;
+                                syncCoverBadge();
+                            };
+                            reader.readAsDataURL(file);
+                            previewGrid.appendChild(wrap);
+
+                            slots[uid] = { hidden, wrap };
+                        });
+
+                        if (tooBig.length) showSizeError(tooBig);
+                        updateLabel();
+                        if (slotCount() > 0) previewGrid.classList.remove('hidden');
+                        picker.value = ''; // reset picker so same file can trigger change again
+                    }
+
+                    window.removePhoto = function (uid) {
+                        const slot = slots[uid];
+                        if (!slot) return;
+                        slot.hidden.remove();
+                        slot.wrap.remove();
+                        delete slots[uid];
+                        syncCoverBadge();
+                        updateLabel();
+                        if (slotCount() === 0) previewGrid.classList.add('hidden');
+                    };
+
+                    picker.addEventListener('change', () => addFiles(picker.files));
+
+                    uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.classList.add('border-[#16a34a]'); });
+                    uploadArea.addEventListener('dragleave', ()  => uploadArea.classList.remove('border-[#16a34a]'));
+                    uploadArea.addEventListener('drop', e => {
+                        e.preventDefault();
+                        uploadArea.classList.remove('border-[#16a34a]');
+                        addFiles(e.dataTransfer.files);
+                    });
+                }());
+                </script>
 
             </div>
 

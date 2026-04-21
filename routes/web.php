@@ -32,7 +32,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])->name('marketplace');
 Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::class, 'search'])->name('marketplace.search');
 
-// ── Public rent page — mirrors marketplace but for rentable cars only ──
+// ── Public rent page 
 Route::get('/rent', [RentController::class, 'index'])->name('rent');
 Route::get('/rent/search', [RentController::class, 'search'])->name('rent.search');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');

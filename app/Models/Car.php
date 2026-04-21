@@ -34,20 +34,31 @@ class Car extends Model
         'is_preorder',
         'expected_arrival_date',
         'preorder_deposit',
+        // ── Rental fields ─────────────────────────────────────────────
+        'listing_type',
+        'rent_price_per_day',
+        'rent_min_days',
+        'rent_max_days',
+        'rent_deposit',
     ];
 
     protected function casts(): array
     {
         return [
-            'price_negotiable'       => 'boolean',
-            'price'                  => 'integer',
-            'mileage'                => 'integer',
-            'range_km'               => 'integer',
-            'battery_kwh'            => 'float',
-            'stock_quantity'         => 'integer',
-            'is_preorder'            => 'boolean',
-            'expected_arrival_date'  => 'date',
-            'preorder_deposit'       => 'integer',
+            'price_negotiable'      => 'boolean',
+            'price'                 => 'integer',
+            'mileage'               => 'integer',
+            'range_km'              => 'integer',
+            'battery_kwh'           => 'float',
+            'stock_quantity'        => 'integer',
+            'is_preorder'           => 'boolean',
+            'expected_arrival_date' => 'date',
+            'preorder_deposit'      => 'integer',
+            // ── Rental casts ──────────────────────────────────────────
+            'rent_price_per_day'    => 'integer',
+            'rent_min_days'         => 'integer',
+            'rent_max_days'         => 'integer',
+            'rent_deposit'          => 'integer',
         ];
     }
 
@@ -63,6 +74,12 @@ class Car extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    /** All rental bookings for this car. */
+    public function rentals(): HasMany
+    {
+        return $this->hasMany(CarRental::class);
     }
 
     /** All reviews left for this car */
@@ -127,5 +144,78 @@ class Car extends Model
         if ($this->stock_quantity <= 0) {
             $this->update(['status' => 'sold']);
         }
-}
+    }
+
+    // ── Listing-type helpers ──────────────────────────────────────────
+
+    /** True when the car can be purchased (listing_type is 'sale' or 'both'). */
+    public function isSaleable(): bool
+    {
+        return in_array($this->listing_type, ['sale', 'both']);
+    }
+
+    /** True when the car can be rented (listing_type is 'rent' or 'both'). */
+    public function isRentable(): bool
+    {
+        return in_array($this->listing_type, ['rent', 'both']);
+    }
+
+    // ── Rental helpers ────────────────────────────────────────────────
+
+    /** e.g. "NRs 2,500 / day" */
+    public function formattedRentPrice(): string
+    {
+        return 'NRs ' . number_format($this->rent_price_per_day) . ' / day';
+    }
+
+    /**
+     * Human-readable rental duration constraint.
+     * e.g. "1–7 days", "Min 3 days", "Max 14 days", "No limit"
+     */
+    public function rentDurationLabel(): string
+    {
+        $min = $this->rent_min_days ?? 1;
+        $max = $this->rent_max_days;
+
+        if ($max) {
+            return "{$min}–{$max} days";
+        }
+
+        return $min > 1 ? "Min {$min} days" : 'No limit';
+    }
+
+    /**
+     * Returns true when the car has at least one confirmed or active rental.
+     * Used to block sale orders while the car is physically out on rental.
+     */
+    public function hasActiveRental(): bool
+    {
+        return $this->rentals()
+            ->whereIn('status', ['confirmed', 'active'])
+            ->exists();
+    }
+
+    /**
+     * Returns true when the requested date range overlaps with any existing
+     * confirmed or active rental for this car.
+     *
+     * Overlap: existing.pickup_date <= requested.return_date
+     *      AND existing.return_date >= requested.pickup_date
+     *
+     * @param  string|\DateTimeInterface  $pickupDate
+     * @param  string|\DateTimeInterface  $returnDate
+     * @param  int|null  $excludeRentalId  Exclude a rental ID (useful when editing).
+     */
+    public function hasOverlappingRental(
+        string|\DateTimeInterface $pickupDate,
+        string|\DateTimeInterface $returnDate,
+        ?int $excludeRentalId = null
+    ): bool {
+        return $this->rentals()
+            ->whereIn('status', ['confirmed', 'active'])
+            ->where('pickup_date', '<=', $returnDate)
+            ->where('return_date', '>=', $pickupDate)
+            ->when($excludeRentalId, fn ($q) => $q->where('id', '!=', $excludeRentalId))
+            ->exists();
+    }
 }

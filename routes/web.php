@@ -5,11 +5,14 @@ use App\Http\Controllers\Buyer\BuyerOrderController;
 use App\Http\Controllers\Buyer\BuyerPreOrderController;
 use App\Http\Controllers\Buyer\BuyerPurchaseController;
 use App\Http\Controllers\Buyer\BuyerReviewController;
+use App\Http\Controllers\Buyer\BuyerRentalController;
 use App\Http\Controllers\Buyer\BuyerVerificationController;
 use App\Http\Controllers\Seller\SellerVerificationController;
 use App\Http\Controllers\Seller\SellerCarController;
 use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerPreOrderController;
+use App\Http\Controllers\Seller\SellerRentalController;
+use App\Http\Controllers\RentController;
 use App\Http\Controllers\BusinessDirectoryController;
 use App\Http\Controllers\Business\BusinessVerificationController;
 use App\Http\Controllers\Business\BusinessNewsController;
@@ -28,6 +31,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])->name('marketplace');
 Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::class, 'search'])->name('marketplace.search');
+
+// ── Public rent page — mirrors marketplace but for rentable cars only ──
+Route::get('/rent', [RentController::class, 'index'])->name('rent');
+Route::get('/rent/search', [RentController::class, 'search'])->name('rent.search');
 Route::get('/news', [App\Http\Controllers\NewsController::class, 'index'])->name('news');
 Route::get('/news/{news:slug}', [App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
 Route::get('/news-filter', [App\Http\Controllers\NewsFilterController::class, 'filter'])->name('news.filter');
@@ -203,6 +210,12 @@ Route::middleware(['auth', 'role:buyer', 'verified.account'])
         Route::get('/reviews/{review}/edit', [BuyerReviewController::class, 'edit'])->name('reviews.edit')->middleware('permission:write reviews');
         Route::patch('/reviews/{review}', [BuyerReviewController::class, 'update'])->name('reviews.update')->middleware('permission:write reviews');
         Route::delete('/reviews/{review}', [BuyerReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('permission:write reviews');
+
+        // Rentals
+        Route::get('/rentals', [BuyerRentalController::class, 'index'])->name('rentals.index')->middleware('permission:manage own orders');
+        Route::post('/rentals', [BuyerRentalController::class, 'store'])->name('rentals.store')->middleware('permission:manage own orders');
+        Route::get('/rentals/{carRental}', [BuyerRentalController::class, 'show'])->name('rentals.show')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/cancel', [BuyerRentalController::class, 'cancel'])->name('rentals.cancel')->middleware('permission:manage own orders');
     });
 
 // ── SELLER routes ──────────────────────────────────────────────────────
@@ -243,6 +256,14 @@ Route::middleware(['auth', 'role:seller', 'verified.account'])
         Route::patch('/negotiations/{negotiation}/accept', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'accept'])->name('negotiations.accept');
         Route::patch('/negotiations/{negotiation}/counter', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'counter'])->name('negotiations.counter');
         Route::patch('/negotiations/{negotiation}/decline', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'decline'])->name('negotiations.decline');
+
+        // Rentals
+        Route::get('/rentals', [SellerRentalController::class, 'index'])->name('rentals.index')->middleware('permission:manage own orders');
+        Route::get('/rentals/{carRental}', [SellerRentalController::class, 'show'])->name('rentals.show')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/confirm', [SellerRentalController::class, 'confirm'])->name('rentals.confirm')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/activate', [SellerRentalController::class, 'activate'])->name('rentals.activate')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/complete', [SellerRentalController::class, 'complete'])->name('rentals.complete')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/cancel', [SellerRentalController::class, 'cancel'])->name('rentals.cancel')->middleware('permission:manage own orders');
 
         // Map location (goes live immediately — no admin approval needed)
         Route::get('/location', [LocationController::class, 'index'])->name('location.index');
@@ -291,6 +312,14 @@ Route::middleware(['auth', 'role:business', 'verified.account'])
         Route::patch('/negotiations/{negotiation}/accept', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'accept'])->name('negotiations.accept');
         Route::patch('/negotiations/{negotiation}/counter', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'counter'])->name('negotiations.counter');
         Route::patch('/negotiations/{negotiation}/decline', [\App\Http\Controllers\Seller\SellerNegotiationController::class, 'decline'])->name('negotiations.decline');
+
+        // Rentals — same controller as seller, context() handles the role difference
+        Route::get('/rentals', [SellerRentalController::class, 'index'])->name('rentals.index')->middleware('permission:manage own orders');
+        Route::get('/rentals/{carRental}', [SellerRentalController::class, 'show'])->name('rentals.show')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/confirm', [SellerRentalController::class, 'confirm'])->name('rentals.confirm')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/activate', [SellerRentalController::class, 'activate'])->name('rentals.activate')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/complete', [SellerRentalController::class, 'complete'])->name('rentals.complete')->middleware('permission:manage own orders');
+        Route::patch('/rentals/{carRental}/cancel', [SellerRentalController::class, 'cancel'])->name('rentals.cancel')->middleware('permission:manage own orders');
 
         // Analytics
         Route::get('/analytics', [App\Http\Controllers\Business\BusinessAnalyticsController::class, 'index'])->name('analytics')->middleware('permission:view business analytics');

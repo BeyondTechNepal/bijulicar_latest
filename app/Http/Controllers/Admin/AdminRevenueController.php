@@ -50,6 +50,12 @@ class AdminRevenueController extends Controller
             ->get();
 
         // ── Monthly chart data ─────────────────────────────────────────
+        // FIX: The original code called now()->startOfMonth()->subMonths($i) twice
+        // per iteration and chained ->endOfMonth() on the second call. Carbon mutates
+        // in place, so $mStart was being silently changed to end-of-month as well,
+        // making both bounds identical and causing the whereBetween to return 0 rows
+        // for every month. Fix: build $mStart once with Carbon::now() and derive
+        // $mEnd from a separate clone so neither object mutates the other.
         $chartMonths = match ($period) {
             '1month'  => 1,
             '3months' => 3,
@@ -62,8 +68,9 @@ class AdminRevenueController extends Controller
 
         $monthlyData = [];
         for ($i = $chartMonths - 1; $i >= 0; $i--) {
-            $mStart = now()->startOfMonth()->subMonths($i);
-            $mEnd   = now()->startOfMonth()->subMonths($i)->endOfMonth();
+            // Use Carbon::now() independently for each bound so mutations don't bleed
+            $mStart = Carbon::now()->startOfMonth()->subMonths($i)->startOfDay();
+            $mEnd   = Carbon::now()->startOfMonth()->subMonths($i)->endOfMonth()->endOfDay();
 
             $mTotal = Advertisement::whereNotNull('paid_at')
                 ->where('amount_paid', '>', 0)

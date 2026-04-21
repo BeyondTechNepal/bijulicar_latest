@@ -2,10 +2,6 @@
 @section('title', 'Revenue')
 @section('page-title', 'Revenue')
 
-@push('styles')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-@endpush
-
 @section('content')
 
     {{-- ── Period Filter Bar ──────────────────────────────────────────── --}}
@@ -260,57 +256,65 @@
         </div>
     </div>
 
+    {{--
+        ROOT CAUSE FIX:
+        The admin layout has NO @stack('styles') and NO @stack('scripts') — so
+        @push('styles') and @push('scripts') were both silently discarded and
+        Chart.js never loaded at all. The fix is to inline the script tags
+        directly inside @section('content') so they are always rendered.
+    --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            const data = @json($monthlyData);
+            const ctx  = document.getElementById('revenueChart');
+
+            if (!ctx || !data.length) return;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.label),
+                    datasets: [{
+                        label: 'Ad Revenue',
+                        data: data.map(d => d.total),
+                        backgroundColor: 'rgba(16,185,129,0.8)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        hoverBackgroundColor: 'rgba(16,185,129,1)',
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ' NRs ' + ctx.parsed.y.toLocaleString(),
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10, weight: '700' }, color: '#94a3b8' },
+                        },
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 10, weight: '700' },
+                                color: '#94a3b8',
+                                callback: v => v >= 1000000
+                                    ? 'NRs ' + (v / 1000000).toFixed(1) + 'M'
+                                    : v >= 1000 ? 'NRs ' + (v / 1000).toFixed(0) + 'K'
+                                    : 'NRs ' + v,
+                            },
+                        },
+                    },
+                },
+            });
+        })();
+    </script>
+
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const data = @json($monthlyData);
-
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: data.map(d => d.label),
-            datasets: [{
-                label: 'Ad Revenue',
-                data: data.map(d => d.total),
-                backgroundColor: 'rgba(16,185,129,0.8)',
-                borderRadius: 8,
-                borderSkipped: false,
-                hoverBackgroundColor: 'rgba(16,185,129,1)',
-            }],
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: ctx => ' NRs ' + ctx.parsed.y.toLocaleString(),
-                    },
-                },
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { font: { size: 10, weight: '700' }, color: '#94a3b8' },
-                },
-                y: {
-                    grid: { color: '#f1f5f9' },
-                    beginAtZero: true,
-                    ticks: {
-                        font: { size: 10, weight: '700' },
-                        color: '#94a3b8',
-                        callback: v => v >= 1000000
-                            ? 'NRs ' + (v / 1000000).toFixed(1) + 'M'
-                            : v >= 1000 ? 'NRs ' + (v / 1000).toFixed(0) + 'K'
-                            : 'NRs ' + v,
-                    },
-                },
-            },
-        },
-    });
-});
-</script>
-@endpush

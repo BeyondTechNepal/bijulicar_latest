@@ -86,23 +86,23 @@
                     <div class="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-4 gap-1.5 shrink-0">
                         <button onclick="switchCategory('ev')" id="tab-ev"
                             class="py-3.5 rounded-xl transition-all bg-white text-emerald-600 shadow-sm border border-slate-200 flex flex-col items-center gap-1.5">
-                            <span class="text-lg leading-none">⚡</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">EV</span>
+                            <span class="text-lg leading-none"><i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i></span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Charging Stations</span>
                         </button>
                         <button onclick="switchCategory('petrol')" id="tab-petrol"
                             class="py-3.5 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1.5">
-                            <span class="text-lg leading-none">⛽</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Petrol</span>
+                            <span class="text-lg leading-none"><i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i></span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Petrol Stations</span>
                         </button>
                         <button onclick="switchCategory('garage')" id="tab-garage"
                             class="py-3.5 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1.5">
-                            <span class="text-lg leading-none">🔧</span>
+                            <span class="text-lg leading-none"><i class="fa-solid fa-screwdriver-wrench" style="color: rgb(255, 212, 59);"></i></span>
                             <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Garages</span>
                         </button>
                         <button onclick="switchCategory('seller-business')" id="tab-seller-business"
                             class="py-3.5 rounded-xl transition-all text-slate-400 hover:text-slate-600 flex flex-col items-center gap-1.5">
-                            <span class="text-lg leading-none">🚗🏢</span>
-                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Sellers & Business</span>
+                            <span class="text-lg leading-none"><i class="fa-solid fa-user-tie" style="color: rgb(116, 192, 252);"></i></span>
+                            <span class="text-[9px] font-black uppercase tracking-wider leading-tight text-center">Sellers & Businesses</span>
                         </button>
                     </div>
 
@@ -746,13 +746,13 @@
                 legend.innerHTML = `
                     <div class="flex items-center flex-wrap gap-3">
                         <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
-                            <span class="w-3 h-3 rounded-full inline-block" style="background:#16a34a"></span>EV (available)
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#16a34a"></span>(available)
                         </span>
                         <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
-                            <span class="w-3 h-3 rounded-full inline-block" style="background:#f59e0b"></span>EV (partial)
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#f59e0b"></span>(partial)
                         </span>
                         <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-slate-500">
-                            <span class="w-3 h-3 rounded-full inline-block" style="background:#ef4444"></span>EV (full)
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:#ef4444"></span>(full)
                         </span>
                     </div>`;
                 legend.classList.remove('hidden');

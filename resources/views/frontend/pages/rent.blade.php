@@ -1,6 +1,6 @@
 @extends('frontend.app')
 
-<title>Rent two Car | BijuliCar</title>
+<title>Rent a Car | BijuliCar</title>
 
 @section('content')
 

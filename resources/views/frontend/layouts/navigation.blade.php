@@ -207,7 +207,7 @@
                 @else
                     <a href="{{ route('login') }}"
                         class="inline-flex items-center justify-center bg-[#4ade80] text-black px-5 py-2.5 rounded-xl text-[13px] font-black shadow-lg shadow-green-400/20 hover:bg-[#22c55e] transition-all active:scale-95">
-                        Login / Sign Up
+                        Account
                     </a>
                 @endauth
             </div>
@@ -382,7 +382,7 @@
                     @else
                         <a href="{{ route('login') }}"
                             class="flex items-center justify-center py-4 rounded-2xl bg-[#4ade80] text-black font-black text-sm shadow-lg shadow-green-400/20">
-                            Login / Sign Up
+                            Account
                         </a>
                     @endauth
                 </div>

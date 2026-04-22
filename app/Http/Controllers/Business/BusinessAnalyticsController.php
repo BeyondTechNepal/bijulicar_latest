@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\Controller;
+use App\Models\CarRental;
 use App\Models\Order;
 use App\Models\PreOrder;
 use App\Models\Purchase;
@@ -14,7 +15,7 @@ class BusinessAnalyticsController extends Controller
     {
         $userId = Auth::id();
 
-        // Listing stats — withTrashed() so deleted cars are counted in history
+        // ── Listing stats ──────────────────────────────────────────────
         $listings = Auth::user()->listedCars()->withTrashed();
 
         $totalListings    = $listings->clone()->count();
@@ -22,7 +23,7 @@ class BusinessAnalyticsController extends Controller
         $soldListings     = $listings->clone()->where('status', 'sold')->count();
         $inactiveListings = $listings->clone()->where('status', 'inactive')->whereNull('deleted_at')->count();
 
-        // Order stats — query by seller_id directly so deleted-car orders are included
+        // ── Sale order stats ───────────────────────────────────────────
         $orders = Order::where('seller_id', $userId);
 
         $totalOrders     = $orders->clone()->count();
@@ -31,29 +32,27 @@ class BusinessAnalyticsController extends Controller
         $completedOrders = $orders->clone()->where('status', 'completed')->count();
         $cancelledOrders = $orders->clone()->where('status', 'cancelled')->count();
 
-        // Revenue stats — via seller_id on orders; no car join needed, so revenue
-        // is preserved even after a car listing is deleted.
+        // ── Sale revenue ───────────────────────────────────────────────
         $totalRevenue = Purchase::whereHas('order', fn($q) => $q->where('seller_id', $userId))
             ->where('payment_status', 'paid')
             ->sum('amount_paid');
 
-        // Drivetrain breakdown — only non-deleted listings (historical deleted ones
-        // can't reliably be counted by drivetrain since car data may be gone)
+        // ── Drivetrain breakdown ───────────────────────────────────────
         $drivetrainBreakdown = Auth::user()
-            ->listedCars()  // excludes soft-deleted (correct for active fleet view)
+            ->listedCars()
             ->selectRaw('drivetrain, COUNT(*) as total')
             ->groupBy('drivetrain')
             ->pluck('total', 'drivetrain')
             ->toArray();
 
-        // Recent orders — include orders where car was deleted
+        // ── Recent sale orders ─────────────────────────────────────────
         $recentOrders = Order::where('seller_id', $userId)
             ->with(['car' => fn($q) => $q->withTrashed(), 'buyer'])
             ->latest('ordered_at')
             ->limit(5)
             ->get();
 
-        // Pre-order stats
+        // ── Pre-order stats ────────────────────────────────────────────
         $preOrders = PreOrder::whereHas('car', fn($q) => $q->withTrashed()->where('seller_id', $userId));
 
         $totalPreOrders          = (clone $preOrders)->count();
@@ -68,25 +67,39 @@ class BusinessAnalyticsController extends Controller
             ->limit(5)
             ->get();
 
+        // ── Rental stats ───────────────────────────────────────────────
+        $rentals = CarRental::where('owner_id', $userId);
+
+        $totalRentals     = (clone $rentals)->count();
+        $pendingRentals   = (clone $rentals)->where('status', 'pending')->count();
+        $confirmedRentals = (clone $rentals)->where('status', 'confirmed')->count();
+        $activeRentals    = (clone $rentals)->where('status', 'active')->count();
+        $completedRentals = (clone $rentals)->where('status', 'completed')->count();
+        $cancelledRentals = (clone $rentals)->where('status', 'cancelled')->count();
+
+        $totalRentalRevenue = (clone $rentals)
+            ->where('status', 'completed')
+            ->sum('total_price');
+
+        $totalRentalDays = (clone $rentals)
+            ->where('status', 'completed')
+            ->sum('total_days');
+
+        $recentRentals = (clone $rentals)
+            ->with(['car' => fn($q) => $q->withTrashed(), 'renter'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
         return view('dashboard.business.analytics', compact(
-            'totalListings',
-            'activeListings',
-            'soldListings',
-            'inactiveListings',
-            'totalOrders',
-            'pendingOrders',
-            'confirmedOrders',
-            'completedOrders',
-            'cancelledOrders',
-            'totalRevenue',
-            'drivetrainBreakdown',
-            'recentOrders',
-            'totalPreOrders',
-            'pendingDepositPreOrders',
-            'depositPaidPreOrders',
-            'convertedPreOrders',
-            'cancelledPreOrders',
-            'recentPreOrders',
+            'totalListings', 'activeListings', 'soldListings', 'inactiveListings',
+            'totalOrders', 'pendingOrders', 'confirmedOrders', 'completedOrders',
+            'cancelledOrders', 'totalRevenue', 'drivetrainBreakdown', 'recentOrders',
+            'totalPreOrders', 'pendingDepositPreOrders', 'depositPaidPreOrders',
+            'convertedPreOrders', 'cancelledPreOrders', 'recentPreOrders',
+            'totalRentals', 'pendingRentals', 'confirmedRentals', 'activeRentals',
+            'completedRentals', 'cancelledRentals', 'totalRentalRevenue',
+            'totalRentalDays', 'recentRentals',
         ));
     }
 }

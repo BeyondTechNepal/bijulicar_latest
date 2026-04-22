@@ -7,7 +7,7 @@
         {{-- ══════════════════════════════════════════════════════════
             HERO SLIDER
         ══════════════════════════════════════════════════════════════ --}}
-        <section class="relative h-[90vh] w-full overflow-hidden bg-slate-900">
+        <section class="relative h-[91vh] w-full overflow-hidden bg-slate-900">
             <div class="swiper mySwiper h-full w-full">
                 <div class="swiper-wrapper">
 

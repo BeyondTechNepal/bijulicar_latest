@@ -273,7 +273,7 @@
 
         {{-- Main content --}}
         {{-- Main content --}}
-<div class="flex-1 lg:ml-64 w-full max-w-full flex flex-col h-screen overflow-hidden">
+<div class="flex-1 lg:ml-64 w-full max-w-full flex flex-col h-[100dvh] overflow-hidden">
 
     {{-- Top bar --}}
     <header class="bg-white border-b border-slate-200 px-4 py-3 sm:px-6 lg:px-8 sm:py-4 flex items-center justify-between gap-2 sticky top-0 z-20 w-full">

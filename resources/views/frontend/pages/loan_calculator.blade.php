@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- HERO SECTION: The "Hook" --}}
-    <section class="relative bg-[#050a15] pt-[110px] pb-10 lg:pt-32 lg:pb-20 overflow-hidden border-b border-white/5">
+    <section class="relative bg-[#050a15] pt-[110px] pb-10 lg:pt-32 lg:pb-5 overflow-hidden border-b border-white/5">
         <div class="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=2071"
                 class="w-full h-full object-cover opacity-90 mix-blend-luminosity scale-110 blur-[2px]"
@@ -95,7 +95,6 @@
                 </div>
             </div>
         </div>
-
     </section>
 
     {{-- CALCULATOR SECTION: The "Utility" --}}

@@ -547,7 +547,7 @@
             window.addEventListener('resize', () => { if (!list.classList.contains('hidden')) pos(); });
         })();
 
-        makeTypeahead('search-input',   'search-suggestions',   [...ALL_BRANDS, ...ALL_MODELS]);
+        makeTypeahead('search-input',   'search-suggestions', ALL_BRANDS);
         makeTypeahead('location-input', 'location-suggestions', ALL_LOCATIONS);
         makeTypeahead('model-input',    'model-suggestions',    ALL_MODELS, { dark: true });
 

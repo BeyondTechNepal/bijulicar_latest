@@ -770,7 +770,7 @@
             window.addEventListener('resize', () => { if (!list.classList.contains('hidden')) positionList(); });
         })();
 
-        makeTypeahead('search-input',   'search-suggestions',   [...ALL_BRANDS, ...ALL_MODELS]);
+        makeTypeahead('search-input',   'search-suggestions', ALL_BRANDS);
         makeTypeahead('location-input', 'location-suggestions', ALL_LOCATIONS);
 
         // ── Year From / To custom dropdowns ──────────────────────────────

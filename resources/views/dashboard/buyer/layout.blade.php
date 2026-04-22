@@ -272,11 +272,11 @@
         </aside>
 
         {{-- Main content --}}
-        <div class="flex-1 lg:ml-64 min-w-0 flex flex-col h-screen overflow-hidden">
+        <div class="flex-1 lg:ml-64 w-full flex flex-col h-screen overflow-hidden">
 
             {{-- Top bar --}}
             <header class="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-0 z-20">
-                <div class="flex items-center gap-3 min-w-0">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
                     {{-- Hamburger (mobile/tablet only) --}}
                     <button id="hamburger-btn"
                         onclick="openSidebar()"
@@ -308,9 +308,9 @@
                 </div>
             @endif
 
-            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-    @yield('content')
-</div>
+            <div class="flex-1 overflow-y-auto  p-4 sm:p-6 lg:p-8">
+                @yield('content')
+            </div>
 
         </div>
 

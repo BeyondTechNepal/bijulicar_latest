@@ -26,6 +26,8 @@ class CarController extends Controller
         $otherListings = Car::where('seller_id', $car->seller_id)
             ->where('id', '!=', $car->id)
             ->where('status', 'available')
+            ->where(fn($q) => $q->whereNull('listing_type')
+                ->orWhereIn('listing_type', ['sale', 'both']))
             ->with('primaryImage')
             ->latest()
             ->take(3)

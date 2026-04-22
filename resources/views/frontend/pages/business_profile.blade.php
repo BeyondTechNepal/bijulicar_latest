@@ -239,7 +239,11 @@
                                 <div>
                                     <p class="text-xs font-bold text-slate-400">Price</p>
                                     <p class="text-base font-black text-slate-900">
-                                        NRs {{ number_format($car->price) }}
+                                        @if($car->price)
+                                            NRs {{ number_format($car->price) }}
+                                        @elseif($car->rent_price_per_day)
+                                            NRs {{ number_format($car->rent_price_per_day) }}/day
+                                        @endif
                                         @if($car->price_negotiable)
                                             <span class="text-[10px] font-bold text-green-600 ml-1">Negotiable</span>
                                         @endif

@@ -99,7 +99,7 @@
                                     {{ ucfirst($car->condition) }}
                                 </span>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-800">
-                                    NRs {{ number_format($car->price) }}
+                                    {{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}
                                 </span>
                             </div>
                         </div>
@@ -203,7 +203,7 @@
                         <p class="text-sm text-slate-400 font-medium mt-0.5">{{ $car->year }}{{ $car->variant ? ' · ' . $car->variant : '' }}</p>
 
                         <div class="mt-4 pt-4 border-t border-slate-100">
-                            <p class="text-2xl font-black text-slate-900">NRs {{ number_format($car->price) }}</p>
+                            <p class="text-2xl font-black text-slate-900">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}</p>
                             <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">
                                 {{ $car->price_negotiable ? '✓ Price negotiable' : 'Fixed price' }}
                             </p>
@@ -307,11 +307,11 @@
             <p class="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-5">Price Comparison</p>
             @php $maxPrice = $selected->max('price'); @endphp
             @foreach ($selected as $i => $car)
-                @php $pct = round($car->price / $maxPrice * 100); @endphp
+                @php $pct = ($car->price && $maxPrice) ? round($car->price / $maxPrice * 100) : 0; @endphp
                 <div class="mb-4 last:mb-0">
                     <div class="flex justify-between items-baseline mb-1.5">
                         <span class="text-[13px] font-bold text-slate-800">{{ $car->brand }} {{ $car->model }}</span>
-                        <span class="text-[13px] font-black {{ $accentText[$i] }}">NRs {{ number_format($car->price) }}</span>
+                        <span class="text-[13px] font-black {{ $accentText[$i] }}">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}</span>
                     </div>
                     <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                         <div class="{{ $accentBg[$i] }} h-full rounded-full" style="width: {{ $pct }}%; transition: width 1s ease"></div>
@@ -614,7 +614,7 @@
                     </div>
 
                     <div class="text-right shrink-0">
-                        <p class="text-[13px] font-black text-slate-800">NRs {{ number_format($car->price) }}</p>
+                        <p class="text-[13px] font-black text-slate-800">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}</p>
                         @if ($alreadySelected)
                             <p class="text-[10px] font-bold text-green-600 uppercase">Added ✓</p>
                         @endif

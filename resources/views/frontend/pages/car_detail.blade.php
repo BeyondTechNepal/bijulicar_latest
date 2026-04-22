@@ -449,8 +449,8 @@
                                             <form method="POST" action="{{ route('buyer.negotiations.store') }}">
                                                 @csrf
                                                 <input type="hidden" name="car_id" value="{{ $car->id }}">
-                                                <input type="number" name="offered_price" required min="1" max="{{ $car->price - 1 }}"
-                                                    placeholder="e.g. {{ number_format($car->price * 0.9, 0, '.', '') }}"
+                                                <input type="number" name="offered_price" required min="1" max="{{ $car->price ? $car->price - 1 : '' }}"
+                                                    placeholder="e.g. {{ $car->price ? number_format($car->price * 0.9, 0, '.', '') : '' }}"
                                                     class="w-full bg-white border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-green-400 mb-2">
                                                 <textarea name="message" rows="2" placeholder="Optional message to seller..."
                                                     class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-green-400 resize-none mb-3"></textarea>
@@ -684,7 +684,9 @@
                             @endif {{-- end $isSoldOut --}}
                         </div>
 
-                    </div>
+                    </div> {{-- end #place-order --}}
+
+                    </div> {{-- end #panel-buy --}}
 
                     @endif {{-- end isSaleable --}}
 
@@ -1003,8 +1005,13 @@
                                     <h3 class="text-[14px] font-black text-slate-900 uppercase italic leading-tight">
                                         {{ $other->displayName() }}</h3>
                                     <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ $other->location }}</p>
-                                    <p class="mt-auto pt-3 text-[15px] font-black text-slate-900 italic">NRs
-                                        {{ number_format($other->price) }}</p>
+                                    <p class="mt-auto pt-3 text-[15px] font-black text-slate-900 italic">
+                                        @if($other->price)
+                                            NRs {{ number_format($other->price) }}
+                                        @elseif($other->rent_price_per_day)
+                                            NRs {{ number_format($other->rent_price_per_day) }}<span class="text-sm font-bold text-slate-400 not-italic">/day</span>
+                                        @endif
+                                    </p>
                                 </div>
                             </a>
                         @endforeach

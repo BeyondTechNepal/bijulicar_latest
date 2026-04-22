@@ -5,9 +5,9 @@
 @section('content')
 
         {{-- ══════════════════════════════════════════════════════════
-         HERO SLIDER
-    ══════════════════════════════════════════════════════════════ --}}
-        <section class="relative h-screen w-full overflow-hidden bg-slate-900">
+            HERO SLIDER
+        ══════════════════════════════════════════════════════════════ --}}
+        <section class="relative h-[90vh] w-full overflow-hidden bg-slate-900">
             <div class="swiper mySwiper h-full w-full">
                 <div class="swiper-wrapper">
 
@@ -15,21 +15,21 @@
                     <div class="swiper-slide relative">
                         <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=2070"
                             class="w-full h-full object-cover brightness-[0.35]" alt="EV Car">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center md:pb-32 text-center px-4 pt-10">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center md:pb-32 text-center px-4 pt-[90px]">
                             <div
                                 class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-xl border border-white/15 rounded-full mb-6">
                                 <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
                                 <span class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Live
                                     Marketplace</span>
                             </div>
-                            <h1 class="text-white text-5xl md:text-7xl font-black tracking-tighter mb-4 uppercase italic">
+                            <h1 class="text-white text-4xl md:text-6xl font-black tracking-tighter mb-4 uppercase italic">
                                 Find Your <span class="text-[#4ade80]">Perfect</span> Vehicle
                             </h1>
-                            <p class="text-slate-300 text-base md:text-xl max-w-2xl mb-10 font-medium leading-relaxed">
+                            <p class="text-slate-300 text-base md:text-xl max-w-2xl mb-5 font-medium leading-relaxed">
                                 Nepal's largest marketplace for electric, hybrid, and traditional vehicles. Buy, sell, compare -
                                 all in one place.
                             </p>
-                            <div class="flex flex-wrap justify-center gap-4">
+                            <div class="flex flex-wrap justify-center gap-4 text-[12px] md:text-[14px]">
                                 <a href="{{ route('marketplace') }}"
                                     class="bg-[#4ade80] text-black px-10 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-[#22c55e] transition-all transform hover:scale-105 shadow-lg shadow-green-500/20">
                                     Browse Marketplace
@@ -47,13 +47,13 @@
                         <img src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&q=80&w=2071"
                             class="w-full h-full object-cover brightness-[0.35]" alt="EV Car 2">
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-15">
-                            <h1 class="text-white text-5xl md:text-8xl font-black tracking-tighter mb-4 uppercase italic">
+                            <h1 class="text-white text-4xl md:text-6xl font-black tracking-tighter mb-4 uppercase italic">
                                 Smart <span class="text-[#4ade80]">Comparisons</span>
                             </h1>
                             <p class="text-slate-300 text-base md:text-xl max-w-2xl mb-10 font-medium leading-relaxed">
                                 Side-by-side technical specs for up to 3 vehicles. Make data-driven decisions before you buy.
                             </p>
-                            <div class="flex flex-wrap justify-center gap-4">
+                            <div class="flex flex-wrap justify-center gap-4 text-[12px]">
                                 <a href="{{ route('compare_cars') }}"
                                     class="bg-[#4ade80] text-black px-10 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-[#22c55e] transition-all transform hover:scale-105 shadow-lg shadow-green-500/20">
                                     Start Comparing
@@ -71,14 +71,14 @@
                         <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=2071"
                             class="w-full h-full object-cover brightness-[0.35]" alt="EV Car 3">
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-15">
-                            <h1 class="text-white text-5xl md:text-8xl font-black tracking-tighter mb-2 uppercase italic">
+                            <h1 class="text-white text-4xl md:text-6xl font-black tracking-tighter mb-2 uppercase italic">
                                 Find Your <span class="text-[#4ade80]">Type</span>
                             </h1>
                             <p class="text-slate-300 text-base md:text-xl max-w-2xl mb-10 font-medium leading-relaxed">
                                 Electric, hybrid, petrol, diesel - whatever you drive, BijuliCar has it. Join the community
                                 today.
                             </p>
-                            <div class="flex flex-wrap justify-center gap-4">
+                            <div class="flex flex-wrap justify-center gap-4 text-[12px]">
                                 @auth
                                     <a href="{{ route('dashboard') }}"
                                         class="bg-[#4ade80] text-black px-10 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-[#22c55e] transition-all transform hover:scale-105 shadow-lg shadow-green-500/20">

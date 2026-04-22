@@ -9,7 +9,7 @@
                     Marketplace
                 </a>
                 <a href="{{ route('rent') }}"
-                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('rent') ? 'text-blue-600 bg-blue-50/50' : 'hover:bg-slate-50' }}">
+                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('rent') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     Rent
                 </a>
                 <a href="{{ route('news') }}"

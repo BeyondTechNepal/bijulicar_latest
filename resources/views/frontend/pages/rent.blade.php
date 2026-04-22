@@ -17,8 +17,8 @@
 
             <div class="mb-6 lg:mb-10">
                 <div class="flex items-center gap-3 mb-2 lg:mb-3">
-                    <span class="w-8 lg:w-10 h-[2px] bg-[#60a5fa]"></span>
-                    <span class="text-[8px] lg:text-[10px] uppercase tracking-[0.4em] text-[#60a5fa] font-bold">Car Rental</span>
+                    <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
+                    <span class="text-[8px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Car Rental</span>
                 </div>
 
                 <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white uppercase italic leading-none whitespace-nowrap">

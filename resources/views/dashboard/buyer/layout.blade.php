@@ -198,7 +198,7 @@
                     </svg>
                     Negotiations
                     @php
-$pendingNegotiations = auth()->user()?->negotiations()->where('status', 'pending_buyer')->count();
+                        $pendingNegotiations = auth()->user()?->negotiations()->where('status', 'pending_buyer')->count();
                     @endphp
                     @if($pendingNegotiations > 0)
                         <span class="ml-auto bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $pendingNegotiations }}</span>

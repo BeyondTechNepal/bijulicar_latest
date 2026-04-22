@@ -8,6 +8,10 @@
                     class="px-2 xl:px-4 py-2 rounded-xl transition-all {{ Route::is('marketplace') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     Marketplace
                 </a>
+                <a href="{{ route('rent') }}"
+                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('rent') ? 'text-blue-600 bg-blue-50/50' : 'hover:bg-slate-50' }}">
+                    Rent
+                </a>
                 <a href="{{ route('news') }}"
                     class="px-2 xl:px-4 py-2 rounded-xl transition-all {{ Route::is('news') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     News
@@ -284,11 +288,17 @@
 
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-4 mt-2">Explore BijuliCar</p>
 
-                    <a href="{{ route('marketplace') }}"
-                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('marketplace') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
-                        <span class="font-bold">Marketplace</span>
-                        <span class="text-lg"><i class="fa-solid fa-cart-shopping" style="color: rgb(55, 225, 175);"></i></span>
-                    </a>
+                <a href="{{ route('marketplace') }}"
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('marketplace') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                    <span class="font-bold">Marketplace</span>
+                    <span class="text-lg">⚡</span>
+                </a>
+
+                <a href="{{ route('rent') }}"
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('rent') ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-700' }}">
+                    <span class="font-bold">Rent a Car</span>
+                    <span class="text-lg">🚗</span>
+                </a>
 
                     <a href="{{ route('loan_calculator') }}"
                         class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('loan_calculator') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">

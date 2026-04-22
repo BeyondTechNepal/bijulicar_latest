@@ -46,6 +46,14 @@ class BuyerOrderController extends Controller
         abort_if(!$car->isAvailable(), 422, 'This car is no longer available.');
         abort_if(!$car->inStock(),     422, 'This car is currently out of stock.');
         abort_if($car->seller_id == $buyerId, 422, 'You cannot order your own listing.');
+        abort_if(!$car->isSaleable(),  422, 'This car is not listed for sale.');
+
+        // Block purchase if the car is currently out on an active rental
+        abort_if(
+            $car->hasActiveRental(),
+            422,
+            'This car is currently out on rental and cannot be ordered right now. Please try again once the rental period ends.'
+        );
 
         $hasActiveOrder = Order::where('buyer_id', $buyerId)
             ->where('car_id', $car->id)

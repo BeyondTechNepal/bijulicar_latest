@@ -168,4 +168,18 @@ class User extends Authenticatable implements MustVerifyEmail
             fn () => $this->notifications()->whereNull('read_at')->count()
         );
     }
+
+    // ── Rental relationships ───────────────────────────────────────────
+
+    /** Rental bookings placed by this user as a renter (buyer side). */
+    public function rentalBookings(): HasMany
+    {
+        return $this->hasMany(CarRental::class, 'renter_id');
+    }
+
+    /** Rental bookings received by this user as the car owner (seller/business side). */
+    public function ownedRentals(): HasMany
+    {
+        return $this->hasMany(CarRental::class, 'owner_id');
+    }
 }

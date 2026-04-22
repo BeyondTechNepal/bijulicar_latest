@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- News Header --}}
-    <section class="relative pt-20 pb-10 lg:pt-32 lg:pb-16 overflow-hidden bg-[#0a0f1e] text-white">
+    <section class="relative pt-20 pb-3 lg:pt-32 lg:pb-[85px] overflow-hidden bg-[#0a0f1e] text-white">
         <div class="absolute inset-0 z-0">
             {{-- <img src="{{ asset('images/news_header.jpg') }}"
                 class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background"> --}}
@@ -16,7 +16,7 @@
             <div class="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/80 via-[#0a0f1e]/25 to-[#202638]"></div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 relative z-10 pt-7 sm:pt-1 md:pt-7 lg:pt-2">
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
                 <div class="max-w-3xl">
                     <div class="flex items-center gap-3 mb-6">
@@ -75,7 +75,7 @@
             </div> --}}
 
             {{-- Filter Buttons --}}
-            <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6" id="filter-container">
+            <div class="mt-10 flex flex-wrap gap-3 lg:gap-4 border-t border-white/5 pt-6 max-w-[75%] lg:max-w-full mr-auto" id="filter-container">
                 <button data-category="all"
                     class="filter-btn px-8 py-3 bg-[#4ade80] text-black rounded-full text-[10px] font-black uppercase tracking-widest italic active-btn">
                     All
@@ -95,8 +95,8 @@
 
         </div>
 
-        <div
-            class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
+        {{-- the bouncing scroll mouse icon --}}
+        <div class="absolute bottom-1 right-6 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Scroll</span>
             <div class="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center p-1">
                 <div class="w-1 h-2 bg-[#4ade80] rounded-full"></div>

@@ -53,7 +53,7 @@ class MarketplaceController extends Controller
                 'mileage'               => number_format($car->mileage),
                 'range_km'              => $car->range_km,
                 'battery_kwh'           => $car->battery_kwh,
-                'price'                 => number_format($car->price),
+                'price'                 => $car->price ? number_format($car->price) : null,
                 'price_negotiable'      => $car->price_negotiable,
                 'primary_image'         => $img,
                 'url'                   => route('cars.show', $car->id),

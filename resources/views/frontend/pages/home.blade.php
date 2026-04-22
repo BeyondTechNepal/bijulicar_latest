@@ -459,8 +459,13 @@
                                                         {{ $car->variant }}</p>
                                                 @endif
                                             </div>
-                                            <p class="text-lg font-black text-[#16a34a] shrink-0">NRs
-                                                {{ number_format($car->price) }}</p>
+                                            <p class="text-lg font-black text-[#16a34a] shrink-0">
+                                                @if($car->price)
+                                                    NRs {{ number_format($car->price) }}
+                                                @elseif($car->rent_price_per_day)
+                                                    NRs {{ number_format($car->rent_price_per_day) }}/day
+                                                @endif
+                                            </p>
                                         </div>
 
                                         <div class="grid grid-cols-2 gap-3 mb-6">

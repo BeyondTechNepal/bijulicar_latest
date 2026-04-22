@@ -93,7 +93,13 @@ class Car extends Model
     /** e.g. "NRs 5,500,000" */
     public function formattedPrice(): string
     {
-        return 'NRs ' . number_format($this->price);
+        if ($this->price) {
+            return 'NRs ' . number_format($this->price);
+        }
+        if ($this->rent_price_per_day) {
+            return 'NRs ' . number_format($this->rent_price_per_day) . '/day';
+        }
+        return '—';
     }
 
     /** e.g. "2024 Tesla Model 3 Long Range" */

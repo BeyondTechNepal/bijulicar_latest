@@ -5,43 +5,53 @@
 @section('content')
 
     {{-- ── Hero + Filter section (untouched design) ──────────────────── --}}
-    <section class="relative pt-32 pb-20 lg:pt-38 lg:pb-15 min-h-60vh flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
+    <section
+        class="relative pt-32 pb-10 lg:pt-38 lg:pb-8 min-h-60vh flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
 
         <div class="absolute inset-0 z-0">
             <img src="{{ asset('images/marketplace_header.jpg') }}"
                 class="w-full h-full object-cover scale-105 blur-[8px] opacity-20 lg:opacity-20" alt="Background">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(15,23,42,0.1)_0%,_#0a0f1e_100%)]"></div>
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(15,23,42,0.1)_0%,_#0a0f1e_100%)]">
+            </div>
         </div>
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
 
-            <div class="mb-6 lg:mb-10"> <div class="flex items-center gap-3 mb-2 lg:mb-3"> <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
-                <span class="text-[8px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">Global Marketplace</span>
+            <div class="mb-6 lg:mb-10">
+                <div class="flex items-center gap-3 mb-2 lg:mb-3">
+                    <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
+                    <span class="text-[9px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">
+                        Global Marketplace
+                    </span>
+                </div>
+                <h1 class="text-[27px] md:text-6xl lg:text-7xl font-black tracking-tighter text-white uppercase italic leading-none whitespace-nowrap">
+                    Digital <span class="text-slate-500">Showroom</span>
+                </h1>
+                <p class="mt-3 lg:mt-4 text-slate-400 text-xs lg:text-base font-medium max-w-sm lg:max-w-md leading-relaxed">
+                    Browse our verified inventory of high-performance electric, hybrid, and precision traditional machines.
+                </p>
             </div>
-            
-            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white uppercase italic leading-none whitespace-nowrap">
-                Digital <span class="text-slate-500">Showroom</span>
-            </h1>
-
-            <p class="mt-3 lg:mt-4 text-slate-400 text-xs lg:text-base font-medium max-w-sm lg:max-w-md leading-relaxed">
-                Browse our verified inventory of high-performance electric, hybrid, and precision traditional machines.
-            </p>
-        </div>
 
             {{-- Quick search bar --}}
             <form method="GET" action="{{ route('marketplace') }}" id="quick-form">
-                <div class="bg-white rounded-[2rem] lg:rounded-full p-2 lg:p-2.5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-md">
+                <div
+                    class="bg-white rounded-[2rem] lg:rounded-full p-2 lg:p-2.5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-md">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 items-center">
 
                         {{-- Search with autocomplete --}}
                         <div class="w-full relative group" x-data>
-                            <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <div
+                                class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
                             </div>
-                            <input type="text" name="search" id="search-input" value="{{ request('search') }}" placeholder="Search BYD, Tesla..."
-                                autocomplete="off"
+                            <input type="text" name="search" id="search-input" value="{{ request('search') }}"
+                                placeholder="Search BYD, Tesla..." autocomplete="off"
                                 class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
-                            <ul id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[200] overflow-hidden max-h-56 overflow-y-auto"></ul>
+                            <ul id="search-suggestions"
+                                class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[200] overflow-hidden max-h-56 overflow-y-auto">
+                            </ul>
                         </div>
 
                         {{-- Custom drivetrain dropdown --}}
@@ -49,32 +59,58 @@
                             <input type="hidden" name="drivetrain" id="dt-value" value="{{ request('drivetrain', 'all') }}">
                             <button type="button" id="dt-btn"
                                 class="w-full flex items-center justify-between bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all">
-                                <span id="dt-label">{{ collect(['ev'=>'EV Power','hybrid'=>'Hybrid Sync','classic'=>'Classic Combustion','petrol'=>'Petrol','diesel'=>'Diesel'])->get(request('drivetrain'), 'Drivetrain') }}</span>
-                                <svg id="dt-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                <span
+                                    id="dt-label">{{ collect(['ev' => 'EV Power', 'hybrid' => 'Hybrid Sync', 'classic' => 'Classic Combustion', 'petrol' => 'Petrol', 'diesel' => 'Diesel'])->get(request('drivetrain'), 'Drivetrain') }}</span>
+                                <svg id="dt-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path d="M19 9l-7 7-7-7" />
+                                </svg>
                             </button>
                             {{-- dropdown list appended to body via JS --}}
-                            <ul id="dt-list" class="hidden bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden py-1">
-                                <li data-value="all"     class="dt-opt px-8 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Drivetrain (All)</li>
-                                <li data-value="ev"      class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">EV Power</li>
-                                <li data-value="hybrid"  class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Hybrid Sync</li>
-                                <li data-value="classic" class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Classic Combustion</li>
-                                <li data-value="petrol"  class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Petrol</li>
-                                <li data-value="diesel"  class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">Diesel</li>
+                            <ul id="dt-list"
+                                class="hidden bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden py-1">
+                                <li data-value="all"
+                                    class="dt-opt px-8 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">
+                                    Drivetrain (All)</li>
+                                <li data-value="ev"
+                                    class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">
+                                    EV Power</li>
+                                <li data-value="hybrid"
+                                    class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">
+                                    Hybrid Sync</li>
+                                <li data-value="classic"
+                                    class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">
+                                    Classic Combustion</li>
+                                <li data-value="petrol"
+                                    class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">
+                                    Petrol</li>
+                                <li data-value="diesel"
+                                    class="dt-opt px-8 py-3 text-sm font-bold text-slate-900 hover:bg-[#4ade80]/10 hover:text-[#16a34a] cursor-pointer uppercase tracking-tight transition-colors">
+                                    Diesel</li>
                             </ul>
                         </div>
 
                         {{-- Location with typeahead (replaces dropdown) --}}
                         <div class="w-full relative group">
-                            <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <div
+                                class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
                             </div>
-                            <input type="text" name="location" id="location-input" value="{{ request('location') }}" placeholder="Any location..."
-                                autocomplete="off"
+                            <input type="text" name="location" id="location-input" value="{{ request('location') }}"
+                                placeholder="Any location..." autocomplete="off"
                                 class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
-                            <ul id="location-suggestions" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
+                            <ul id="location-suggestions"
+                                class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[200] overflow-hidden max-h-48 overflow-y-auto">
+                            </ul>
                         </div>
 
-                        <button type="submit" id="search-btn" class="w-full px-12 py-4 lg:py-6 bg-black text-white rounded-2xl lg:rounded-full font-black uppercase italic tracking-widest text-sm hover:bg-[#4ade80] hover:text-black transition-all duration-500 active:scale-95 shadow-xl shadow-black/20">
+                        <button type="submit" id="search-btn"
+                            class="w-full px-12 py-4 lg:py-6 bg-black text-white rounded-2xl lg:rounded-full font-black uppercase italic tracking-widest text-sm hover:bg-[#4ade80] hover:text-black transition-all duration-500 active:scale-95 shadow-xl shadow-black/20">
                             Search Units
                         </button>
                     </div>
@@ -82,71 +118,105 @@
 
                 {{-- Advanced filters --}}
                 <div class="mt-6">
-                    <button type="button" onclick="toggleFilters()" class="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-[#4ade80] transition-all">
-                        <span class="p-2.5 bg-white/10 border border-white/10 rounded-xl group-hover:border-[#4ade80]/50 text-white group-hover:text-[#4ade80] backdrop-blur-md">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                    <button type="button" onclick="toggleFilters()"
+                        class="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-[#4ade80] transition-all">
+                        <span
+                            class="p-2.5 bg-white/10 border border-white/10 rounded-xl group-hover:border-[#4ade80]/50 text-white group-hover:text-[#4ade80] backdrop-blur-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
                         </span>
                         Advanced Parameters
                     </button>
 
-                    <div id="advanced-panel" class="{{ request()->hasAny(['brand','model_name','year_from','year_to','price_min','price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl">
-                        <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;"></div>
+                    <div id="advanced-panel"
+                        class="{{ request()->hasAny(['brand', 'model_name', 'year_from', 'year_to', 'price_min', 'price_max']) ? '' : 'hidden' }} relative mt-6 p-8 lg:p-10 bg-[#0f172a]/90 border border-white/10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl backdrop-blur-xl">
+                        <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
+                            style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;">
+                        </div>
                         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
 
                             <!-- {{-- Brand with autocomplete --}}
-                            <div class="space-y-3 relative">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-[#4ade80]">Vehicle Brand</label>
-                                <input type="text" name="brand" id="brand-input" value="{{ request('brand') }}" placeholder="e.g. Tesla, BYD"
-                                    autocomplete="off"
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
-                                <ul id="brand-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
-                            </div> -->
+                                <div class="space-y-3 relative">
+                                    <label class="text-[10px] font-black uppercase tracking-widest text-[#4ade80]">Vehicle Brand</label>
+                                    <input type="text" name="brand" id="brand-input" value="{{ request('brand') }}" placeholder="e.g. Tesla, BYD"
+                                        autocomplete="off"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
+                                    <ul id="brand-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
+                                </div> -->
 
                             {{-- Model with autocomplete --}}
                             <div class="space-y-3 relative">
-                                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Model Name</label>
-                                <input type="text" name="model_name" id="model-input" value="{{ request('model_name') }}" placeholder="e.g. Model 3"
-                                    autocomplete="off"
+                                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Model
+                                    Name</label>
+                                <input type="text" name="model_name" id="model-input" value="{{ request('model_name') }}"
+                                    placeholder="e.g. Model 3" autocomplete="off"
                                     class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-6 text-sm font-bold text-white placeholder:text-slate-600 focus:ring-2 focus:ring-[#4ade80]/20 outline-none">
-                                <ul id="model-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden max-h-48 overflow-y-auto"></ul>
+                                <ul id="model-suggestions"
+                                    class="hidden absolute left-0 right-0 top-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden max-h-48 overflow-y-auto">
+                                </ul>
                             </div>
 
                             {{-- Year range — custom dropdowns --}}
                             <div class="space-y-3 lg:col-span-2">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     Year Range
-                                    <span class="text-slate-600 normal-case font-medium ml-1">({{ $minYear }} – {{ $maxYear }})</span>
+                                    <span class="text-slate-600 normal-case font-medium ml-1">({{ $minYear }} –
+                                        {{ $maxYear }})</span>
                                 </label>
                                 <div class="grid grid-cols-2 gap-3">
 
                                     {{-- Year From --}}
                                     <div class="relative" id="yr-from-wrapper">
-                                        <input type="hidden" name="year_from" id="yr-from-value" value="{{ request('year_from') }}">
+                                        <input type="hidden" name="year_from" id="yr-from-value"
+                                            value="{{ request('year_from') }}">
                                         <button type="button" id="yr-from-btn"
                                             class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-sm font-bold text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
                                             <span id="yr-from-label">{{ request('year_from') ?: 'From' }}</span>
-                                            <svg id="yr-from-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                            <svg id="yr-from-chevron"
+                                                class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                                <path d="M19 9l-7 7-7-7" />
+                                            </svg>
                                         </button>
-                                        <ul id="yr-from-list" class="hidden bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl overflow-y-auto" style="max-height:220px">
-                                            <li data-value="" class="yr-from-opt px-5 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">From (any)</li>
+                                        <ul id="yr-from-list"
+                                            class="hidden bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl overflow-y-auto"
+                                            style="max-height:220px">
+                                            <li data-value=""
+                                                class="yr-from-opt px-5 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">
+                                                From (any)</li>
                                             @for ($y = $minYear; $y <= $maxYear; $y++)
-                                            <li data-value="{{ $y }}" class="yr-from-opt px-5 py-3 text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">{{ $y }}</li>
+                                                <li data-value="{{ $y }}"
+                                                    class="yr-from-opt px-5 py-3 text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">
+                                                    {{ $y }}</li>
                                             @endfor
                                         </ul>
                                     </div>
 
                                     {{-- Year To --}}
                                     <div class="relative" id="yr-to-wrapper">
-                                        <input type="hidden" name="year_to" id="yr-to-value" value="{{ request('year_to') }}">
+                                        <input type="hidden" name="year_to" id="yr-to-value"
+                                            value="{{ request('year_to') }}">
                                         <button type="button" id="yr-to-btn"
                                             class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-sm font-bold text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
                                             <span id="yr-to-label">{{ request('year_to') ?: 'To' }}</span>
-                                            <svg id="yr-to-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                            <svg id="yr-to-chevron"
+                                                class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                                <path d="M19 9l-7 7-7-7" />
+                                            </svg>
                                         </button>
-                                        <ul id="yr-to-list" class="hidden bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl overflow-y-auto" style="max-height:220px">
-                                            <li data-value="" class="yr-to-opt px-5 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">To (any)</li>
+                                        <ul id="yr-to-list"
+                                            class="hidden bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl overflow-y-auto"
+                                            style="max-height:220px">
+                                            <li data-value=""
+                                                class="yr-to-opt px-5 py-3 text-sm font-bold text-slate-500 hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">
+                                                To (any)</li>
                                             @for ($y = $maxYear; $y >= $minYear; $y--)
-                                            <li data-value="{{ $y }}" class="yr-to-opt px-5 py-3 text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">{{ $y }}</li>
+                                                <li data-value="{{ $y }}"
+                                                    class="yr-to-opt px-5 py-3 text-sm font-bold text-white hover:bg-[#4ade80]/20 hover:text-[#4ade80] cursor-pointer transition-colors">
+                                                    {{ $y }}</li>
                                             @endfor
                                         </ul>
                                     </div>
@@ -159,13 +229,15 @@
                                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     Price Range (NRs)
                                     <span class="text-[#4ade80] ml-2" id="price-display">
-                                        {{ request('price_min') ? number_format((int)request('price_min')) : number_format($minPrice) }}
+                                        {{ request('price_min') ? number_format((int) request('price_min')) : number_format($minPrice) }}
                                         –
-                                        {{ request('price_max') ? number_format((int)request('price_max')) : number_format($maxPrice) }}
+                                        {{ request('price_max') ? number_format((int) request('price_max')) : number_format($maxPrice) }}
                                     </span>
                                 </label>
-                                <input type="hidden" name="price_min" id="price_min" value="{{ request('price_min', $minPrice) }}">
-                                <input type="hidden" name="price_max" id="price_max" value="{{ request('price_max', $maxPrice) }}">
+                                <input type="hidden" name="price_min" id="price_min"
+                                    value="{{ request('price_min', $minPrice) }}">
+                                <input type="hidden" name="price_max" id="price_max"
+                                    value="{{ request('price_max', $maxPrice) }}">
                                 <div id="price-slider" class="relative h-6 flex items-center px-2"></div>
                             </div>
 
@@ -173,14 +245,20 @@
                             <div class="flex items-end pb-1 lg:justify-center">
                                 <label class="relative inline-flex items-center cursor-pointer group">
                                     <input type="checkbox" name="only_available" value="1" class="sr-only peer" {{ request('only_available') ? 'checked' : '' }}>
-                                    <div class="w-11 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4ade80] peer-checked:after:bg-black"></div>
-                                    <span class="ml-3 text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Only Available</span>
+                                    <div
+                                        class="w-11 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4ade80] peer-checked:after:bg-black">
+                                    </div>
+                                    <span
+                                        class="ml-3 text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Only
+                                        Available</span>
                                 </label>
                             </div>
 
                             <div class="flex items-end justify-end gap-3">
-                                <a href="{{ route('marketplace') }}" class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white">Clear</a>
-                                <button type="submit" class="px-10 py-4 bg-[#4ade80] text-black rounded-xl text-[10px] font-black uppercase tracking-widest italic hover:bg-white transition-all shadow-lg shadow-black/40">Apply</button>
+                                <a href="{{ route('marketplace') }}"
+                                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white">Clear</a>
+                                <button type="submit"
+                                    class="px-10 py-4 bg-[#4ade80] text-black rounded-xl text-[10px] font-black uppercase tracking-widest italic hover:bg-white transition-all shadow-lg shadow-black/40">Apply</button>
                             </div>
                         </div>
                     </div>
@@ -190,10 +268,20 @@
                 <div class="mt-10 flex flex-wrap items-center gap-4 px-4">
                     <div class="flex items-center gap-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
-                        <span class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $totalActive }} Active Units</span>
+                        <span
+                            class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $totalActive }}
+                            Active Units</span>
                     </div>
                 </div>
             </form>
+        </div>
+
+        {{-- the bouncing scroll mouse icon --}}
+        <div class="absolute bottom-15 right-6 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
+            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Scroll</span>
+            <div class="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center p-1">
+                <div class="w-1 h-2 bg-[#4ade80] rounded-full"></div>
+            </div>
         </div>
     </section>
 

@@ -5,7 +5,7 @@
 @section('content')
 
     {{-- ── Hero Section ──────────────────────────────────────────────────── --}}
-    <section class="relative pt-24 pb-12 lg:pt-32 lg:pb-20 overflow-hidden bg-[#0a0f1e] text-white">
+    <section class="relative pt-24 pb-5 lg:pt-32 lg:pb-5 overflow-hidden bg-[#0a0f1e] text-white">
 
     <div class="absolute inset-0 z-0">
         <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(74,222,128,0.08)_0%,_transparent_60%)]"></div>
@@ -57,7 +57,7 @@
             </div>
     </div>
 
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 animate-bounce opacity-30 hover:opacity-100 transition-opacity pointer-events-none">
+    <div class="absolute bottom-5 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 animate-bounce opacity-30 hover:opacity-100 transition-opacity pointer-events-none">
         <span class="text-[8px] font-black uppercase tracking-[0.3em] text-white/60">Scroll</span>
         <div class="w-4 h-6 border-2 border-white/10 rounded-full flex justify-center p-0.5">
             <div class="w-1 h-1.5 bg-[#4ade80] rounded-full"></div>

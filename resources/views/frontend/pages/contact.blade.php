@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- header section --}}
-    <section class="relative bg-[#0a0f1e] pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+    <section class="relative bg-[#0a0f1e] pt-24 pb-7 lg:pt-32 lg:pb-8 overflow-hidden">
 
         <div class="absolute inset-0 z-0">
             @if ($banner)

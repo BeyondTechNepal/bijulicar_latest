@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- News Header --}}
-    <section class="relative pt-20 pb-3 lg:pt-32 lg:pb-[85px] overflow-hidden bg-[#0a0f1e] text-white">
+    <section class="relative pt-20 pb-3 lg:pt-32 lg:pb-[100px] overflow-hidden bg-[#0a0f1e] text-white">
         <div class="absolute inset-0 z-0">
             {{-- <img src="{{ asset('images/news_header.jpg') }}"
                 class="w-full h-full object-cover opacity-100 scale-105 blur-[3px]" alt="Automotive News Background"> --}}
@@ -96,7 +96,7 @@
         </div>
 
         {{-- the bouncing scroll mouse icon --}}
-        <div class="absolute bottom-1 right-6 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
+        <div class="absolute bottom-4 right-6 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50 hover:opacity-100 transition-opacity">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Scroll</span>
             <div class="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center p-1">
                 <div class="w-1 h-2 bg-[#4ade80] rounded-full"></div>

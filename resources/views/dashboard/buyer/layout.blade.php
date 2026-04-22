@@ -198,7 +198,7 @@
                     </svg>
                     Negotiations
                     @php
-$pendingNegotiations = auth()->user()?->negotiations()->where('status', 'pending_buyer')->count();
+                        $pendingNegotiations = auth()->user()?->negotiations()->where('status', 'pending_buyer')->count();
                     @endphp
                     @if($pendingNegotiations > 0)
                         <span class="ml-auto bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $pendingNegotiations }}</span>
@@ -272,47 +272,52 @@ $pendingNegotiations = auth()->user()?->negotiations()->where('status', 'pending
         </aside>
 
         {{-- Main content --}}
-        <div class="flex-1 lg:ml-64 min-w-0 flex flex-col h-screen overflow-hidden">
+        {{-- Main content --}}
+<div class="flex-1 lg:ml-64 w-full max-w-full flex flex-col h-screen overflow-hidden">
 
-            {{-- Top bar --}}
-            <header class="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-0 z-20">
-                <div class="flex items-center gap-3 min-w-0">
-                    {{-- Hamburger (mobile/tablet only) --}}
-                    <button id="hamburger-btn"
-                        onclick="openSidebar()"
-                        class="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0"
-                        aria-label="Open sidebar">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                    <h1 class="text-base sm:text-lg font-black text-slate-900 uppercase italic tracking-tight truncate">
-                        @yield('page-title', 'Dashboard')
-                    </h1>
-                </div>
-                <a href="{{ route('marketplace') }}"
-                    class="inline-flex items-center gap-1.5 bg-slate-900 text-white px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shrink-0 whitespace-nowrap">
-                    ⚡ <span class="hidden xs:inline">Browse</span> EVs
-                </a>
-            </header>
-
-            {{-- Flash messages --}}
-            @if (session('success'))
-                <div class="mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-5 bg-[#4ade80]/10 border border-[#4ade80]/30 text-[#16a34a] rounded-xl px-4 py-3 text-sm font-bold">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-5 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-bold">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-    @yield('content')
-</div>
-
+    {{-- Top bar --}}
+    <header class="bg-white border-b border-slate-200 px-4 py-3 sm:px-6 lg:px-8 sm:py-4 flex items-center justify-between gap-2 sticky top-0 z-20 w-full">
+        <div class="flex items-center gap-3 min-w-0 flex-1"> {{-- Added flex-1 and min-w-0 --}}
+            {{-- Hamburger (mobile/tablet only) --}}
+            <button id="hamburger-btn"
+                onclick="openSidebar()"
+                class="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0"
+                aria-label="Open sidebar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <h1 class="text-sm sm:text-lg font-black text-slate-900 uppercase italic tracking-tight truncate">
+                @yield('page-title', 'Dashboard')
+            </h1>
         </div>
+        
+        <a href="{{ route('marketplace') }}"
+            class="inline-flex items-center gap-1.5 bg-slate-900 text-white px-3 py-2 rounded-xl text-[10px] sm:text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shrink-0 whitespace-nowrap">
+            ⚡ <span class="hidden xs:inline">Browse</span> EVs
+        </a>
+    </header>
+
+    {{-- Flash messages --}}
+    <div class="px-4 sm:px-6 lg:px-8"> {{-- Wrapper to keep messages from hitting edges --}}
+        @if (session('success'))
+            <div class="mt-4 bg-[#4ade80]/10 border border-[#4ade80]/30 text-[#16a34a] rounded-xl px-4 py-3 text-sm font-bold">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-bold">
+                {{ session('error') }}
+            </div>
+        @endif
+    </div>
+
+    {{-- Content Area --}}
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        @yield('content')
+    </div>
+
+</div>
 
     </div>
 

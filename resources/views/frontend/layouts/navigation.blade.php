@@ -3,28 +3,28 @@
 
         {{-- Left: main nav links --}}
         <div class="hidden lg:flex items-center">
-            <div class="flex space-x-1 text-[14px] font-bold text-slate-800">
+            <div class="flex items-center text-[12px] xl:text-[14px] font-bold text-slate-800 whitespace-nowrap">
                 <a href="{{ route('marketplace') }}"
-                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('marketplace') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    class="px-2 xl:px-4 py-2 rounded-xl transition-all {{ Route::is('marketplace') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     Marketplace
                 </a>
                 <a href="{{ route('news') }}"
-                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('news') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    class="px-2 xl:px-4 py-2 rounded-xl transition-all {{ Route::is('news') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     News
                 </a>
                 <a href="{{ route('loan_calculator') }}"
-                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('loan_calculator') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    class="px-2 xl:px-4 py-2 rounded-xl transition-all {{ Route::is('loan_calculator') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     Loan Calculator
                 </a>
                 <a href="{{ route('compare_cars') }}"
-                    class="px-4 py-2 rounded-xl transition-all {{ Route::is('compare_cars') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
+                    class="px-2 xl:px-4 py-2 rounded-xl transition-all {{ Route::is('compare_cars') ? 'text-green-600 bg-green-50/50' : 'hover:bg-slate-50' }}">
                     Compare Cars
                 </a>
             </div>
         </div>
 
         {{-- Centre: logo --}}
-        <div class="flex items-center">
+        <div class="flex items-center shrink-0 px-2 xl:px-4">
             <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
                 <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-[#16a34a] transition-all duration-500 shadow-lg group-hover:rotate-[360deg]">
                     <span class="text-white font-bold text-sm italic">BC</span>
@@ -35,13 +35,14 @@
 
         {{-- Right: secondary nav + auth --}}
         <div class="flex items-center space-x-2 md:space-x-4">
-            <div class="hidden lg:flex items-center space-x-2">
-                <a href="{{ route('businesses.index') }}"
-                    class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('businesses.*') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Businesses</a>
-                <a href="{{ route('map_location') }}"
-                    class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('map_location') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Map Search</a>
-                <a href="{{ route('contact') }}"
-                    class="px-3 py-2 rounded-xl text-[14px] font-bold {{ Route::is('contact') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Contact</a>
+            <div class="hidden lg:flex items-center space-x-0 xl:space-x-2">
+                <a href="{{ route('businesses.index') }}" class="px-2 xl:px-3 py-2 rounded-xl text-[12px] xl:text-[14px] font-bold {{ Route::is('businesses.*') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">
+                    Businesses
+                </a>
+                <a href="{{ route('map_location') }}" class="px-2 xl:px-3 py-2 rounded-xl text-[12px] xl:text-[14px] font-bold {{ Route::is('map_location') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">
+                    Map Search
+                </a>
+                <a href="{{ route('contact') }}" class="px-2 xl:px-3 py-2 rounded-xl text-[12px] xl:text-[14px] font-bold {{ Route::is('contact') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">Contact</a>
 
                 <div class="h-6 w-[1px] bg-slate-200 mx-2"></div>
 

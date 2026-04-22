@@ -71,6 +71,18 @@ class CarController extends Controller
             $alreadyReviewed = $car->reviews->contains('buyer_id', auth()->id());
         }
 
+        // ── Rental state ──────────────────────────────────────────────
+        $alreadyRented = false;
+        if (auth()->check() && auth()->user()->hasRole('buyer')) {
+            $alreadyRented = \App\Models\CarRental::where('renter_id', auth()->id())
+                ->where('car_id', $car->id)
+                ->whereIn('status', ['pending', 'confirmed', 'active'])
+                ->exists();
+        }
+
+        // Block sale orders if car is currently out on an active rental
+        $blockedBySaleRental = $car->isRentable() && !$car->isSaleable() ? false : $car->hasActiveRental();
+
         // ── Sidebar ads for the car detail page (priority DESC) ──────────
         $carDetailAds = Advertisement::liveForPlacement('car_detail_horizontal')->get();
 
@@ -85,7 +97,9 @@ class CarController extends Controller
             'alreadyReviewed',
             'hasPurchased',
             'alreadyPreOrdered',
-            'carDetailAds'
+            'carDetailAds',
+            'alreadyRented',
+            'blockedBySaleRental'
         ));
     }
 }

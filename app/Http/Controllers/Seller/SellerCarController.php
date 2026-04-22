@@ -73,7 +73,15 @@ class SellerCarController extends Controller
             'is_preorder'           => ['boolean'],
             'expected_arrival_date' => ['nullable', 'required_if:is_preorder,1', 'date', 'after:today'],
             'preorder_deposit'      => ['nullable', 'required_if:is_preorder,1', 'integer', 'min:1000'],
+            // ── Rental fields ──────────────────────────────────────────
+            'listing_type'       => ['required', 'in:sale,rent,both'],
+            'rent_price_per_day' => ['nullable', 'required_if:listing_type,rent', 'required_if:listing_type,both', 'integer', 'min:1'],
+            'rent_min_days'      => ['nullable', 'integer', 'min:1'],
+            'rent_max_days'      => ['nullable', 'integer', 'min:1', 'gte:rent_min_days'],
+            'rent_deposit'       => ['nullable', 'integer', 'min:0'],
         ]);
+
+        $isRentable = in_array($request->listing_type, ['rent', 'both']);
 
         $car = Car::create([
             'seller_id'        => Auth::id(),
@@ -96,6 +104,12 @@ class SellerCarController extends Controller
             'is_preorder'           => $request->boolean('is_preorder'),
             'expected_arrival_date' => $request->boolean('is_preorder') ? $request->expected_arrival_date : null,
             'preorder_deposit'      => $request->boolean('is_preorder') ? $request->preorder_deposit : null,
+            // ── Rental fields ──────────────────────────────────────────
+            'listing_type'       => $request->listing_type,
+            'rent_price_per_day' => $isRentable ? $request->rent_price_per_day : null,
+            'rent_min_days'      => $isRentable ? ($request->rent_min_days ?? 1) : null,
+            'rent_max_days'      => $isRentable ? $request->rent_max_days : null,
+            'rent_deposit'       => $isRentable ? $request->rent_deposit : null,
         ]);
 
         // Handle image uploads
@@ -172,10 +186,17 @@ class SellerCarController extends Controller
             'is_preorder'           => ['boolean'],
             'expected_arrival_date' => ['nullable', 'required_if:is_preorder,1', 'date'],
             'preorder_deposit'      => ['nullable', 'required_if:is_preorder,1', 'integer', 'min:1000'],
+            // ── Rental fields ──────────────────────────────────────────
+            'listing_type'       => ['required', 'in:sale,rent,both'],
+            'rent_price_per_day' => ['nullable', 'required_if:listing_type,rent', 'required_if:listing_type,both', 'integer', 'min:1'],
+            'rent_min_days'      => ['nullable', 'integer', 'min:1'],
+            'rent_max_days'      => ['nullable', 'integer', 'min:1', 'gte:rent_min_days'],
+            'rent_deposit'       => ['nullable', 'integer', 'min:0'],
         ]);
 
         // Determine correct status
-        $newStatus = $request->status;
+        $newStatus  = $request->status;
+        $isRentable = in_array($request->listing_type, ['rent', 'both']);
         if ($request->boolean('is_preorder')) {
             $newStatus = 'upcoming';
         } elseif ($request->stock_quantity > 0 && $car->status === 'sold') {
@@ -202,6 +223,12 @@ class SellerCarController extends Controller
             'is_preorder'           => $request->boolean('is_preorder'),
             'expected_arrival_date' => $request->boolean('is_preorder') ? $request->expected_arrival_date : null,
             'preorder_deposit'      => $request->boolean('is_preorder') ? $request->preorder_deposit : null,
+            // ── Rental fields ──────────────────────────────────────────
+            'listing_type'       => $request->listing_type,
+            'rent_price_per_day' => $isRentable ? $request->rent_price_per_day : null,
+            'rent_min_days'      => $isRentable ? ($request->rent_min_days ?? 1) : null,
+            'rent_max_days'      => $isRentable ? $request->rent_max_days : null,
+            'rent_deposit'       => $isRentable ? $request->rent_deposit : null,
         ]);
 
         // Remove selected images

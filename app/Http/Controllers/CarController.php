@@ -73,15 +73,19 @@ class CarController extends Controller
 
         // ── Rental state ──────────────────────────────────────────────
         $alreadyRented = false;
-        if (auth()->check() && auth()->user()->hasRole('buyer')) {
-            $alreadyRented = \App\Models\CarRental::where('renter_id', auth()->id())
-                ->where('car_id', $car->id)
-                ->whereIn('status', ['pending', 'confirmed', 'active'])
-                ->exists();
+        $blockedBySaleRental = false;
+        try {
+            if (auth()->check() && auth()->user()->hasRole('buyer')) {
+                $alreadyRented = \App\Models\CarRental::where('renter_id', auth()->id())
+                    ->where('car_id', $car->id)
+                    ->whereIn('status', ['pending', 'confirmed', 'active'])
+                    ->exists();
+            }
+            // Block sale orders if car is currently out on an active rental
+            $blockedBySaleRental = $car->isSaleable() ? $car->hasActiveRental() : false;
+        } catch (\Exception $e) {
+            // car_rentals table doesn't exist yet — migration not run
         }
-
-        // Block sale orders if car is currently out on an active rental
-        $blockedBySaleRental = $car->isRentable() && !$car->isSaleable() ? false : $car->hasActiveRental();
 
         // ── Sidebar ads for the car detail page (priority DESC) ──────────
         $carDetailAds = Advertisement::liveForPlacement('car_detail_horizontal')->get();

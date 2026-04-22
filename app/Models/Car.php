@@ -151,13 +151,14 @@ class Car extends Model
     /** True when the car can be purchased (listing_type is 'sale' or 'both'). */
     public function isSaleable(): bool
     {
-        return in_array($this->listing_type, ['sale', 'both']);
+        // Default to 'sale' when listing_type is null (pre-migration rows)
+        return in_array($this->listing_type ?? 'sale', ['sale', 'both']);
     }
 
     /** True when the car can be rented (listing_type is 'rent' or 'both'). */
     public function isRentable(): bool
     {
-        return in_array($this->listing_type, ['rent', 'both']);
+        return in_array($this->listing_type ?? 'sale', ['rent', 'both']);
     }
 
     // ── Rental helpers ────────────────────────────────────────────────

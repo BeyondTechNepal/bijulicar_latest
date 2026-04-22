@@ -395,6 +395,26 @@
                 {{-- ── RIGHT: order sidebar ─────────────────────────────── --}}
                 <div class="xl:w-80 space-y-5 xl:sticky xl:top-24 xl:self-start">
 
+                    {{-- Buy / Rent tab selector (only shown when both options available) --}}
+                    @if($car->isSaleable() && $car->isRentable())
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-1.5 flex gap-1" id="action-tabs">
+                        <button type="button" id="tab-buy"
+                            onclick="switchTab('buy')"
+                            class="flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-slate-900 text-white">
+                            🏷️ Buy
+                        </button>
+                        <button type="button" id="tab-rent"
+                            onclick="switchTab('rent')"
+                            class="flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all text-slate-500 hover:bg-slate-50">
+                            📅 Rent
+                        </button>
+                    </div>
+                    @endif
+
+                    {{-- ── BUY PANEL ─────────────────────────────────────── --}}
+                    @if($car->isSaleable())
+                    <div id="panel-buy">
+
                     {{-- Price + Order card --}}
                     <div id="place-order" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 scroll-mt-28">
                         <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Asking Price</p>
@@ -657,6 +677,199 @@
                         </div>
 
                     </div>
+
+                    @endif {{-- end isSaleable --}}
+
+                    {{-- ── RENT PANEL ─────────────────────────────────── --}}
+                    @if($car->isRentable() && !$isSoldOut)
+                    <div id="panel-rent" class="{{ ($car->isSaleable()) ? 'hidden' : '' }}">
+                        <div id="rent-car" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 scroll-mt-28">
+
+                            {{-- Daily rate display --}}
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Daily Rental Rate</p>
+                            <p class="text-4xl font-black text-slate-900 italic tracking-tight">
+                                NRs {{ number_format($car->rent_price_per_day) }}
+                                <span class="text-lg font-bold text-slate-400 not-italic">/day</span>
+                            </p>
+
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <span class="text-[10px] font-black px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg uppercase tracking-wider border border-blue-100">
+                                    {{ $car->rentDurationLabel() }}
+                                </span>
+                                @if($car->rent_deposit)
+                                <span class="text-[10px] font-black px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase tracking-wider">
+                                    NRs {{ number_format($car->rent_deposit) }} deposit
+                                </span>
+                                @endif
+                            </div>
+
+                            <div class="mt-5 pt-5 border-t border-slate-100 space-y-3">
+                                @auth
+                                    @if(auth()->user()->hasRole('buyer'))
+                                        @if($alreadyRented)
+                                            {{-- Already has active/pending rental --}}
+                                            <div class="w-full py-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-[12px] font-black uppercase tracking-widest text-center">
+                                                ✓ Already Booked
+                                            </div>
+                                            <a href="{{ route('buyer.rentals.index') }}"
+                                                class="block w-full py-3.5 rounded-xl bg-slate-100 text-slate-700 text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-slate-200 transition-all">
+                                                View My Rentals
+                                            </a>
+                                        @else
+                                            {{-- Rental booking form --}}
+                                            <form method="POST" action="{{ route('buyer.rentals.store') }}" id="rentalForm">
+                                                @csrf
+                                                <input type="hidden" name="car_id" value="{{ $car->id }}">
+
+                                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Your Contact Details</p>
+
+                                                <div class="mb-2.5">
+                                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Full Name <span class="text-red-400">*</span></label>
+                                                    <input type="text" name="renter_name" required
+                                                        value="{{ old('renter_name', auth()->user()->name) }}"
+                                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:border-blue-400 transition-all font-medium @error('renter_name') border-red-400 @enderror">
+                                                    @error('renter_name')<p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>@enderror
+                                                </div>
+
+                                                <div class="mb-2.5">
+                                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Phone <span class="text-red-400">*</span></label>
+                                                    <input type="text" name="renter_phone" required
+                                                        value="{{ old('renter_phone', auth()->user()->phone) }}"
+                                                        placeholder="98XXXXXXXX"
+                                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-blue-400 transition-all font-medium @error('renter_phone') border-red-400 @enderror">
+                                                    @error('renter_phone')<p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>@enderror
+                                                </div>
+
+                                                <div class="mb-2.5">
+                                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Email <span class="text-red-400">*</span></label>
+                                                    <input type="email" name="renter_email" required
+                                                        value="{{ old('renter_email', auth()->user()->email) }}"
+                                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:border-blue-400 transition-all font-medium @error('renter_email') border-red-400 @enderror">
+                                                    @error('renter_email')<p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>@enderror
+                                                </div>
+
+                                                <div class="border-t border-slate-100 pt-3 mt-3 mb-2.5">
+                                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Rental Dates</p>
+                                                    <div class="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Pickup <span class="text-red-400">*</span></label>
+                                                            <input type="date" name="pickup_date" required
+                                                                value="{{ old('pickup_date') }}"
+                                                                min="{{ today()->format('Y-m-d') }}"
+                                                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:border-blue-400 transition-all font-medium @error('pickup_date') border-red-400 @enderror"
+                                                                id="pickup-date-input">
+                                                            @error('pickup_date')<p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>@enderror
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Return <span class="text-red-400">*</span></label>
+                                                            <input type="date" name="return_date" required
+                                                                value="{{ old('return_date') }}"
+                                                                min="{{ today()->addDay()->format('Y-m-d') }}"
+                                                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:border-blue-400 transition-all font-medium @error('return_date') border-red-400 @enderror"
+                                                                id="return-date-input">
+                                                            @error('return_date')<p class="text-[10px] text-red-500 font-bold mt-1">{{ $message }}</p>@enderror
+                                                        </div>
+                                                    </div>
+                                                    {{-- Live cost preview --}}
+                                                    <div id="rental-cost-preview" class="hidden mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Estimated Total</span>
+                                                            <span class="text-base font-black text-blue-700" id="rental-cost-amount">—</span>
+                                                        </div>
+                                                        <p class="text-[10px] text-blue-400 font-medium mt-0.5" id="rental-cost-days"></p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Notes <span class="normal-case font-medium text-slate-300">(optional)</span></label>
+                                                    <textarea name="notes" rows="2" placeholder="Any special requests or questions..."
+                                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-blue-400 transition-all font-medium resize-none">{{ old('notes') }}</textarea>
+                                                </div>
+
+                                                <button type="submit"
+                                                    class="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-slate-900 text-white text-[13px] font-black uppercase italic tracking-widest hover:bg-blue-600 transition-all shadow-lg">
+                                                    📅 Request Rental
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                                </button>
+                                            </form>
+
+                                            {{-- Live cost calculator script --}}
+                                            <script>
+                                            (function(){
+                                                const pricePerDay = {{ $car->rent_price_per_day }};
+                                                const minDays     = {{ $car->rent_min_days ?? 1 }};
+                                                const maxDays     = {{ $car->rent_max_days ?? 'null' }};
+                                                const pickupEl    = document.getElementById('pickup-date-input');
+                                                const returnEl    = document.getElementById('return-date-input');
+                                                const preview     = document.getElementById('rental-cost-preview');
+                                                const amountEl    = document.getElementById('rental-cost-amount');
+                                                const daysEl      = document.getElementById('rental-cost-days');
+
+                                                function update() {
+                                                    if (!pickupEl.value || !returnEl.value) { preview.classList.add('hidden'); return; }
+                                                    const pickup = new Date(pickupEl.value);
+                                                    const ret    = new Date(returnEl.value);
+                                                    const days   = Math.round((ret - pickup) / 86400000);
+                                                    if (days <= 0) { preview.classList.add('hidden'); return; }
+                                                    const total  = days * pricePerDay;
+                                                    amountEl.textContent = 'NRs ' + total.toLocaleString();
+                                                    let note = days + ' day' + (days !== 1 ? 's' : '') + ' × NRs ' + pricePerDay.toLocaleString();
+                                                    if (maxDays && days > maxDays) note += ' ⚠ exceeds max ' + maxDays + ' days';
+                                                    if (days < minDays) note += ' ⚠ min ' + minDays + ' days required';
+                                                    daysEl.textContent = note;
+                                                    preview.classList.remove('hidden');
+                                                    // Update return date min to be after pickup
+                                                    returnEl.min = new Date(pickup.getTime() + 86400000).toISOString().split('T')[0];
+                                                }
+                                                pickupEl.addEventListener('change', update);
+                                                returnEl.addEventListener('change', update);
+                                            })();
+                                            </script>
+                                        @endif
+                                    @else
+                                        <p class="text-center text-[12px] text-slate-400 font-bold">You must be a buyer to rent this car. Log in via a buyer account.</p>
+                                    @endif
+                                @else
+                                    <a href="{{ route('login') }}"
+                                        class="block w-full py-4 rounded-xl bg-slate-900 text-white text-[13px] font-black uppercase italic tracking-widest text-center hover:bg-blue-600 transition-all shadow-lg">
+                                        Login to Rent
+                                    </a>
+                                    <a href="{{ route('register') }}"
+                                        class="block w-full py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[12px] font-black uppercase tracking-widest text-center hover:bg-slate-50 transition-all">
+                                        Create Free Account
+                                    </a>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
+                    @endif {{-- end isRentable --}}
+
+                    {{-- Tab switching script --}}
+                    @if($car->isSaleable() && $car->isRentable())
+                    <script>
+                    function switchTab(tab) {
+                        const buyPanel  = document.getElementById('panel-buy');
+                        const rentPanel = document.getElementById('panel-rent');
+                        const buyTab    = document.getElementById('tab-buy');
+                        const rentTab   = document.getElementById('tab-rent');
+                        if (tab === 'buy') {
+                            buyPanel.classList.remove('hidden');
+                            rentPanel.classList.add('hidden');
+                            buyTab.className  = buyTab.className.replace('text-slate-500 hover:bg-slate-50', 'bg-slate-900 text-white');
+                            rentTab.className = rentTab.className.replace('bg-slate-900 text-white', 'text-slate-500 hover:bg-slate-50');
+                        } else {
+                            rentPanel.classList.remove('hidden');
+                            buyPanel.classList.add('hidden');
+                            rentTab.className  = rentTab.className.replace('text-slate-500 hover:bg-slate-50', 'bg-slate-900 text-white');
+                            buyTab.className   = buyTab.className.replace('bg-slate-900 text-white', 'text-slate-500 hover:bg-slate-50');
+                        }
+                    }
+                    // Auto-switch to rent tab if URL hash is #rent-car
+                    document.addEventListener('DOMContentLoaded', function() {
+                        if (window.location.hash === '#rent-car') switchTab('rent');
+                    });
+                    </script>
+                    @endif
 
                     {{-- Seller card --}}
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">

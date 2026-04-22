@@ -115,6 +115,20 @@
                                 class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingPreOrders }}</span>
                         @endif
                     </a>
+
+                    <a href="{{ route('business.rentals.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
+                {{ request()->routeIs('business.rentals*') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Rentals
+                        @php $pendingRentals = \App\Models\CarRental::where('owner_id', auth()->id())->where('status', 'pending')->count(); @endphp
+                        @if ($pendingRentals > 0)
+                            <span class="ml-auto text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingRentals }}</span>
+                        @endif
+                    </a>
                 @endcan
 
                 <a href="{{ route('business.negotiations.index') }}"

@@ -366,6 +366,65 @@
                     </div>
                 </div>
 
+                {{-- Listing Type --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Listing Type <span class="text-red-400">*</span></p>
+                    <p class="text-xs text-slate-400 font-medium mb-4">Choose how buyers can engage with this listing.</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        @foreach(['sale' => ['label' => 'For Sale', 'desc' => 'Buyers can purchase', 'icon' => '🏷️'], 'rent' => ['label' => 'For Rent', 'desc' => 'Buyers can rent', 'icon' => '📅'], 'both' => ['label' => 'Both', 'desc' => 'Sale & rental', 'icon' => '⚡']] as $val => $opt)
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="listing_type" value="{{ $val }}" class="sr-only peer"
+                                {{ old('listing_type', 'sale') === $val ? 'checked' : '' }}>
+                            <div class="border-2 border-slate-200 rounded-xl p-3 text-center transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-slate-300">
+                                <span class="text-xl">{{ $opt['icon'] }}</span>
+                                <p class="text-[11px] font-black text-slate-900 uppercase tracking-tight mt-1">{{ $opt['label'] }}</p>
+                                <p class="text-[10px] text-slate-400 font-medium mt-0.5">{{ $opt['desc'] }}</p>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                    @error('listing_type')<p class="text-red-500 text-xs font-bold mt-2">{{ $message }}</p>@enderror
+
+                    {{-- Rental fields — revealed when rent or both is selected --}}
+                    <div id="rental-fields" class="{{ in_array(old('listing_type'), ['rent','both']) ? '' : 'hidden' }} mt-5 pt-5 border-t border-slate-100 space-y-4">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rental Settings</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daily Rate (NRs) <span class="text-red-400">*</span></label>
+                                <input type="number" name="rent_price_per_day" value="{{ old('rent_price_per_day') }}" min="1" placeholder="e.g. 3000"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-blue-400 focus:bg-white transition-all">
+                                @error('rent_price_per_day')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Security Deposit (NRs)</label>
+                                <input type="number" name="rent_deposit" value="{{ old('rent_deposit') }}" min="0" placeholder="e.g. 10000"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-blue-400 focus:bg-white transition-all">
+                                @error('rent_deposit')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Min Days</label>
+                                <input type="number" name="rent_min_days" value="{{ old('rent_min_days', 1) }}" min="1" placeholder="1"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-blue-400 focus:bg-white transition-all">
+                                @error('rent_min_days')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Max Days <span class="normal-case font-medium text-slate-300">(blank = no limit)</span></label>
+                                <input type="number" name="rent_max_days" value="{{ old('rent_max_days') }}" min="1" placeholder="e.g. 30"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-blue-400 focus:bg-white transition-all">
+                                @error('rent_max_days')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                    (function(){
+                        const radios = document.querySelectorAll('input[name="listing_type"]');
+                        const panel  = document.getElementById('rental-fields');
+                        function toggle(){ const v = document.querySelector('input[name="listing_type"]:checked')?.value; panel.classList.toggle('hidden', !['rent','both'].includes(v)); }
+                        radios.forEach(r => r.addEventListener('change', toggle));
+                    })();
+                    </script>
+                </div>
+
                 {{-- Submit --}}
                 <button type="submit"
                     class="w-full flex items-center justify-center gap-3 bg-slate-900 text-white py-4 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-900">

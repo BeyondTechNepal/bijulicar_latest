@@ -81,7 +81,7 @@
                     @if($alreadyReviewed)
                         <span class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest">✓ Done</span>
                     @else
-                        <a href="{{ route('buyer.reviews.create', $purchase->order->car) }}"
+                        <a href="{{ route('buyer.reviews.create', ['car_id' => $purchase->order->car->id]) }}"
                             class="inline-block text-[10px] font-black px-2.5 py-1.5 bg-slate-900 text-white rounded-lg uppercase tracking-widest hover:bg-[#16a34a] transition-all">
                             Review
                         </a>

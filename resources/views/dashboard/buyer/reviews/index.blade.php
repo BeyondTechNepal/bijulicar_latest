@@ -7,7 +7,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer Portal</p>
-            <p class="text-sm font-bold text-slate-600 mt-0.5">Reviews you have written for purchased vehicles.</p>
+            <p class="text-sm font-bold text-slate-600 mt-0.5">Reviews you have written for purchased and rented vehicles.</p>
         </div>
     </div>
 
@@ -20,15 +20,24 @@
                 {{-- Car info + stars --}}
                 <div class="flex items-start gap-4 flex-1">
                     <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase shrink-0">
-                        EV
+                        {{ $review->car ? strtoupper($review->car->drivetrain) : 'EV' }}
                     </div>
                     <div>
-                        <p class="text-sm font-black text-slate-900 uppercase italic tracking-tight">
-                            {{ $review->car ? $review->car->displayName() : 'Listing removed' }}
-                        </p>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-sm font-black text-slate-900 uppercase italic tracking-tight">
+                                {{ $review->car ? $review->car->displayName() : 'Listing removed' }}
+                            </p>
+                            {{-- Source badge --}}
+                            <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider {{ $review->sourceBadgeClasses() }}">
+                                {{ $review->sourceLabel() }}
+                            </span>
+                        </div>
                         <p class="text-[#f59e0b] text-base mt-1 tracking-wider">{{ $review->starDisplay() }}</p>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">
                             {{ $review->rating }}/5 · {{ $review->created_at->format('d M Y') }}
+                            @if($review->isRentalReview() && $review->carRental)
+                                · Rented {{ $review->carRental->pickup_date->format('d M') }}–{{ $review->carRental->return_date->format('d M Y') }}
+                            @endif
                         </p>
                         @if($review->body)
                         <p class="text-sm text-slate-600 font-medium mt-3 leading-relaxed">
@@ -77,12 +86,18 @@
         <p class="text-5xl mb-4">⭐</p>
         <p class="font-black text-slate-900 uppercase italic tracking-tight text-lg">No reviews yet</p>
         <p class="text-sm text-slate-500 font-medium mt-2 mb-6">
-            Complete a purchase to unlock the ability to write a review.
+            Complete a purchase or rental to unlock the ability to write a review.
         </p>
-        <a href="{{ route('buyer.purchases.index') }}"
-            class="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg">
-            View My Purchases →
-        </a>
+        <div class="flex items-center justify-center gap-3 flex-wrap">
+            <a href="{{ route('buyer.purchases.index') }}"
+                class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg">
+                View My Purchases →
+            </a>
+            <a href="{{ route('buyer.rentals.index') }}"
+                class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-blue-700 transition-all shadow-lg">
+                View My Rentals →
+            </a>
+        </div>
     </div>
     @endif
 

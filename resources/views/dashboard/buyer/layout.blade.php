@@ -292,10 +292,10 @@
             </h1>
         </div>
         
-        <a href="{{ route('marketplace') }}"
+        <!-- <a href="{{ route('marketplace') }}"
             class="inline-flex items-center gap-1.5 bg-slate-900 text-white px-3 py-2 rounded-xl text-[10px] sm:text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shrink-0 whitespace-nowrap">
             ⚡ <span class="hidden xs:inline">Browse</span> EVs
-        </a>
+        </a> -->
     </header>
 
     {{-- Flash messages --}}

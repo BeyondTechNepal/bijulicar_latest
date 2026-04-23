@@ -115,7 +115,7 @@
 
                     <button type="submit"
                         class="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase italic tracking-widest text-xs hover:bg-[#16a34a] transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200 group">
-                        Authorize Entry
+                        Login
                         <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -126,8 +126,7 @@
             </div>
 
             <p class="mt-8 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                New to the community? <a href="{{ route('register') }}" class="text-[#16a34a] hover:underline ml-1">Join
-                    Now</a>
+                New to the community? <a href="{{ route('register') }}" class="text-[#16a34a] hover:underline ml-1">Register</a>
             </p>
         </section>
 

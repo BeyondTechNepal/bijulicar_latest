@@ -65,7 +65,7 @@
                                         <span
                                             class="inline-block mt-0.5 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg
                                         {{ $loc->type === 'ev-station' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-violet-50 text-violet-600 border border-violet-200' }}">
-                                            {{ $loc->type === 'ev-station' ? '⚡ EV Station' : '🔧 Garage' }}
+                                            {{ $loc->type === 'ev-station' ? '⚡ Charging Station' : '🔧 Garage' }}
                                         </span>
                                     </div>
                                     <div>
@@ -182,7 +182,7 @@
                                     <span
                                         class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg
                                 {{ $loc->type === 'ev-station' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-violet-50 text-violet-600 border border-violet-200' }}">
-                                        {{ $loc->type === 'ev-station' ? '⚡ EV Station' : '🔧 Garage' }}
+                                        {{ $loc->type === 'ev-station' ? '⚡ Charging Station' : '🔧 Garage' }}
                                     </span>
                                 </td>
                                 <td class="px-5 py-3.5 text-xs text-gray-700">{{ $loc->address }}</td>

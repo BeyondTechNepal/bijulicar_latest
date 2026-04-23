@@ -101,7 +101,7 @@
                         $roleOptions = [
                             'buyer'      => ['icon' => '<i class="fa-solid fa-cart-arrow-down" style="color: rgb(46, 204, 113);"></i>', 'label' => 'Buyer'],
                             'seller'     => ['icon' => '<i class="fa-solid fa-car-side" style="color: #3498db;"></i>',                  'label' => 'Seller'],
-                            'ev-station' => ['icon' => '<i class="fa-solid fa-charging-station" style="color: #f1c40f;"></i>',          'label' => 'EV Station'],
+                            'ev-station' => ['icon' => '<i class="fa-solid fa-charging-station" style="color: #f1c40f;"></i>',          'label' => 'Charging Station'],
                             'garage'     => ['icon' => '<i class="fa-solid fa-screwdriver-wrench" style="color: #9b59b6;"></i>',        'label' => 'Garage'],
                             'business'   => ['icon' => '<i class="fa-solid fa-building" style="color: #34495e;"></i>',                 'label' => 'Business'],
                         ];

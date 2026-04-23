@@ -3,20 +3,20 @@
         <div class="flex justify-between h-20">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 no-underline group">
-        <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-[#16a34a] transition-all duration-500 shadow-lg group-hover:rotate-[360deg]">
-            <span class="text-white font-bold text-sm italic">BC</span>
-        </div>
-        <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
-    </a>
-</div>
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 no-underline group">
+                        <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-[#16a34a] transition-all duration-500 shadow-lg group-hover:rotate-[360deg]">
+                            <span class="text-white font-bold text-sm italic">BC</span>
+                        </div>
+                        <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
+                    </a>
+                </div>
 
                 <div class="hidden space-x-4 sm:-my-px sm:ms-12 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
                         class="text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#16a34a]">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    </div>
+                </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">

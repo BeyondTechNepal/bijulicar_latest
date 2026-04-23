@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Review;
 
 class CarRental extends Model
 {
@@ -63,6 +65,12 @@ class CarRental extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /** Reviews written for this specific rental booking. */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'car_rental_id');
     }
 
     // ── Display helpers ───────────────────────────────────────────────

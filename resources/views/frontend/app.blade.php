@@ -31,17 +31,34 @@
     {{-- import for spreadsheet --}}
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
+        
+
+        <style>
+
+        /* Hide scrollbar utility */
+        .scrollbar-hide-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide-nav {
+            -ms-overflow-style: none;
+            /* IE & Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+    </style>
+
 </head>
 
 <body class="flex flex-col min-h-screen bg-white">
 
-    @include('frontend.layouts.navigation')
+@include('frontend.layouts.navigation')
 
-    <main class="flex-grow">
-        @yield('content')
-    </main>
+<main class="flex-grow">
+    @yield('content')
+</main>
 
-    @include('frontend.layouts.footer')
+@include('frontend.layouts.footer')
 
 </body>
 

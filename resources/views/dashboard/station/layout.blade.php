@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>@yield('title', 'Station Panel') — BijuliCar</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         /* Mobile Sidebar Animation */

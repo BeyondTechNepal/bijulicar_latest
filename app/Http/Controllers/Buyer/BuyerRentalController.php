@@ -16,7 +16,10 @@ class BuyerRentalController extends Controller
     {
         $rentals = Auth::user()
             ->rentalBookings()
-            ->with(['car' => fn ($q) => $q->withTrashed()])
+            ->with([
+                'car'     => fn ($q) => $q->withTrashed(),
+                'reviews' => fn ($q) => $q->where('buyer_id', Auth::id()),
+            ])
             ->latest()
             ->paginate(10);
 

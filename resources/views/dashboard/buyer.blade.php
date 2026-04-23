@@ -5,11 +5,15 @@
 @section('content')
     @php
         $user = auth()->user();
-        $totalOrders = $user->orders()->count();
-        $pendingOrders = $user->orders()->where('status', 'pending')->count();
-        $totalPurchases = $user->purchases()->count();
-        $totalReviews = $user->reviews()->count();
-        $recentOrders = $user->orders()->with(['car' => fn($q) => $q->withTrashed()])->latest('ordered_at')->take(4)->get();
+        $totalOrders        = $user->orders()->count();
+        $pendingOrders      = $user->orders()->where('status', 'pending')->count();
+        $totalPurchases     = $user->purchases()->count();
+        $totalReviews       = $user->reviews()->count();
+        $totalRentals       = $user->rentalBookings()->count();
+        $activeRentals      = $user->rentalBookings()->whereIn('status', ['confirmed', 'active'])->count();
+        $pendingRentals     = $user->rentalBookings()->where('status', 'pending')->count();
+        $recentOrders       = $user->orders()->with(['car' => fn($q) => $q->withTrashed()])->latest('ordered_at')->take(4)->get();
+        $recentRentals      = $user->rentalBookings()->with(['car' => fn($q) => $q->withTrashed()])->latest()->take(3)->get();
     @endphp
 
     {{-- Welcome banner --}}
@@ -25,7 +29,7 @@
     </div>
 
     {{-- Stats --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
         <div class="bg-white border border-slate-200 rounded-2xl p-5">
             <div class="text-2xl font-black text-slate-900">{{ $totalOrders }}</div>
             <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Total Orders</div>
@@ -42,10 +46,18 @@
             <div class="text-2xl font-black text-slate-700">{{ $totalReviews }}</div>
             <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Reviews Written</div>
         </div>
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+            <div class="text-2xl font-black text-blue-700">{{ $totalRentals }}</div>
+            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Total Rentals</div>
+        </div>
+        <div class="{{ $activeRentals > 0 ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200' }} border rounded-2xl p-5">
+            <div class="text-2xl font-black {{ $activeRentals > 0 ? 'text-green-600' : 'text-slate-400' }}">{{ $activeRentals }}</div>
+            <div class="text-[10px] font-black {{ $activeRentals > 0 ? 'text-green-500' : 'text-slate-400' }} uppercase tracking-widest mt-1">Active Rentals</div>
+        </div>
     </div>
 
     {{-- Quick action cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         @can('manage own orders')
             <a href="{{ route('buyer.orders.index') }}"
                 class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md hover:border-slate-300 transition-all block group">
@@ -82,6 +94,33 @@
                 </div>
                 <p class="font-black text-slate-900 text-sm uppercase italic tracking-tight">My Purchases</p>
                 <p class="text-xs text-slate-500 font-medium mt-0.5">View completed purchases</p>
+            </a>
+        @endcan
+
+        @can('manage own orders')
+            <a href="{{ route('buyer.rentals.index') }}"
+                class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md hover:border-blue-200 transition-all block group">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        @if($pendingRentals > 0)
+                            <span class="text-[10px] bg-yellow-100 text-yellow-700 border border-yellow-200 px-1.5 py-0.5 rounded-full font-black">{{ $pendingRentals }} pending</span>
+                        @elseif($activeRentals > 0)
+                            <span class="text-[10px] bg-green-100 text-green-700 border border-green-200 px-1.5 py-0.5 rounded-full font-black">{{ $activeRentals }} active</span>
+                        @endif
+                        <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="font-black text-slate-900 text-sm uppercase italic tracking-tight">My Rentals</p>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">Track and manage rental bookings</p>
             </a>
         @endcan
 
@@ -151,6 +190,56 @@
                 class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all">
                 Browse Marketplace →
             </a>
+        </div>
+    @endif
+
+    {{-- Recent Rentals --}}
+    @if($recentRentals->isNotEmpty())
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 mt-6">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-2">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recent Rentals</p>
+                    @if($pendingRentals > 0)
+                        <span class="text-[10px] bg-yellow-100 text-yellow-700 border border-yellow-200 px-2 py-0.5 rounded-full font-black">{{ $pendingRentals }} pending</span>
+                    @endif
+                    @if($activeRentals > 0)
+                        <span class="text-[10px] bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-black">{{ $activeRentals }} active</span>
+                    @endif
+                </div>
+                <a href="{{ route('buyer.rentals.index') }}"
+                    class="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">View All →</a>
+            </div>
+            <div class="space-y-3">
+                @foreach($recentRentals as $rental)
+                    <a href="{{ route('buyer.rentals.show', $rental) }}"
+                        class="flex items-center justify-between py-3 px-4 -mx-4 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50/60 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-base shrink-0">🚗</div>
+                            <div>
+                                <p class="text-sm font-black text-slate-900">{{ $rental->carDisplayName() }}</p>
+                                <p class="text-[11px] text-slate-400 font-medium mt-0.5">
+                                    {{ $rental->pickup_date->format('d M') }} → {{ $rental->return_date->format('d M Y') }}
+                                    · {{ $rental->total_days }} days
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <p class="text-sm font-black text-slate-700 hidden sm:block">NRs {{ number_format($rental->total_price) }}</p>
+                            <span @class([
+                                'text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider',
+                                'bg-yellow-100 text-yellow-700' => $rental->status === 'pending',
+                                'bg-blue-100 text-blue-700'     => $rental->status === 'confirmed',
+                                'bg-green-100 text-green-700'   => $rental->status === 'active',
+                                'bg-slate-100 text-slate-600'   => $rental->status === 'completed',
+                                'bg-red-100 text-red-600'       => $rental->status === 'cancelled',
+                            ])>{{ $rental->statusLabel() }}</span>
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
         </div>
     @endif
 

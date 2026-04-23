@@ -94,9 +94,25 @@
                         <p class="text-[11px] text-slate-400 font-medium mt-1">{{ $review->car ? $review->car->location : '' }}</p>
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-slate-100">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Original Rating</p>
-                    <p class="text-[#f59e0b] text-lg mt-1">{{ $review->starDisplay() }}</p>
+                <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review Type</p>
+                        <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider {{ $review->sourceBadgeClasses() }}">
+                            {{ $review->sourceLabel() }}
+                        </span>
+                    </div>
+                    @if($review->isRentalReview() && $review->carRental)
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rental Period</p>
+                        <p class="text-xs font-bold text-slate-700">
+                            {{ $review->carRental->pickup_date->format('d M') }} – {{ $review->carRental->return_date->format('d M Y') }}
+                        </p>
+                    </div>
+                    @endif
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Original Rating</p>
+                        <p class="text-[#f59e0b] text-lg">{{ $review->starDisplay() }}</p>
+                    </div>
                 </div>
             </div>
         </div>

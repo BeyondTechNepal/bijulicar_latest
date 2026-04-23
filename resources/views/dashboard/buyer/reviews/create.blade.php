@@ -22,6 +22,9 @@
                 <form method="POST" action="{{ route('buyer.reviews.store') }}">
                     @csrf
                     <input type="hidden" name="car_id" value="{{ $car->id }}">
+                    @if($rental)
+                        <input type="hidden" name="car_rental_id" value="{{ $rental->id }}">
+                    @endif
 
                     {{-- Star rating --}}
                     <div class="mb-6">
@@ -61,7 +64,7 @@
                         <textarea
                             name="body"
                             rows="5"
-                            placeholder="Share your experience with this vehicle and seller..."
+                            placeholder="{{ $rental ? 'Share your rental experience with this vehicle and owner...' : 'Share your experience with this vehicle and seller...' }}"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all resize-none">{{ old('body') }}</textarea>
                         @error('body')
                             <p class="text-red-500 text-xs font-bold mt-2">{{ $message }}</p>
@@ -79,7 +82,7 @@
             </div>
         </div>
 
-        {{-- Car summary --}}
+        {{-- Car / Rental summary --}}
         <div>
             <div class="bg-white border border-slate-200 rounded-2xl p-6">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Reviewing</p>
@@ -97,10 +100,42 @@
                         @endif
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-slate-100">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Seller</p>
-                    <p class="text-sm font-black text-slate-700 mt-1">{{ $car->seller->name }}</p>
+
+                @if($rental)
+                {{-- Rental details --}}
+                <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review Type</p>
+                        <span class="text-[10px] font-black px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 uppercase tracking-wider">Rental</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rental Period</p>
+                        <p class="text-xs font-bold text-slate-700">
+                            {{ $rental->pickup_date->format('d M') }} – {{ $rental->return_date->format('d M Y') }}
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Duration</p>
+                        <p class="text-xs font-bold text-slate-700">{{ $rental->total_days }} days</p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Owner</p>
+                        <p class="text-xs font-bold text-slate-700">{{ $rental->owner?->name ?? '—' }}</p>
+                    </div>
                 </div>
+                @else
+                {{-- Purchase / seller details --}}
+                <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review Type</p>
+                        <span class="text-[10px] font-black px-2.5 py-1 rounded-full bg-[#4ade80]/15 text-[#16a34a] uppercase tracking-wider">Purchase</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Seller</p>
+                        <p class="text-xs font-bold text-slate-700">{{ $car->seller->name }}</p>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
 
@@ -135,7 +170,6 @@
         });
     });
 
-    // Restore on page load if old() value exists
     const checked = document.querySelector('input[name="rating"]:checked');
     if (checked) highlight(parseInt(checked.value));
 </script>

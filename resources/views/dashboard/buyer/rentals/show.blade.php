@@ -202,9 +202,26 @@
                 @endif
 
                 @if($carRental->isCompleted())
+                @php
+                    $hasReviewed = \App\Models\Review::where('buyer_id', auth()->id())
+                        ->where('car_rental_id', $carRental->id)
+                        ->exists();
+                @endphp
                 <p class="text-center text-[11px] font-black text-green-600 uppercase tracking-widest py-2">
                     ✓ Rental Completed
                 </p>
+                @can('write reviews')
+                    @if(!$hasReviewed)
+                        <a href="{{ route('buyer.reviews.create', ['rental_id' => $carRental->id]) }}"
+                            class="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all block text-center">
+                            ⭐ Write a Review
+                        </a>
+                    @else
+                        <p class="w-full flex items-center justify-center gap-2 bg-slate-50 text-slate-400 border border-slate-200 py-3 rounded-xl text-[11px] font-black uppercase italic tracking-widest text-center">
+                            ✓ Review Submitted
+                        </p>
+                    @endif
+                @endcan
                 @endif
             </div>
 

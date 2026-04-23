@@ -183,7 +183,7 @@
                             ->where('car_id', $order->car_id)->exists();
                     @endphp
                     @if(!$alreadyReviewed)
-                    <a href="{{ route('buyer.reviews.create', $order->car) }}"
+                    <a href="{{ route('buyer.reviews.create', ['car_id' => $order->car->id]) }}"
                         class="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg block text-center">
                         ⭐ Write a Review
                     </a>

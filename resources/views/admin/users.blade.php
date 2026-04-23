@@ -32,7 +32,7 @@
                     <button @click="tab = 'ev-station'"
                         :class="tab === 'ev-station' ? 'bg-purple-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'"
                         class="px-4 py-2 rounded-lg text-xs font-bold transition-all">
-                        EV Stations
+                        Charging Stations
                     </button>
                     <button @click="tab = 'garage'"
                         :class="tab === 'garage' ? 'bg-purple-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'"
@@ -122,7 +122,7 @@
                                                     <option value="business" {{ $role === 'business' ? 'selected' : '' }}>
                                                         Business</option>
                                                     <option value="ev-station" {{ $role === 'ev-station' ? 'selected' : '' }}>
-                                                        EV Station
+                                                        Charging Station
                                                     </option>
                                                     <option value="garage" {{ $role === 'garage' ? 'selected' : '' }}>Garage
                                                     </option>

@@ -97,24 +97,27 @@
 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Account Type</label>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2"> 
-                        @foreach([
-                            'buyer' => '<i class="fa-solid fa-cart-arrow-down" style="color: rgb(46, 204, 113);"></i>', 
-                            'seller' => '<i class="fa-solid fa-car-side" style="color: #3498db;"></i>', 
-                            'charging-station' => '<i class="fa-solid fa-charging-station" style="color: #f1c40f;"></i>', 
-                            'garage' => '<i class="fa-solid fa-screwdriver-wrench" style="color: #9b59b6;"></i>', 
-                            'business' => '<i class="fa-solid fa-building" style="color: #34495e;"></i>'
-                        ] as $role => $icon)
+                    @php
+                        $roleOptions = [
+                            'buyer'      => ['icon' => '<i class="fa-solid fa-cart-arrow-down" style="color: rgb(46, 204, 113);"></i>', 'label' => 'Buyer'],
+                            'seller'     => ['icon' => '<i class="fa-solid fa-car-side" style="color: #3498db;"></i>',                  'label' => 'Seller'],
+                            'ev-station' => ['icon' => '<i class="fa-solid fa-charging-station" style="color: #f1c40f;"></i>',          'label' => 'Charging Station'],
+                            'garage'     => ['icon' => '<i class="fa-solid fa-screwdriver-wrench" style="color: #9b59b6;"></i>',        'label' => 'Garage'],
+                            'business'   => ['icon' => '<i class="fa-solid fa-building" style="color: #34495e;"></i>',                 'label' => 'Business'],
+                        ];
+                    @endphp
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        @foreach($roleOptions as $role => $opt)
                         <label class="group cursor-pointer">
                             <input type="radio" name="role" value="{{ $role }}" class="sr-only peer" {{ old('role') === $role ? 'checked' : '' }}>
                             <div class="relative h-full border border-slate-100 rounded-xl p-2 text-center transition-all peer-checked:border-[#16a34a] peer-checked:bg-green-50/50 hover:shadow-sm flex flex-col items-center justify-center">
                                 
                                 <div class="text-base mb-1 text-slate-600 peer-checked:text-[#16a34a] transition-colors">
-                                    {!! $icon !!}
+                                    {!! $opt['icon'] !!}
                                 </div>
                                 
                                 <div class="font-black text-[10px] text-slate-900 uppercase tracking-tighter leading-none">
-                                    {{ ucfirst(str_replace('-', ' ', $role)) }}
+                                    {{ $opt['label'] }}
                                 </div>
                                 
                                 <div class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#16a34a] opacity-0 peer-checked:opacity-100 transition-opacity"></div>

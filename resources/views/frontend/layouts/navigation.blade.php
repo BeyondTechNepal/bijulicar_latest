@@ -68,7 +68,7 @@
                         $roleLabel = $user->hasRole('buyer') ? 'Buyer'
                             : ($user->hasRole('seller') ? 'Seller'
                                 : ($user->hasRole('business') ? 'Business'
-                                    : ($user->hasRole('ev-station') ? 'EV Station'
+                                    : ($user->hasRole('ev-station') ? 'Charging Station'
                                         : ($user->hasRole('garage') ? 'Garage' : 'User'))));
                         $unreadCount = $user->unreadNotificationCount();
                     @endphp
@@ -249,7 +249,7 @@
                             $roleLabel = $user->hasRole('buyer') ? 'Buyer'
                                 : ($user->hasRole('seller') ? 'Seller'
                                     : ($user->hasRole('business') ? 'Business'
-                                        : ($user->hasRole('ev-station') ? 'EV Station'
+                                        : ($user->hasRole('ev-station') ? 'Charging Station'
                                             : ($user->hasRole('garage') ? 'Garage' : 'User'))));
                             $unreadCount = $unreadCount ?? $user->unreadNotificationCount();
                         @endphp
@@ -445,4 +445,3 @@
         }
     });
 </script>
-

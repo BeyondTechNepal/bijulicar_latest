@@ -16,7 +16,7 @@ class BuyerPreOrderController extends Controller
     {
         $preOrders = Auth::user()
             ->preOrders()
-            ->with('car')
+            ->with(['car' => fn($q) => $q->withTrashed()])
             ->latest('placed_at')
             ->paginate(10);
 

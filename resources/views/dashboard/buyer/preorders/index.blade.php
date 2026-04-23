@@ -36,10 +36,12 @@
                     ⚡
                 </div>
                 <div>
-                    <p class="text-sm font-black text-slate-900">{{ $preOrder->car->displayName() }}</p>
-                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">
-                        {{ ucfirst($preOrder->car->condition) }} · {{ $preOrder->car->location }}
-                    </p>
+                    <p class="text-sm font-black text-slate-900">
+                    {{ $preOrder->car?->displayName() ?? 'Car no longer available' }}
+                </p>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5">
+                    {{ $preOrder->car ? ucfirst($preOrder->car->condition) . ' · ' . $preOrder->car->location : '—' }}
+                </p>
                 </div>
             </div>
 

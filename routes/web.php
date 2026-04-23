@@ -100,23 +100,27 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
         ->name('notifications.readAll');
 
-    // ── Public booking — available to ALL authenticated roles ──────────
-    // Any buyer, seller, business, ev-station, or garage user can book
+    // ── Public booking — requires verified email + approved account ─────
+    // Moved inside verified + verified.account so unverified/unapproved
+    // users cannot book even if they are logged in.
+    Route::middleware(['verified', 'verified.account'])->group(function () {
 
-    // Book a garage appointment (submitted from the map popup)
-    Route::post('/book/garage', [PublicBookingController::class, 'bookGarage'])->name('booking.garage');
+        // Book a garage appointment (submitted from the map popup)
+        Route::post('/book/garage', [PublicBookingController::class, 'bookGarage'])->name('booking.garage');
 
-    // Cancel a pending garage appointment (Bug 9 fix)
-    Route::delete('/book/garage/{appointment}/cancel', [PublicBookingController::class, 'cancelAppointment'])->name('booking.garage.cancel');
+        // Cancel a pending garage appointment
+        Route::delete('/book/garage/{appointment}/cancel', [PublicBookingController::class, 'cancelAppointment'])->name('booking.garage.cancel');
 
-    // Request an EV charging slot (submitted from the map popup)
-    Route::post('/book/ev-slot', [PublicBookingController::class, 'requestSlot'])->name('booking.slot');
+        // Request an EV charging slot (submitted from the map popup)
+        Route::post('/book/ev-slot', [PublicBookingController::class, 'requestSlot'])->name('booking.slot');
 
-    // Cancel a pending EV slot request (Bug 7 fix)
-    Route::delete('/book/ev-slot/{slot}/cancel', [PublicBookingController::class, 'cancelSlot'])->name('booking.slot.cancel');
+        // Cancel a pending EV slot request
+        Route::delete('/book/ev-slot/{slot}/cancel', [PublicBookingController::class, 'cancelSlot'])->name('booking.slot.cancel');
 
-    // My bookings page — shows the user's garage appointments + EV slot requests
-    Route::get('/my-bookings', [PublicBookingController::class, 'myAppointments'])->name('booking.mine');
+        // My bookings page — shows the user's garage appointments + EV slot requests
+        Route::get('/my-bookings', [PublicBookingController::class, 'myAppointments'])->name('booking.mine');
+
+    });
 
     // ── Pending approval screen ────────────────────────────────────────
     Route::get('/pending-approval', function () {

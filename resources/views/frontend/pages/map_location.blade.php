@@ -250,9 +250,17 @@
 
     <script>
         // ── Auth state passed from server ──────────────────────────────────
-        const IS_AUTH   = {{ auth()->check() ? 'true' : 'false' }};
-        const AUTH_ID   = {{ auth()->id() ?? 'null' }};
-        const LOGIN_URL = "{{ route('login') }}";
+        const IS_AUTH     = {{ auth()->check() ? 'true' : 'false' }};
+        const IS_VERIFIED = {{ (auth()->check() && auth()->user()->hasVerifiedEmail() && optional(
+            auth()->user()->hasRole('buyer')      ? auth()->user()->buyerVerification      :
+           (auth()->user()->hasRole('seller')     ? auth()->user()->sellerVerification     :
+           (auth()->user()->hasRole('business')   ? auth()->user()->businessVerification   :
+           (auth()->user()->hasRole('ev-station') ? auth()->user()->stationVerification    :
+           (auth()->user()->hasRole('garage')     ? auth()->user()->garageVerification     : null))))
+        )->isApproved()) ? 'true' : 'false' }};
+        const AUTH_ID     = {{ auth()->id() ?? 'null' }};
+        const LOGIN_URL   = "{{ route('login') }}";
+        const VERIFY_URL  = "{{ auth()->check() ? route('verification.notice') : route('login') }}";
         const BOOK_GARAGE_URL = "{{ route('booking.garage') }}";
         const BOOK_SLOT_URL   = "{{ route('booking.slot') }}";
         const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
@@ -430,14 +438,19 @@
                 }
 
                 if (avail > 0) {
-                    bookBtn = IS_AUTH
+                    bookBtn = IS_VERIFIED
                         ? `<button onclick="openSlotModal(${loc.user_id}, '${escHtml(loc.name)}', '${escHtml(loc.address)}')"
                                style="margin-top:12px;width:100%;background:#16a34a;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;border:none;cursor:pointer">
                                Request a Slot →
                            </button>`
+                        : IS_AUTH
+                        ? `<a href="${VERIFY_URL}" style="display:block;margin-top:12px;text-align:center;background:#f59e0b;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
+                               Verify account to book →
+                           </a>`
                         : `<a href="${LOGIN_URL}" style="display:block;margin-top:12px;text-align:center;background:#0f172a;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
                                Log in to book →
                            </a>`;
+                }
                 }
 
             } else if (isGarage) {
@@ -455,11 +468,15 @@
                     availBadge += ` <span class="slot-pill pill-amber">Next free ~${timeAgo(loc.next_finish_at)}</span>`;
                 }
 
-                bookBtn = IS_AUTH
+                bookBtn = IS_VERIFIED
                     ? `<button onclick="openGarageModal(${loc.user_id}, '${escHtml(loc.name)}', '${escHtml(loc.address)}')"
                            style="margin-top:12px;width:100%;background:#6366f1;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;border:none;cursor:pointer">
                            Book Appointment →
                        </button>`
+                    : IS_AUTH
+                    ? `<a href="${VERIFY_URL}" style="display:block;margin-top:12px;text-align:center;background:#f59e0b;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
+                           Verify account to book →
+                       </a>`
                     : `<a href="${LOGIN_URL}" style="display:block;margin-top:12px;text-align:center;background:#0f172a;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
                            Log in to book →
                        </a>`;

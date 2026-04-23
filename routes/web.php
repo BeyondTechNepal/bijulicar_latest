@@ -205,7 +205,7 @@ Route::middleware(['auth', 'role:buyer', 'verified.account'])
 
         // Reviews
         Route::get('/reviews', [BuyerReviewController::class, 'index'])->name('reviews.index')->middleware('permission:write reviews');
-        Route::get('/reviews/create/{car}', [BuyerReviewController::class, 'create'])->name('reviews.create')->middleware('permission:write reviews');
+        Route::get('/reviews/create', [BuyerReviewController::class, 'create'])->name('reviews.create')->middleware('permission:write reviews');
         Route::post('/reviews', [BuyerReviewController::class, 'store'])->name('reviews.store')->middleware('permission:write reviews');
         Route::get('/reviews/{review}/edit', [BuyerReviewController::class, 'edit'])->name('reviews.edit')->middleware('permission:write reviews');
         Route::patch('/reviews/{review}', [BuyerReviewController::class, 'update'])->name('reviews.update')->middleware('permission:write reviews');

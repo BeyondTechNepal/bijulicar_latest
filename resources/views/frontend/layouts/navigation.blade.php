@@ -226,8 +226,8 @@
     <div id="mobileMenu" class="fixed inset-0 z-[-1] invisible opacity-0 transition-all duration-300">
     <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="toggleMobileMenu()"></div>
 
-    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[92%] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 origin-top overflow-hidden" id="menuCard">
-        <div class="overflow-y-auto max-h-[80vh] p-5">
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[92%] bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 origin-top" id="menuCard">
+        <div class="overflow-y-auto max-h-[90dvh] p-5">
             <div class="flex flex-col space-y-1">
 
                     @auth

@@ -301,10 +301,28 @@
                     <span class="text-lg"><i class="fa-solid fa-car" style="color: rgb(55, 225, 175);"></i></span>
                 </a>
 
+                <a href="{{ route('news') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('news') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                        <span class="font-bold">News & Updates</span>
+                        <span class="text-lg"><i class="fa-solid fa-newspaper" style="color: rgb(55, 225, 175);"></i></span>
+                    </a>
+
                     <a href="{{ route('loan_calculator') }}"
                         class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('loan_calculator') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
                         <span class="font-bold">Loan Calculator</span>
                         <span class="text-lg"><i class="fa-solid fa-wallet" style="color: rgb(55, 225, 175);"></i></span>
+                    </a>
+
+                    <a href="{{ route('compare_cars') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('compare_cars') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                        <span class="font-bold">Compare Cars</span>
+                        <span class="text-lg"><i class="fa-solid fa-exchange-alt" style="color: rgb(55, 225, 175);"></i></span>
+                    </a>
+
+                    <a href="{{ route('businesses.index') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('businesses.*') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                        <span class="font-bold">Businesses</span>
+                        <span class="text-lg"><i class="fa-solid fa-user-tie" style="color: rgb(55, 225, 175);"></i></span>
                     </a>
 
                     <a href="{{ route('map_location') }}"
@@ -313,16 +331,10 @@
                         <span class="text-lg"><i class="fa-solid fa-map-location" style="color: rgb(55, 225, 175);"></i></span>
                     </a>
 
-                    <a href="{{ route('news') }}"
-                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('news') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
-                        <span class="font-bold">News & Updates</span>
-                        <span class="text-lg"><i class="fa-solid fa-newspaper" style="color: rgb(55, 225, 175);"></i></span>
-                    </a>
-
-                    <a href="{{ route('businesses.index') }}"
-                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('businesses.*') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
-                        <span class="font-bold">Businesses</span>
-                        <span class="text-lg"><i class="fa-solid fa-user-tie" style="color: rgb(55, 225, 175);"></i></span>
+                    <a href="{{ route('contact') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('contact') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                        <span class="font-bold">Contact Us</span>
+                        <span class="text-lg"><i class="fa-solid fa-phone" style="color: rgb(55, 225, 175);"></i></span>
                     </a>
 
                     <div class="h-px bg-slate-100 my-2"></div>

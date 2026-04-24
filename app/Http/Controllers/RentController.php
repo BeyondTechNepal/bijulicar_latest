@@ -56,6 +56,13 @@ class RentController extends Controller
                 ->pluck('car_id');
         }
 
+        $rentAds = \App\Models\Advertisement::with('car')
+            ->where('placement', 'rent')
+            ->where('is_active', true)
+            ->where(fn($q) => $q->whereNull('starts_at')->orWhereDate('starts_at', '<=', today()))
+            ->where(fn($q) => $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', today()))
+            ->get();
+
         return view('frontend.pages.rent', compact(
             'cars',
             'locations',
@@ -66,7 +73,8 @@ class RentController extends Controller
             'maxYear',
             'minRentPrice',
             'maxRentPrice',
-            'rentedCarIds'
+            'rentedCarIds',
+            'rentAds'
         ));
     }
 

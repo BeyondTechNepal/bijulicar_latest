@@ -14,6 +14,7 @@ class MarketplaceController extends Controller
     public function search(Request $request)
     {
         $query = Car::with(['seller', 'primaryImage'])
+            ->whereIn('listing_type', ['sale', 'both'])
             ->whereIn('status', ['available', 'upcoming'])
             ->latest();
 
@@ -136,21 +137,22 @@ class MarketplaceController extends Controller
         $activeStatuses = ['available', 'upcoming'];
 
         $query = Car::with('seller')
+            ->whereIn('listing_type', ['sale', 'both'])
             ->whereIn('status', $activeStatuses)
             ->latest();
 
         $this->applyFilters($query, $request);
 
         $cars        = $query->paginate(9)->withQueryString();
-        $locations   = Car::whereIn('status', $activeStatuses)->distinct()->pluck('location')->sort()->values();
-        $totalActive = Car::whereIn('status', $activeStatuses)->count();
+        $locations   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->pluck('location')->sort()->values();
+        $totalActive = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->count();
 
-        $brands   = Car::whereIn('status', $activeStatuses)->distinct()->orderBy('brand')->pluck('brand');
-        $models   = Car::whereIn('status', $activeStatuses)->distinct()->orderBy('model')->pluck('model');
-        $minYear  = (int) (Car::whereIn('status', $activeStatuses)->min('year') ?? date('Y'));
-        $maxYear  = (int) (Car::whereIn('status', $activeStatuses)->max('year') ?? date('Y'));
-        $minPrice = (int) (Car::whereIn('status', $activeStatuses)->min('price') ?? 0);
-        $maxPrice = (int) (Car::whereIn('status', $activeStatuses)->max('price') ?? 10000000);
+        $brands   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->orderBy('brand')->pluck('brand');
+        $models   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->orderBy('model')->pluck('model');
+        $minYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('year') ?? date('Y'));
+        $maxYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('year') ?? date('Y'));
+        $minPrice = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('price') ?? 0);
+        $maxPrice = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('price') ?? 10000000);
 
         $marketplaceAds = \App\Models\Advertisement::with('car')
             ->where('placement', 'marketplace')

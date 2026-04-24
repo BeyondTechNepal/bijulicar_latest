@@ -450,7 +450,7 @@
                         : `<a href="${LOGIN_URL}" style="display:block;margin-top:12px;text-align:center;background:#0f172a;color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 0;border-radius:10px;text-decoration:none">
                                Log in to book →
                            </a>`;
-                }
+                
                 }
 
             } else if (isGarage) {

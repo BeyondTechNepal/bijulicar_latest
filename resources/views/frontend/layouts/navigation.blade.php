@@ -296,7 +296,7 @@
                 </a>
 
                 <a href="{{ route('rent') }}"
-                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('rent') ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-700' }}">
+                    class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('rent') ? 'bg-blue-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
                     <span class="font-bold">Rent a Car</span>
                     <span class="text-lg"><i class="fa-solid fa-car" style="color: rgb(55, 225, 175);"></i></span>
                 </a>

@@ -65,7 +65,7 @@ class Advertisement extends Model
         'rent' => [
             'label' => 'Rent Page (Horizontal Banner)',
             'image' => null,
-            'video' => 'https://player.vimeo.com/video/1182327058?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
+            'video' => 'https://player.vimeo.com/video/1186137101?autoplay=1&muted=1&loop=1&controls=0&title=0&byline=0&portrait=0&badge=0',
         ],
         'news_sidebar' => [
             'label' => 'News Page — Right Sidebar (Vertical)',

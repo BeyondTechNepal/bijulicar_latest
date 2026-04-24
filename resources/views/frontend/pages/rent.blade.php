@@ -175,6 +175,15 @@
         </div>
     </section>
 
+    {{-- ── Sponsored banners (rent placement) ─────────────────────────── --}}
+    @if ($rentAds->isNotEmpty())
+        <section class="bg-[#f1f5f9] pt-10 pb-0">
+            <div class="max-w-7xl mx-auto px-6">
+                <x-ads.horizontal-banner :ads="$rentAds" />
+            </div>
+        </section>
+    @endif
+
     {{-- ── Car listings grid ────────────────────────────────────────────── --}}
     <section id="listings-section" class="py-20 bg-[#f1f5f9]">
         <div class="max-w-7xl mx-auto px-6">

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Advertisement;
+use App\Models\CarRental;
 use App\Models\EvStationSlot;
 use App\Models\GarageAppointment;
 use App\Models\Order;
@@ -395,6 +396,117 @@ class NotificationService
             body:   'The seller has cancelled your pre-order. Please contact the seller regarding your deposit refund.',
             url:    route('buyer.preorders.index'),
         );
+    }
+
+    // ── Car Rental ─────────────────────────────────────────────────────
+
+    /**
+     * Fired when a buyer submits a new rental booking.
+     * Notifies the owner so they can confirm or decline promptly.
+     */
+    public function rentalBookingReceived(CarRental $rental): void
+    {
+        $carName = $rental->carDisplayName();
+
+        $this->create(
+            userId: $rental->owner_id,
+            type:   'rental_booking_received',
+            title:  'New rental request — ' . $carName,
+            body:   $rental->renter_name . ' wants to rent your car from '
+                  . $rental->pickup_date->format('d M') . ' to '
+                  . $rental->return_date->format('d M Y') . ' ('
+                  . $rental->total_days . ' day' . ($rental->total_days > 1 ? 's' : '') . ').'
+                  . ' Confirm or decline from your dashboard.',
+            url:    route('seller.rentals.show', $rental->id),
+        );
+    }
+
+    /**
+     * Fired when the owner confirms a pending rental booking.
+     * Notifies the renter that they are good to go.
+     */
+    public function rentalConfirmed(CarRental $rental): void
+    {
+        $carName = $rental->carDisplayName();
+
+        $this->create(
+            userId: $rental->renter_id,
+            type:   'rental_confirmed',
+            title:  'Rental confirmed — ' . $carName,
+            body:   'Your rental booking has been confirmed by the owner. Pick-up date: '
+                  . $rental->pickup_date->format('D, d M Y') . '.',
+            url:    route('buyer.rentals.show', $rental->id),
+        );
+    }
+
+    /**
+     * Fired when the owner marks the rental as active (car handed over).
+     * Notifies the renter that the clock is now running.
+     */
+    public function rentalActivated(CarRental $rental): void
+    {
+        $carName = $rental->carDisplayName();
+
+        $this->create(
+            userId: $rental->renter_id,
+            type:   'rental_active',
+            title:  'Rental is now active — ' . $carName,
+            body:   'Your rental has started. Please return the car by '
+                  . $rental->return_date->format('D, d M Y') . '.',
+            url:    route('buyer.rentals.show', $rental->id),
+        );
+    }
+
+    /**
+     * Fired when the owner marks the rental as completed (car returned).
+     * Notifies the renter and prompts them to leave a review.
+     */
+    public function rentalCompleted(CarRental $rental): void
+    {
+        $carName = $rental->carDisplayName();
+
+        $this->create(
+            userId: $rental->renter_id,
+            type:   'rental_completed',
+            title:  'Rental completed — ' . $carName,
+            body:   'Your rental has been completed. Thank you for using BijuliCar! '
+                  . 'Don\'t forget to leave a review.',
+            url:    route('buyer.rentals.show', $rental->id),
+        );
+    }
+
+    /**
+     * Fired when either party cancels a booking.
+     * Notifies the OTHER party (not the one who cancelled).
+     *
+     * @param  'owner'|'renter'  $cancelledBy
+     */
+    public function rentalCancelled(CarRental $rental, string $cancelledBy): void
+    {
+        $carName = $rental->carDisplayName();
+
+        if ($cancelledBy === 'renter') {
+            // Tell the owner their booking was cancelled
+            $this->create(
+                userId: $rental->owner_id,
+                type:   'rental_cancelled',
+                title:  'Rental booking cancelled — ' . $carName,
+                body:   $rental->renter_name . ' has cancelled their booking for '
+                      . $rental->pickup_date->format('d M') . ' – '
+                      . $rental->return_date->format('d M Y') . '.',
+                url:    route('seller.rentals.index'),
+            );
+        } else {
+            // Tell the renter the owner cancelled
+            $this->create(
+                userId: $rental->renter_id,
+                type:   'rental_cancelled',
+                title:  'Rental booking cancelled — ' . $carName,
+                body:   'The owner has cancelled your rental booking'
+                      . ($rental->cancellation_reason ? '. Reason: ' . $rental->cancellation_reason : '.'),
+                url:    route('buyer.rentals.index'),
+            );
+        }
     }
 
     // ── Account Verification ───────────────────────────────────────────

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RentalBookingReceivedMail;
+use App\Mail\RentalCancelledMail;
 use App\Models\Car;
 use App\Models\CarRental;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class BuyerRentalController extends Controller
 {
@@ -107,6 +111,17 @@ class BuyerRentalController extends Controller
             'notes'             => $request->notes,
         ]);
 
+        // ── Notify & email the owner ──────────────────────────────────
+
+        $rental->load('owner');
+
+        app(NotificationService::class)->rentalBookingReceived($rental);
+
+        if ($rental->owner?->email) {
+            Mail::to($rental->owner->email)
+                ->queue(new RentalBookingReceivedMail($rental));
+        }
+
         return redirect()
             ->route('buyer.rentals.show', $rental->id)
             ->with('success', 'Rental booking submitted! The owner will confirm your dates shortly.');
@@ -124,6 +139,17 @@ class BuyerRentalController extends Controller
             'cancelled_by'        => 'renter',
             'cancellation_reason' => 'Cancelled by renter.',
         ]);
+
+        // ── Notify & email the owner ──────────────────────────────────
+
+        $carRental->load('owner');
+
+        app(NotificationService::class)->rentalCancelled($carRental, 'renter');
+
+        if ($carRental->owner?->email) {
+            Mail::to($carRental->owner->email)
+                ->queue(new RentalCancelledMail($carRental, 'renter', $carRental->owner->name));
+        }
 
         return redirect()
             ->route('buyer.rentals.index')

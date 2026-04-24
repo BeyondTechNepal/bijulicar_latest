@@ -79,6 +79,9 @@ class UserNotification extends Model
                 'order_completed',
                 'preorder_converted',
                 'account_approved',
+                'rental_confirmed',
+                'rental_active',
+                'rental_completed',
             ]) => ['bg-emerald-100', 'text-emerald-600'],
 
             in_array($this->type, [
@@ -88,11 +91,13 @@ class UserNotification extends Model
                 'order_cancelled',
                 'preorder_cancelled',
                 'account_rejected',
+                'rental_cancelled',
             ]) => ['bg-red-100', 'text-red-600'],
 
             in_array($this->type, [
                 'slot_occupied',
                 'preorder_deposit_confirmed',
+                'rental_booking_received',
             ]) => ['bg-blue-100', 'text-blue-600'],
 
             default => ['bg-slate-100', 'text-slate-500'],
@@ -115,6 +120,9 @@ class UserNotification extends Model
                 'order_completed',
                 'preorder_converted',
                 'account_approved',
+                'rental_confirmed',
+                'rental_active',
+                'rental_completed',
             ]) => 'check',
 
             in_array($this->type, [
@@ -124,11 +132,13 @@ class UserNotification extends Model
                 'order_cancelled',
                 'preorder_cancelled',
                 'account_rejected',
+                'rental_cancelled',
             ]) => 'cross',
 
             in_array($this->type, [
                 'slot_occupied',
                 'preorder_deposit_confirmed',
+                'rental_booking_received',
             ]) => 'bolt',
 
             default => 'info',

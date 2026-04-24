@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RentalActivatedMail;
+use App\Mail\RentalCancelledMail;
+use App\Mail\RentalCompletedMail;
+use App\Mail\RentalConfirmedMail;
 use App\Models\CarRental;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class SellerRentalController extends Controller
 {
@@ -73,6 +79,15 @@ class SellerRentalController extends Controller
 
         $carRental->update(['status' => 'confirmed']);
 
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalConfirmed($carRental);
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalConfirmedMail($carRental));
+
         $prefix = $this->context()['prefix'];
 
         return redirect()
@@ -88,6 +103,15 @@ class SellerRentalController extends Controller
         abort_if($carRental->status !== 'confirmed', 422, 'Only confirmed bookings can be marked as active.');
 
         $carRental->update(['status' => 'active']);
+
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalActivated($carRental);
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalActivatedMail($carRental));
 
         $prefix = $this->context()['prefix'];
 
@@ -112,6 +136,15 @@ class SellerRentalController extends Controller
             'actual_return_date' => $request->actual_return_date ?? today(),
         ]);
 
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalCompleted($carRental);
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalCompletedMail($carRental));
+
         $prefix = $this->context()['prefix'];
 
         return redirect()
@@ -135,6 +168,15 @@ class SellerRentalController extends Controller
             'cancelled_by'        => 'owner',
             'cancellation_reason' => $request->cancellation_reason ?? 'Cancelled by owner.',
         ]);
+
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalCancelled($carRental, 'owner');
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalCancelledMail($carRental, 'owner', $carRental->renter_name));
 
         $prefix = $this->context()['prefix'];
 

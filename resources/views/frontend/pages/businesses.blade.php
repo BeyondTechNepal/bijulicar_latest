@@ -5,7 +5,7 @@
 @section('content')
 
 {{-- ── Hero Section ──────────────────────────────────────────────────── --}}
-<section class="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden bg-[#0a0f1e] text-white">
+<section class="relative pt-24 pb-5 md:pb-20 lg:pt-32 overflow-hidden bg-[#0a0f1e] text-white">
 
     {{-- Layered background --}}
     <div class="absolute inset-0 z-0">
@@ -95,7 +95,7 @@
     </div>
 
     {{-- Scroll indicator --}}
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 animate-bounce opacity-30 pointer-events-none">
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 animate-bounce opacity-30 pointer-events-none">
         <span class="text-[8px] font-black uppercase tracking-[0.3em] text-white/60">Scroll</span>
         <div class="w-4 h-6 border-2 border-white/10 rounded-full flex justify-center p-0.5">
             <div class="w-1 h-1.5 bg-[#4ade80] rounded-full"></div>

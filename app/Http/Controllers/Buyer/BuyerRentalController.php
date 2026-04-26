@@ -10,6 +10,7 @@ use App\Models\CarRental;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class BuyerRentalController extends Controller
@@ -55,70 +56,80 @@ class BuyerRentalController extends Controller
             'notes'        => ['nullable', 'string', 'max:500'],
         ]);
 
-        $car     = Car::findOrFail($request->car_id);
         $renterId = Auth::id();
+        $pickup   = \Carbon\Carbon::parse($request->pickup_date);
+        $return   = \Carbon\Carbon::parse($request->return_date);
+        $days     = (int) $pickup->diffInDays($return);
 
-        // ── Guard checks ──────────────────────────────────────────────
+        // ── Date min/max validation (no DB needed, done before transaction) ──
 
-        abort_if(!$car->isRentable(),   422, 'This car is not available for rent.');
-        abort_if(!$car->isAvailable(),  422, 'This car is currently unavailable.');
-        abort_if($car->seller_id === $renterId, 422, 'You cannot rent your own listing.');
+        // We need the car for min/max check — a plain find is fine here
+        // since we'll re-fetch with a lock inside the transaction.
+        $carForValidation = Car::findOrFail($request->car_id);
 
-        // Block if ALL stock units are currently out on confirmed/active rental
-        abort_if(
-            $car->availableStockForRent() === 0,
-            422,
-            'All units of this car are currently out on rental. Please try again once a rental ends.'
-        );
-
-        // Prevent duplicate active bookings by the same buyer on the same car
-        $hasActiveRental = CarRental::where('renter_id', $renterId)
-            ->where('car_id', $car->id)
-            ->whereIn('status', ['pending', 'confirmed', 'active'])
-            ->exists();
-
-        abort_if($hasActiveRental, 422, 'You already have an active rental booking for this car.');
-
-        // ── Date maths ────────────────────────────────────────────────
-
-        $pickup  = \Carbon\Carbon::parse($request->pickup_date);
-        $return  = \Carbon\Carbon::parse($request->return_date);
-        $days    = (int) $pickup->diffInDays($return);
-
-        // Validate against car's min/max day constraints
-        if ($car->rent_min_days && $days < $car->rent_min_days) {
+        if ($carForValidation->rent_min_days && $days < $carForValidation->rent_min_days) {
             return back()
                 ->withInput()
-                ->withErrors(['return_date' => "Minimum rental duration for this car is {$car->rent_min_days} days."]);
+                ->withErrors(['return_date' => "Minimum rental duration for this car is {$carForValidation->rent_min_days} days."]);
         }
 
-        if ($car->rent_max_days && $days > $car->rent_max_days) {
+        if ($carForValidation->rent_max_days && $days > $carForValidation->rent_max_days) {
             return back()
                 ->withInput()
-                ->withErrors(['return_date' => "Maximum rental duration for this car is {$car->rent_max_days} days."]);
+                ->withErrors(['return_date' => "Maximum rental duration for this car is {$carForValidation->rent_max_days} days."]);
         }
 
-        // ── Create the booking ────────────────────────────────────────
+        // ── Atomic availability check + booking creation ──────────────
 
-        $rental = CarRental::create([
-            'car_id'            => $car->id,
-            'car_snapshot_name' => $car->displayName(),
-            'renter_id'         => $renterId,
-            'owner_id'          => $car->seller_id,
-            'pickup_date'       => $request->pickup_date,
-            'return_date'       => $request->return_date,
-            'total_days'        => $days,
-            'price_per_day'     => $car->rent_price_per_day,
-            'deposit_amount'    => $car->rent_deposit,
-            'total_price'       => $car->rent_price_per_day * $days,
-            'status'            => 'pending',
-            'renter_name'       => $request->renter_name,
-            'renter_phone'      => $request->renter_phone,
-            'renter_email'      => $request->renter_email,
-            'notes'             => $request->notes,
-        ]);
+        $rental = DB::transaction(function () use ($request, $renterId, $pickup, $return, $days) {
 
-        // ── Notify & email the owner ──────────────────────────────────
+            // Lock the car row — concurrent requests for the same car
+            // will queue here until this transaction commits or rolls back.
+            $car = Car::lockForUpdate()->findOrFail($request->car_id);
+
+            // ── Guard checks (re-evaluated inside the lock) ───────────
+
+            abort_if(!$car->isRentable(),  422, 'This car is not available for rent.');
+            abort_if(!$car->isAvailable(), 422, 'This car is currently unavailable.');
+            abort_if($car->seller_id === $renterId, 422, 'You cannot rent your own listing.');
+
+            // Block if ALL stock units are currently out on confirmed/active rental
+            abort_if(
+                $car->availableStockForRent() === 0,
+                422,
+                'All units of this car are currently out on rental. Please try again once a rental ends.'
+            );
+
+            // Prevent duplicate active bookings by the same buyer on the same car
+            $hasActiveRental = CarRental::where('renter_id', $renterId)
+                ->where('car_id', $car->id)
+                ->whereIn('status', ['pending', 'confirmed', 'active'])
+                ->exists();
+
+            abort_if($hasActiveRental, 422, 'You already have an active rental booking for this car.');
+
+            // ── Create the booking ────────────────────────────────────
+
+            return CarRental::create([
+                'car_id'            => $car->id,
+                'car_snapshot_name' => $car->displayName(),
+                'renter_id'         => $renterId,
+                'owner_id'          => $car->seller_id,
+                'pickup_date'       => $request->pickup_date,
+                'return_date'       => $request->return_date,
+                'total_days'        => $days,
+                'price_per_day'     => $car->rent_price_per_day,
+                'deposit_amount'    => $car->rent_deposit,
+                'total_price'       => $car->rent_price_per_day * $days,
+                'status'            => 'pending',
+                'renter_name'       => $request->renter_name,
+                'renter_phone'      => $request->renter_phone,
+                'renter_email'      => $request->renter_email,
+                'notes'             => $request->notes,
+            ]);
+        });
+
+        // ── Notify & email the owner (outside transaction — no DB lock needed) ──
 
         $rental->load('owner');
 

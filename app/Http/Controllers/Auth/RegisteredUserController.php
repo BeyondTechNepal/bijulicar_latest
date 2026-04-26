@@ -34,17 +34,20 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'phone'    => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
 
             // Role must be one of the three frontend roles — never admin/superadmin
             'role' => ['required', Rule::in(['buyer', 'seller', 'business', 'ev-station', 'garage'])],
+
+            // terms and conditions must be accepted — this is the legal birth moment of the account
+            'terms' => ['accepted'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'phone'    => $request->phone,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'wants_newsletter' => $request->has('wants_newsletter'),
         ]);

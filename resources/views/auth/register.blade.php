@@ -44,10 +44,10 @@
         </section>
 
         {{-- Right Section: Form --}}
-        <section class="w-full lg:w-[50%] flex flex-col justify-center px-6 md:px-16 lg:px-20 py-10 lg:py-12 bg-white relative z-10 min-h-screen">
+        <section class="w-full lg:w-[50%] flex flex-col justify-center px-6 md:px-16 lg:px-20 py-10 lg:py-5 bg-white relative z-10 min-h-screen">
 
             {{-- Brand Logo --}}
-            <div class="mb-8"> 
+            <div class="mb-2"> 
                 <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-4 group no-underline">
                     <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
                         <svg class="w-5 h-5 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="mb-6"> 
+            <div class="mb-2"> 
                 <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">
                     Create <span class="text-[#16a34a]">Account</span>
                 </h1>

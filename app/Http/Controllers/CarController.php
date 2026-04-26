@@ -99,8 +99,9 @@ class CarController extends Controller
         }
 
         // ── Rental state ──────────────────────────────────────────────
-        $alreadyRented = false;
+        $alreadyRented       = false;
         $blockedBySaleRental = false;
+        $availableForRent    = 0;
         try {
             if (auth()->check() && auth()->user()->hasRole('buyer')) {
                 $alreadyRented = \App\Models\CarRental::where('renter_id', auth()->id())
@@ -108,8 +109,10 @@ class CarController extends Controller
                     ->whereIn('status', ['pending', 'confirmed', 'active'])
                     ->exists();
             }
-            // Block sale orders if car is currently out on an active rental
+            // Block sale orders only when ALL units are out on active rental
             $blockedBySaleRental = $car->isSaleable() ? $car->hasActiveRental() : false;
+            // How many units are free to rent right now
+            $availableForRent    = $car->isRentable() ? $car->availableStockForRent() : 0;
         } catch (\Exception $e) {
             // car_rentals table doesn't exist yet — migration not run
         }
@@ -131,6 +134,7 @@ class CarController extends Controller
             'carDetailAds',
             'alreadyRented',
             'blockedBySaleRental',
+            'availableForRent',
             'hasRented',
             'alreadyReviewedRental',
             'completedRental'

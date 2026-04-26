@@ -64,7 +64,14 @@ class BuyerRentalController extends Controller
         abort_if(!$car->isAvailable(),  422, 'This car is currently unavailable.');
         abort_if($car->seller_id === $renterId, 422, 'You cannot rent your own listing.');
 
-        // Prevent duplicate active bookings on the same car
+        // Block if ALL stock units are currently out on confirmed/active rental
+        abort_if(
+            $car->availableStockForRent() === 0,
+            422,
+            'All units of this car are currently out on rental. Please try again once a rental ends.'
+        );
+
+        // Prevent duplicate active bookings by the same buyer on the same car
         $hasActiveRental = CarRental::where('renter_id', $renterId)
             ->where('car_id', $car->id)
             ->whereIn('status', ['pending', 'confirmed', 'active'])

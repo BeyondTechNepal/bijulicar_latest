@@ -568,12 +568,12 @@
                                             View My Orders
                                         </a>
                                     @elseif ($blockedBySaleRental)
-                                        {{-- Car is saleable but currently out on an active rental --}}
+                                        {{-- All units are out on confirmed/active rental — buying not possible right now --}}
                                         <div class="w-full py-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[12px] font-black uppercase tracking-widest text-center">
                                             🚗 Currently On Rental
                                         </div>
                                         <p class="text-center text-[11px] text-slate-400 font-medium mt-1">
-                                            This car is out on rental. Orders will be available once the rental ends.
+                                            All units of this car are out on rental. Orders will be available once a rental ends.
                                         </p>
                                     @elseif ($car->inStock())
                                         <form method="POST" action="{{ route('buyer.orders.store') }}" id="orderForm">
@@ -743,6 +743,14 @@
                                                 class="block w-full py-3.5 rounded-xl bg-slate-100 text-slate-700 text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-slate-200 transition-all">
                                                 View My Rentals
                                             </a>
+                                        @elseif($availableForRent === 0)
+                                            {{-- All stock units are out on confirmed/active rental --}}
+                                            <div class="w-full py-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[12px] font-black uppercase tracking-widest text-center">
+                                                🚗 Currently On Rental
+                                            </div>
+                                            <p class="text-center text-[11px] text-slate-400 font-medium mt-1">
+                                                All units of this car are currently out on rental. Check back once a rental ends.
+                                            </p>
                                         @else
                                             {{-- Rental booking form --}}
                                             <form method="POST" action="{{ route('buyer.rentals.store') }}" id="rentalForm">

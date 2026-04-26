@@ -133,8 +133,12 @@
                                 <p class="text-[11px] text-slate-400 font-medium mt-1">Current banner. Upload a new file below to replace it.</p>
                             </div>
                         @endif
-                        <input type="file" name="image" accept="image/*"
+                        <input type="file" name="image" accept="image/*" id="image-input"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-all">
+                        <p class="text-[11px] text-slate-400 font-medium mt-1">JPG, PNG or WebP — max 2 MB.</p>
+                        <p id="image-size-error" class="text-red-500 text-[11px] font-bold mt-1 hidden">
+                            Image is too large. Please use an image under 2 MB.
+                        </p>
                         @error('image')<p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>@enderror
                     </div>
 
@@ -356,6 +360,37 @@
 
         updateTierLabels();
         updatePricing();
+    </script>
+
+    <script>
+        // ── Instant client-side image size check ──────────────────────────────
+        (function () {
+            const MAX_BYTES = 2 * 1024 * 1024; // 2 MB — matches server-side max:2048
+            const input    = document.getElementById('image-input');
+            const error    = document.getElementById('image-size-error');
+            const form     = input ? input.closest('form') : null;
+
+            if (!input || !error || !form) return;
+
+            input.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file && file.size > MAX_BYTES) {
+                    error.classList.remove('hidden');
+                    this.value = '';
+                } else {
+                    error.classList.add('hidden');
+                }
+            });
+
+            form.addEventListener('submit', function (e) {
+                const file = input.files[0];
+                if (file && file.size > MAX_BYTES) {
+                    e.preventDefault();
+                    error.classList.remove('hidden');
+                    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        })();
     </script>
 
 @endsection

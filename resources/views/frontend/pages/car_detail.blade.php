@@ -326,9 +326,8 @@
                         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <span
-                                    class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-base"><i class="fa-solid fa-star" style="color: #facc15;"></i></span>
-                                <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Buyer
-                                    Reviews</span>
+                                    class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-base">⭐</span>
+                                <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Reviews</span>
                             </div>
                             @if ($reviewCount > 0)
                                 <div class="flex items-center gap-2">
@@ -359,8 +358,14 @@
                                                     {{ strtoupper(substr($review->buyer->name ?? 'U', 0, 2)) }}
                                                 </div>
                                                 <div>
-                                                    <p class="text-[13px] font-bold text-slate-800">
-                                                        {{ $review->buyer->name ?? 'Buyer' }}</p>
+                                                    <div class="flex items-center gap-2">
+                                                        <p class="text-[13px] font-bold text-slate-800">
+                                                            {{ $review->buyer->name ?? 'Reviewer' }}</p>
+                                                        {{-- Source badge: Rental vs Purchase --}}
+                                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ $review->sourceBadgeClasses() }}">
+                                                            {{ $review->sourceLabel() }}
+                                                        </span>
+                                                    </div>
                                                     <p class="text-[11px] text-slate-400 font-medium">
                                                         {{ $review->created_at->diffForHumans() }}</p>
                                                 </div>
@@ -390,17 +395,30 @@
                                         class="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all">
                                         Be the first to review
                                     </a>
+                                @elseif ($hasRented && !$alreadyReviewedRental)
+                                    <a href="{{ route('buyer.reviews.create', ['rental_id' => $completedRental->id]) }}"
+                                        class="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-blue-600 transition-all">
+                                        Be the first to review
+                                    </a>
                                 @endif
                             </div>
                         @endif
 
-                        {{-- Write review CTA --}}
-                        @if ($hasPurchased && !$alreadyReviewed && $car->reviews->isNotEmpty())
-                            <div class="px-6 pb-5">
-                                <a href="{{ route('buyer.reviews.create', $car) }}"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-amber-100 transition-all">
-                                    ⭐ Write your review
-                                </a>
+                        {{-- Write review CTAs --}}
+                        @if ($car->reviews->isNotEmpty())
+                            <div class="px-6 pb-5 flex flex-wrap gap-3">
+                                @if ($hasPurchased && !$alreadyReviewed)
+                                    <a href="{{ route('buyer.reviews.create', $car) }}"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-amber-100 transition-all">
+                                        ⭐ Review your purchase
+                                    </a>
+                                @endif
+                                @if ($hasRented && !$alreadyReviewedRental)
+                                    <a href="{{ route('buyer.reviews.create', ['rental_id' => $completedRental->id]) }}"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-100 transition-all">
+                                        ⭐ Review your rental
+                                    </a>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -574,12 +592,12 @@
                                             View My Orders
                                         </a>
                                     @elseif ($blockedBySaleRental)
-                                        {{-- Car is saleable but currently out on an active rental --}}
+                                        {{-- All units are out on confirmed/active rental — buying not possible right now --}}
                                         <div class="w-full py-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[12px] font-black uppercase tracking-widest text-center">
                                             🚗 Currently On Rental
                                         </div>
                                         <p class="text-center text-[11px] text-slate-400 font-medium mt-1">
-                                            This car is out on rental. Orders will be available once the rental ends.
+                                            All units of this car are out on rental. Orders will be available once a rental ends.
                                         </p>
                                     @elseif ($car->inStock())
                                         <form method="POST" action="{{ route('buyer.orders.store') }}" id="orderForm">
@@ -749,6 +767,14 @@
                                                 class="block w-full py-3.5 rounded-xl bg-slate-100 text-slate-700 text-[12px] font-black uppercase italic tracking-widest text-center hover:bg-slate-200 transition-all">
                                                 View My Rentals
                                             </a>
+                                        @elseif($availableForRent === 0)
+                                            {{-- All stock units are out on confirmed/active rental --}}
+                                            <div class="w-full py-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[12px] font-black uppercase tracking-widest text-center">
+                                                🚗 Currently On Rental
+                                            </div>
+                                            <p class="text-center text-[11px] text-slate-400 font-medium mt-1">
+                                                All units of this car are currently out on rental. Check back once a rental ends.
+                                            </p>
                                         @else
                                             {{-- Rental booking form --}}
                                             <form method="POST" action="{{ route('buyer.rentals.store') }}" id="rentalForm">

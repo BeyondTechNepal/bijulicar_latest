@@ -192,14 +192,32 @@ class Car extends Model
     }
 
     /**
-     * Returns true when the car has at least one confirmed or active rental.
-     * Used to block sale orders while the car is physically out on rental.
+     * Returns true only when ALL stock units are out on confirmed/active rental —
+     * i.e. there is no physical unit left to hand over.
+     *
+     * A 3-stock car with 1 unit on rental still has 2 units free → returns false.
+     * A 1-stock car with 1 unit on rental has nothing left → returns true.
      */
     public function hasActiveRental(): bool
     {
-        return $this->rentals()
+        $activeCount = $this->rentals()
             ->whereIn('status', ['confirmed', 'active'])
-            ->exists();
+            ->count();
+
+        return $activeCount >= $this->stock_quantity;
+    }
+
+    /**
+     * How many units are free to be rented right now.
+     * stock_quantity minus the number of confirmed/active rentals.
+     */
+    public function availableStockForRent(): int
+    {
+        $activeCount = $this->rentals()
+            ->whereIn('status', ['confirmed', 'active'])
+            ->count();
+
+        return max(0, $this->stock_quantity - $activeCount);
     }
 
     /**

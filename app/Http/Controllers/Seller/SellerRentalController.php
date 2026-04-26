@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RentalActivatedMail;
+use App\Mail\RentalCancelledMail;
+use App\Mail\RentalCompletedMail;
+use App\Mail\RentalConfirmedMail;
 use App\Models\CarRental;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class SellerRentalController extends Controller
 {
@@ -73,6 +79,15 @@ class SellerRentalController extends Controller
 
         $carRental->update(['status' => 'confirmed']);
 
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalConfirmed($carRental);
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalConfirmedMail($carRental));
+
         $prefix = $this->context()['prefix'];
 
         return redirect()
@@ -89,6 +104,15 @@ class SellerRentalController extends Controller
 
         $carRental->update(['status' => 'active']);
 
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalActivated($carRental);
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalActivatedMail($carRental));
+
         $prefix = $this->context()['prefix'];
 
         return redirect()
@@ -96,12 +120,18 @@ class SellerRentalController extends Controller
             ->with('success', 'Rental marked as active — car is now with the renter.');
     }
 
-    // ── Complete: active → completed (car returned) ───────────────────
+    // ── Complete: confirmed|active → completed (car returned) ────────
+    // Allows skipping the activate step — the owner may hand over and
+    // receive the car back without clicking "Mark as Picked Up" first.
 
     public function complete(Request $request, CarRental $carRental)
     {
         abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
-        abort_if($carRental->status !== 'active', 422, 'Only active rentals can be marked as completed.');
+        abort_if(
+            !in_array($carRental->status, ['confirmed', 'active']),
+            422,
+            'Only confirmed or active rentals can be marked as completed.'
+        );
 
         $request->validate([
             'actual_return_date' => ['nullable', 'date'],
@@ -111,6 +141,15 @@ class SellerRentalController extends Controller
             'status'             => 'completed',
             'actual_return_date' => $request->actual_return_date ?? today(),
         ]);
+
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalCompleted($carRental);
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalCompletedMail($carRental));
 
         $prefix = $this->context()['prefix'];
 
@@ -135,6 +174,15 @@ class SellerRentalController extends Controller
             'cancelled_by'        => 'owner',
             'cancellation_reason' => $request->cancellation_reason ?? 'Cancelled by owner.',
         ]);
+
+        // ── Notify & email the renter ─────────────────────────────────
+
+        $carRental->load('renter');
+
+        app(NotificationService::class)->rentalCancelled($carRental, 'owner');
+
+        Mail::to($carRental->renter_email)
+            ->queue(new RentalCancelledMail($carRental, 'owner', $carRental->renter_name));
 
         $prefix = $this->context()['prefix'];
 

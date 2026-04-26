@@ -95,16 +95,35 @@ class BusinessAdvertisementController extends Controller
         return redirect()->route('business.advertisements.index')->with('success', 'Your advertisement has been submitted for review. We\'ll email you once it\'s approved.');
     }
 
-    /** Show the edit form — only allowed while still pending review. */
+    /** Show the edit form — only allowed while still pending review or rejected. */
     public function edit(Advertisement $advertisement)
     {
         abort_if($advertisement->user_id != Auth::id(), 403);
         abort_if(!in_array($advertisement->status, ['pending_review', 'rejected']), 403, 'You can only edit ads that are pending review or were rejected.');
 
         $cars = Auth::user()->listedCars()->where('status', 'available')->get();
-        $placements = Advertisement::PLACEMENTS;
+
+        // PLACEMENTS is a nested array: ['home' => ['label' => '...', 'video' => '...'], ...]
+        // The blade does @foreach($placements as $value => $label) and outputs {{ $label }},
+        // so we must flatten it to a simple key => label string map — same as create() does
+        // implicitly via the extra ->map() on pricingRules. Without this the blade crashes
+        // with "htmlspecialchars(): Argument #1 must be of type string, array given".
+        $placements = collect(Advertisement::PLACEMENTS)->map(fn($p) => $p['label'])->all();
+
         $priorities = Advertisement::PRIORITIES;
-        $pricingRules = AdPricingRule::active()->get()->groupBy('placement')->map(fn($g) => $g->keyBy('priority'));
+
+        // Match the shape that create() passes — pricingRules must be a nested structure
+        // of [placement][priority] => ['price_per_day', 'min_days', 'is_active']
+        // so the JS pricing calculator in the blade works correctly.
+        $pricingRules = AdPricingRule::active()->get()->groupBy('placement')->map(fn($g) => $g->keyBy('priority'))->map(
+            fn($tierGroup) => $tierGroup->map(
+                fn($rule) => [
+                    'price_per_day' => (float) $rule->price_per_day,
+                    'min_days'      => (int) $rule->min_days,
+                    'is_active'     => (bool) $rule->is_active,
+                ],
+            ),
+        );
 
         return view('dashboard.business.advertisements.edit', compact('advertisement', 'cars', 'placements', 'priorities', 'pricingRules'));
     }

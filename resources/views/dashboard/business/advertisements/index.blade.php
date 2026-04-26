@@ -87,17 +87,25 @@
 
             {{-- Status --}}
             <div class="col-span-1">
-                @if($ad->isLive())
+                @if($ad->status === 'rejected')
+                    <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-red-100 text-red-700">Rejected</span>
+                @elseif($ad->status === 'pending_review')
+                    <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-yellow-100 text-yellow-700">In Review</span>
+                @elseif($ad->status === 'approved')
+                    <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-blue-100 text-blue-700">Approved</span>
+                @elseif($ad->isLive())
                     <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-green-100 text-green-700">Live</span>
-                @elseif(!$ad->is_active)
-                    <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-slate-100 text-slate-500">Inactive</span>
-                @else
+                @elseif($ad->is_active)
                     <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-yellow-100 text-yellow-700">Scheduled</span>
+                @else
+                    <span class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-slate-100 text-slate-500">Inactive</span>
                 @endif
             </div>
 
             {{-- Actions --}}
             <div class="col-span-2 flex items-center gap-2">
+                {{-- Edit only shown for statuses the business is actually allowed to edit --}}
+                @if(in_array($ad->status, ['pending_review', 'rejected']))
                 <a href="{{ route('business.advertisements.edit', $ad) }}"
                     class="w-8 h-8 bg-slate-100 hover:bg-slate-900 hover:text-white rounded-xl flex items-center justify-center transition-all group"
                     title="Edit">
@@ -106,6 +114,7 @@
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                 </a>
+                @endif
                 <form method="POST" action="{{ route('business.advertisements.destroy', $ad) }}"
                     onsubmit="return confirm('Delete this advertisement?')">
                     @csrf

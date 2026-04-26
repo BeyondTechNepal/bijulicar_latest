@@ -5,7 +5,7 @@
 @section('content')
 
     {{-- ── Hero Banner ───────────────────────────────────────────────────────── --}}
-    <section class="relative pt-20 pb-10 lg:pt-32 lg:pb-16 overflow-hidden bg-[#0a0f1e] text-white">
+    <section class="relative pt-[110px] pb-10 lg:pt-32 lg:pb-16 overflow-hidden bg-[#0a0f1e] text-white">
         <div class="absolute inset-0 z-0">
             @if ($news->hero_image)
                 <img src="{{ asset('storage/' . $news->hero_image) }}"

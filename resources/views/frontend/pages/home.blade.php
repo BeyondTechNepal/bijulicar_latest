@@ -66,6 +66,35 @@
                         </div>
                     </div>
 
+                    {{-- Slide 3: Rent --}}
+                    <div class="swiper-slide relative">
+                        <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80&w=2070"
+                            class="w-full h-full object-cover brightness-[0.35]" alt="Rent a Car">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-15">
+                            <div
+                                class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-xl border border-white/15 rounded-full mb-6">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
+                                <span class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Now Available</span>
+                            </div>
+                            <h1 class="text-white text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-4 uppercase italic">
+                                Rent a Car <span class="text-[#4ade80]">Today</span>
+                            </h1>
+                            <p class="text-slate-300 text-base md:text-xl max-w-2xl mb-10 font-medium leading-relaxed">
+                                Flexible short or long-term rentals from verified owners across Nepal. Pick your dates, pick up your keys.
+                            </p>
+                            <div class="flex flex-wrap justify-center gap-4 text-[12px] md:text-[14px]">
+                                <a href="{{ route('rent') }}"
+                                    class="bg-[#4ade80] text-black px-10 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-[#22c55e] transition-all transform hover:scale-105 shadow-lg shadow-green-500/20">
+                                    Browse Rentals
+                                </a>
+                                <a href="{{ route('marketplace') }}"
+                                    class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-white/20 transition-all">
+                                    Buy Instead
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Slide 3: Auth CTA --}}
                     <div class="swiper-slide relative">
                         <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=2071"
@@ -600,6 +629,105 @@
         </section>
 
         {{-- ══════════════════════════════════════════════════════════
+         RENT A CAR  (new feature spotlight)
+    ══════════════════════════════════════════════════════════════ --}}
+        <section class="py-24 bg-[#0f172a] relative overflow-hidden">
+            {{-- Background accents --}}
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(74,222,128,0.07)_0%,_transparent_60%)]"></div>
+            <div class="absolute inset-0 opacity-[0.03]"
+                style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+                {{-- Section header --}}
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="h-[2px] w-8 bg-[#4ade80]"></span>
+                            <span class="text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">New Feature</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white uppercase italic">
+                            Rent a Car <span class="text-slate-500">on BijuliCar</span>
+                        </h2>
+                        <p class="text-slate-400 text-sm mt-3 max-w-md leading-relaxed font-medium">
+                            Flexible daily rentals from verified owners across Nepal — no long-term commitment needed.
+                        </p>
+                    </div>
+                    <a href="{{ route('rent') }}"
+                        class="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-[#4ade80] transition-colors group shrink-0">
+                        Browse All Rentals
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+
+                {{-- Feature cards --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+                    {{-- Card 1: Pick your dates --}}
+                    <div class="group bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-2xl bg-[#4ade80]/10 border border-[#4ade80]/20 flex items-center justify-center mb-6 group-hover:bg-[#4ade80]/20 transition-colors">
+                            <svg class="w-6 h-6 text-[#4ade80]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-black text-white uppercase italic tracking-tight mb-3">Pick Your Dates</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Choose your pickup and return dates. Rentals available from 1 day to long-term — completely on your schedule.</p>
+                    </div>
+
+                    {{-- Card 2: Verified owners --}}
+                    <div class="group bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-2xl bg-[#4ade80]/10 border border-[#4ade80]/20 flex items-center justify-center mb-6 group-hover:bg-[#4ade80]/20 transition-colors">
+                            <svg class="w-6 h-6 text-[#4ade80]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.745 3.745 0 013.296-1.043A3.745 3.745 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-black text-white uppercase italic tracking-tight mb-3">Verified Owners</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Every rental listing comes from a verified seller or business. Transparent pricing, no hidden deposit surprises.</p>
+                    </div>
+
+                    {{-- Card 3: EV & hybrid available --}}
+                    <div class="group bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-[#4ade80]/30 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-2xl bg-[#4ade80]/10 border border-[#4ade80]/20 flex items-center justify-center mb-6 group-hover:bg-[#4ade80]/20 transition-colors">
+                            <svg class="w-6 h-6 text-[#4ade80]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-black text-white uppercase italic tracking-tight mb-3">EV & Hybrid Ready</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Rent electric, hybrid, or traditional vehicles. Filter by drivetrain, location, and price per day to find your match.</p>
+                    </div>
+
+                </div>
+
+                {{-- Bottom CTA strip --}}
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-6 bg-white/5 border border-white/10 rounded-2xl px-8 py-6">
+                    <div class="flex items-center gap-6 flex-wrap justify-center sm:justify-start">
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-white italic">{{ str_pad($rentableCount ?? 0, 2, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">Cars Available</p>
+                        </div>
+                        <div class="w-px h-10 bg-white/10 hidden sm:block"></div>
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-white italic">Daily</p>
+                            <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">Rental Pricing</p>
+                        </div>
+                        <div class="w-px h-10 bg-white/10 hidden sm:block"></div>
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-white italic">100%</p>
+                            <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">Verified Listings</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('rent') }}"
+                        class="shrink-0 bg-[#4ade80] text-black px-8 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-[#22c55e] transition-all transform hover:scale-105 shadow-lg shadow-green-500/20 text-sm">
+                        Find a Rental
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        {{-- ══════════════════════════════════════════════════════════
          FEATURED BUSINESSES
     ══════════════════════════════════════════════════════════════ --}}
         @if (isset($featuredBusinesses) && $featuredBusinesses->isNotEmpty())
@@ -810,7 +938,7 @@
                 </div>
 
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border border-slate-200 rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50">
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-px bg-slate-200 border border-slate-200 rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50">
 
                     <a href="{{ route('marketplace') }}"
                         class="group bg-white p-10 transition-all duration-500 hover:bg-slate-50 block">
@@ -872,6 +1000,20 @@
                         <h4 class="text-lg font-extrabold text-slate-900 uppercase tracking-tight mb-4 italic">Auto News</h4>
                         <p class="text-slate-500 text-sm leading-relaxed">Real-time market insights and deep-dive reviews
                             across the automotive landscape.</p>
+                    </a>
+
+                    <a href="{{ route('rent') }}"
+                        class="group bg-white p-10 transition-all duration-500 hover:bg-slate-50 block">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center mb-10 group-hover:bg-[#4ade80]/10 transition-colors">
+                            <svg class="w-6 h-6 text-slate-400 group-hover:text-[#4ade80] transition-colors" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-extrabold text-slate-900 uppercase tracking-tight mb-4 italic">Car Rental</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Daily rentals from verified owners. Filter by location, drivetrain, and budget — no long-term commitment.</p>
                     </a>
 
                 </div>

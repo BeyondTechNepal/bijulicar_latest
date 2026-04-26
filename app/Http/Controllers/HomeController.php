@@ -14,6 +14,7 @@ class HomeController extends Controller
     public const CACHE_RECENT_CARS     = 'home.recent_cars';
     public const CACHE_HOME_ADS        = 'home.ads';
     public const CACHE_FEATURED_BIZ    = 'home.featured_businesses';
+    public const CACHE_RENTABLE_COUNT  = 'home.rentable_count';
 
     public function index()
     {
@@ -92,13 +93,23 @@ class HomeController extends Controller
                 ->values()
         );
 
+        // Rentable cars count — busted when a car listing_type or status changes.
+        $rentableCount = Cache::remember(
+            self::CACHE_RENTABLE_COUNT,
+            now()->addMinutes(10),
+            fn () => Car::whereIn('listing_type', ['rent', 'both'])
+                ->where('status', 'available')
+                ->count()
+        );
+
         return view('frontend.pages.home', compact(
             'recentCars',
             'evCount',
             'hybridCount',
             'classicCount',
             'homeAds',
-            'featuredBusinesses'
+            'featuredBusinesses',
+            'rentableCount'
         ));
     }
 }

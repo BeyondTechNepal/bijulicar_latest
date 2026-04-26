@@ -74,12 +74,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="David Phal Magar"
+                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="Amrit Nepal"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a] transition-all">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="david@example.com"
+                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="amrit@example.com"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a] transition-all">
                     </div>
                     <div class="space-y-1 md:col-span-2">

@@ -11,28 +11,28 @@
                 'light' => 'bg-green-50',
                 'text' => 'text-green-700',
                 'badge' => 'bg-green-100 text-green-700',
-                'label' => '⚡ Electric',
+                'label' => '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i> Electric',
             ],
             'hybrid' => [
                 'bg' => 'bg-blue-500',
                 'light' => 'bg-blue-50',
                 'text' => 'text-blue-700',
                 'badge' => 'bg-blue-100 text-blue-700',
-                'label' => '🔋 Hybrid',
+                'label' => '<i class="fa-solid fa-leaf" style="color: rgb(46, 204, 113);"></i>/<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i> Hybrid',
             ],
             'petrol' => [
                 'bg' => 'bg-orange-500',
                 'light' => 'bg-orange-50',
                 'text' => 'text-orange-700',
                 'badge' => 'bg-orange-100 text-orange-700',
-                'label' => '⛽ Petrol',
+                'label' => '<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i> Petrol',
             ],
             'diesel' => [
                 'bg' => 'bg-slate-600',
                 'light' => 'bg-slate-50',
                 'text' => 'text-slate-700',
                 'badge' => 'bg-slate-200 text-slate-700',
-                'label' => '🛢 Diesel',
+                'label' => '<i class="fa-solid fa-oil-can mr-1" style="color: rgb(241, 196, 15);"></i> Diesel',
             ],
         ];
         $dc = $driveColors[$car->drivetrain] ?? $driveColors['petrol'];
@@ -68,7 +68,7 @@
                         <div class="absolute top-4 left-4">
                             <span
                                 class="text-[11px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest {{ $dc['badge'] }}">
-                                {{ $dc['label'] }}
+                                {!!  $dc['label'] !!}
                             </span>
                         </div>
 
@@ -156,7 +156,7 @@
                             <div>
                                 <div class="flex flex-wrap items-center gap-2 mb-2">
                                     <span
-                                        class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest {{ $dc['badge'] }}">{{ $dc['label'] }}</span>
+                                        class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest {{ $dc['badge'] }}">{!! $dc['label'] !!}</span>
                                     <span
                                         class="text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest bg-slate-100 text-slate-600">{{ ucfirst($car->condition) }}</span>
                                     @if ($car->stock_quantity > 1)
@@ -222,7 +222,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                         <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                             <span
-                                class="w-8 h-8 rounded-lg {{ $dc['light'] }} flex items-center justify-center text-base">⚡</span>
+                                class="w-8 h-8 rounded-lg {{ $dc['light'] }} flex items-center justify-center text-base"><i class="fa-solid fa-truck-monster" style="color: rgb(255, 212, 59);"></i></span>
                             <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Vehicle
                                 Details</span>
                         </div>
@@ -230,46 +230,70 @@
                         <div class="grid grid-cols-2 divide-x divide-slate-50">
                             @php
                                 $specs = [
-                                    ['icon' => '📅', 'label' => 'Year', 'value' => $car->year],
-                                    ['icon' => '⚙️', 'label' => 'Drivetrain', 'value' => strtoupper($car->drivetrain)],
                                     [
-                                        'icon' => '🛣️',
+                                        'icon' => '<i class="fa-solid fa-calendar-days" style="color: #64748b;"></i>', 
+                                        'label' => 'Year', 
+                                        'value' => $car->year
+                                    ],
+                                    [
+                                        'icon' => '<i class="fa-solid fa-gears" style="color: #475569;"></i>', 
+                                        'label' => 'Drivetrain', 
+                                        'value' => strtoupper($car->drivetrain)
+                                    ],
+                                    [
+                                        'icon' => '<i class="fa-solid fa-road" style="color: #94a3b8;"></i>',
                                         'label' => 'Mileage',
                                         'value' => number_format($car->mileage) . ' km',
                                     ],
-                                    ['icon' => '🏷️', 'label' => 'Condition', 'value' => ucfirst($car->condition)],
-                                    ['icon' => '🎨', 'label' => 'Color', 'value' => $car->color ?? '—'],
                                     [
-                                        'icon' => '📦',
-                                        'label' => 'Stock',
-                                        'value' =>
-                                            $car->stock_quantity . ' unit' . ($car->stock_quantity !== 1 ? 's' : ''),
+                                        'icon' => '<i class="fa-solid fa-certificate" style="color: #f59e0b;"></i>', 
+                                        'label' => 'Condition', 
+                                        'value' => ucfirst($car->condition)
                                     ],
-                                    ['icon' => '📍', 'label' => 'Location', 'value' => $car->location],
+                                    [
+                                        'icon' => '<i class="fa-solid fa-palette" style="color: #6366f1;"></i>', 
+                                        'label' => 'Color', 
+                                        'value' => $car->color ?? '—'
+                                    ],
+                                    [
+                                        'icon' => '<i class="fa-solid fa-cubes" style="color: #0ea5e9;"></i>',
+                                        'label' => 'Stock',
+                                        'value' => $car->stock_quantity . ' unit' . ($car->stock_quantity !== 1 ? 's' : ''),
+                                    ],
+                                    [
+                                        'icon' => '<i class="fa-solid fa-location-dot" style="color: #ef4444;"></i>', 
+                                        'label' => 'Location', 
+                                        'value' => $car->location
+                                    ],
                                 ];
+
                                 if ($car->range_km) {
                                     $specs[] = [
-                                        'icon' => '🔋',
+                                        'icon' => '<i class="fa-solid fa-car-battery" style="color: #10b981;"></i>',
                                         'label' => 'EV Range',
                                         'value' => number_format($car->range_km) . ' km',
                                     ];
                                 }
+
                                 if ($car->battery_kwh) {
                                     $specs[] = [
-                                        'icon' => '⚡',
+                                        'icon' => '<i class="fa-solid fa-bolt-lightning" style="color: #fbbf24;"></i>',
                                         'label' => 'Battery',
                                         'value' => $car->battery_kwh . ' kWh',
                                     ];
                                 }
+
+                                // Grid balancing
                                 if (count($specs) % 2 !== 0) {
                                     $specs[] = null;
                                 }
                             @endphp
+
                             @foreach ($specs as $spec)
                                 @if ($spec)
                                     <div
                                         class="flex items-center gap-3 px-5 py-3.5 border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
-                                        <span class="text-xl shrink-0">{{ $spec['icon'] }}</span>
+                                        <span class="text-xl shrink-0 px-4">{!! $spec['icon'] !!}</span>
                                         <div class="min-w-0">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                                 {{ $spec['label'] }}</p>
@@ -289,7 +313,7 @@
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                             <div class="flex items-center gap-3 mb-4">
                                 <span
-                                    class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base">📝</span>
+                                    class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base"><i class="fa-solid fa-pen-to-square" style="color: #6366f1;"></i></span>
                                 <span
                                     class="text-[12px] font-black uppercase tracking-widest text-slate-700">Description</span>
                             </div>
@@ -994,56 +1018,84 @@
 
                     <!-- {{-- ── Sidebar ads (priority: Premium → Featured → Standard) ── --}}
                     @if (isset($carDetailAds) && $carDetailAds->isNotEmpty())
-    <x-ads.vertical-sidebar :ads="$carDetailAds" />
-    @endif -->
+                        <x-ads.vertical-sidebar :ads="$carDetailAds" />
+                    @endif -->
 
                 </div>
             </div>
 
             {{-- ── OTHER LISTINGS BY SAME SELLER ──────────────────────── --}}
-            @if ($otherListings->isNotEmpty())
-                <div class="mt-12">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="w-8 h-[2px] bg-[#4ade80]"></span>
-                        <span class="text-[11px] font-black uppercase tracking-widest text-slate-500">More from
-                            {{ $car->seller->name }}</span>
+           @if ($otherListings->isNotEmpty())
+    <div class="mt-12">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="w-8 h-[2px] bg-[#4ade80]"></span>
+            <span class="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                More from {{ $car->seller->name }}
+            </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            @foreach ($otherListings as $other)
+                @php
+                    // Consistency with your Recently Added drivetrain logic
+                    $dtColors = [
+                        'ev' => ['badge' => 'bg-green-100 text-green-700', 'label' => '<i class="fa-solid fa-leaf mr-1"></i>EV'],
+                        'hybrid' => ['badge' => 'bg-blue-100 text-blue-700', 'label' => '<i class="fa-solid fa-leaf text-[9px]"></i>/<i class="fa-solid fa-gas-pump mr-1"></i>HYBRID'],
+                        'petrol' => ['badge' => 'bg-red-100 text-red-700', 'label' => '<i class="fa-solid fa-gas-pump mr-1"></i>PETROL'],
+                        'diesel' => ['badge' => 'bg-amber-100 text-amber-700', 'label' => '<i class="fa-solid fa-oil-can mr-1"></i>DIESEL'],
+                    ];
+                    $dtc = $dtColors[$other->drivetrain] ?? $dtColors['petrol'];
+                @endphp
+
+                <a href="{{ route('cars.show', $other) }}"
+                    class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md overflow-hidden transition-all flex flex-col">   
+                    
+                    {{-- Image Area --}}
+                    <div class="h-36 bg-slate-100 overflow-hidden relative">
+                        @if ($other->primary_image)
+                            <img src="{{ Storage::url($other->primary_image) }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                alt="{{ $other->displayName() }}">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center text-3xl opacity-20">
+                                <i class="fa-solid fa-truck-monster" style="color: #64748b;"></i>
+                            </div>
+                        @endif
+
+                        {{-- Drivetrain Badge --}}
+                        <span class="absolute top-3 left-3 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-tighter {{ $dtc['badge'] }}">
+                            {!! $dtc['label'] !!}
+                        </span>
+
+                        {{-- Time Ago Badge --}}
+                        <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-slate-500 border border-slate-100">
+                            <i class="fa-regular fa-clock mr-1"></i>{{ $other->created_at->diffForHumans(null, true) }}
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        @foreach ($otherListings as $other)
-                            <a href="{{ route('cars.show', $other) }}"
-                                class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md overflow-hidden transition-all flex flex-col">
-                                <div class="h-36 bg-slate-100 overflow-hidden relative">
-                                    @if ($other->primary_image)
-                                        <img src="{{ Storage::url($other->primary_image) }}"
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            alt="{{ $other->displayName() }}">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-3xl opacity-20">🚗
-                                        </div>
-                                    @endif
-                                    <span
-                                        class="absolute top-3 left-3 text-[10px] font-black px-2.5 py-1 rounded-full uppercase
-                                    {{ $other->drivetrain === 'ev' ? 'bg-green-100 text-green-700' : ($other->drivetrain === 'hybrid' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600') }}">
-                                        {{ strtoupper($other->drivetrain) }}
-                                    </span>
-                                </div>
-                                <div class="p-4 flex-1 flex flex-col">
-                                    <h3 class="text-[14px] font-black text-slate-900 uppercase italic leading-tight">
-                                        {{ $other->displayName() }}</h3>
-                                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ $other->location }}</p>
-                                    <p class="mt-auto pt-3 text-[15px] font-black text-slate-900 italic">
-                                        @if($other->price)
-                                            NRs {{ number_format($other->price) }}
-                                        @elseif($other->rent_price_per_day)
-                                            NRs {{ number_format($other->rent_price_per_day) }}<span class="text-sm font-bold text-slate-400 not-italic">/day</span>
-                                        @endif
-                                    </p>
-                                </div>
-                            </a>
-                        @endforeach
+
+                    {{-- Card Body --}}
+                    <div class="p-4 flex-1 flex flex-col">
+                        <h3 class="text-[14px] font-black text-slate-900 uppercase italic leading-tight group-hover:text-[#16a34a] transition-colors">
+                            {{ $other->displayName() }}
+                        </h3>
+                        
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-[9px]"></i>
+                            {{ $other->location }}
+                        </p>
+
+                        <p class="mt-auto pt-3 text-[15px] font-black text-slate-900 italic">
+                            @if($other->price)
+                                NRs {{ number_format($other->price) }}
+                            @elseif($other->rent_price_per_day)
+                                NRs {{ number_format($other->rent_price_per_day) }}<span class="text-[10px] font-bold text-slate-400 not-italic uppercase ml-0.5">/ day</span>
+                            @endif
+                        </p>
                     </div>
-                </div>
-            @endif
+                </a>
+            @endforeach
+        </div>
+    </div>
+@endif
 
         </div>
     </section>

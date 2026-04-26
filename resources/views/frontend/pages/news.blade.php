@@ -82,7 +82,7 @@
                 </button>
                 @foreach ($categories as $category)
                     <button data-category="{{ $category->slug }}"
-                        class="filter-btn px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">
+                        class="filter-btn px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-200 hover:text-white transition-all">
                         {{ $category->name }}
                     </button>
                 @endforeach

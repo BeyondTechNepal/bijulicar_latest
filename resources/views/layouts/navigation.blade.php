@@ -43,7 +43,7 @@
                         </div>
                         
                         <x-dropdown-link :href="route('profile.edit')" class="text-[11px] font-bold uppercase tracking-wider hover:bg-slate-50">
-                            {{ __('User Profile') }}
+                            {{ __('Profile Settings') }}
                         </x-dropdown-link>
 
                         <form method="POST" action="{{ route('logout') }}">
@@ -51,7 +51,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     class="text-[11px] font-bold uppercase tracking-wider text-red-600 hover:bg-red-50"
                                     onclick="event.preventDefault(); this.closest('form').submit();">
-                                {{ __('Terminate Session') }}
+                                {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -84,7 +84,7 @@
 
             <div class="space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')" class="font-bold uppercase tracking-wider text-xs">
-                    {{ __('Settings') }}
+                    {{ __('Profile Settings') }}
                 </x-responsive-nav-link>
 
                 <form method="POST" action="{{ route('logout') }}">

@@ -9,7 +9,9 @@
         <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon"/>
 
         {{-- Tailwind CSS import --}}
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com"></script> 
+
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -35,5 +37,7 @@
                 @yield('content')
             </main>
         </div>
+        
     </body>
+    
 </html>

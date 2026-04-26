@@ -120,12 +120,18 @@ class SellerRentalController extends Controller
             ->with('success', 'Rental marked as active — car is now with the renter.');
     }
 
-    // ── Complete: active → completed (car returned) ───────────────────
+    // ── Complete: confirmed|active → completed (car returned) ────────
+    // Allows skipping the activate step — the owner may hand over and
+    // receive the car back without clicking "Mark as Picked Up" first.
 
     public function complete(Request $request, CarRental $carRental)
     {
         abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
-        abort_if($carRental->status !== 'active', 422, 'Only active rentals can be marked as completed.');
+        abort_if(
+            !in_array($carRental->status, ['confirmed', 'active']),
+            422,
+            'Only confirmed or active rentals can be marked as completed.'
+        );
 
         $request->validate([
             'actual_return_date' => ['nullable', 'date'],

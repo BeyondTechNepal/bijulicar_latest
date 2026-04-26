@@ -208,8 +208,8 @@
                 </form>
                 @endif
 
-                {{-- Complete (active only) --}}
-                @if($carRental->isActive())
+                {{-- Complete (confirmed or active) --}}
+                @if($carRental->isConfirmed() || $carRental->isActive())
                 <form method="POST" action="{{ route($prefix . '.rentals.complete', $carRental) }}"
                     onsubmit="return confirm('Mark car as returned and complete the rental?')">
                     @csrf @method('PATCH')

@@ -162,7 +162,7 @@ class AdminAdvertisementController extends Controller
     private function sendMail(object $mailable, string $to): void
     {
         try {
-            Mail::to($to)->send($mailable);
+            Mail::to($to)->queue($mailable);
         } catch (\Throwable $e) {
             Log::warning("Ad email failed to [{$to}]: " . $e->getMessage());
         }

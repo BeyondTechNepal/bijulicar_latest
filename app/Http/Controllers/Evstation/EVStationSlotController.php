@@ -111,7 +111,7 @@ class EVStationSlotController extends Controller
         ]);
         app(NotificationService::class)->slotApproved($slot, $customer);
 
-        Mail::to($customer->email)->send(
+        Mail::to($customer->email)->queue(
             new SlotRequestApprovedMail($slot, $customer)
         );
 
@@ -142,7 +142,7 @@ class EVStationSlotController extends Controller
         ]);
         app(NotificationService::class)->slotRejected($slot, $customer, $request->rejection_reason ?? '');
 
-        Mail::to($customer->email)->send(
+        Mail::to($customer->email)->queue(
             new SlotRequestRejectedMail($slot, $customer, $request->rejection_reason ?? '')
         );
 

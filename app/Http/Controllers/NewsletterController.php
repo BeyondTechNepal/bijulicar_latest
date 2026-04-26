@@ -35,7 +35,7 @@ class NewsletterController extends Controller
             'token' => Str::random(64),
         ]);
 
-        Mail::to($subscriber->email)->send(new VerifyNewsletter($subscriber));
+        Mail::to($subscriber->email)->queue(new VerifyNewsletter($subscriber));
 
         return response()->json(['success' => 'Thanks for subscribing! Please check your email to verify.']);
     }

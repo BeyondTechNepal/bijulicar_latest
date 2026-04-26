@@ -90,7 +90,7 @@ class GarageAppointmentController extends Controller
                 ]);
         }
 
-        Mail::to($appointment->customer->email)->send(
+        Mail::to($appointment->customer->email)->queue(
             new BookingApprovedMail($appointment)
         );
 
@@ -116,7 +116,7 @@ class GarageAppointmentController extends Controller
 
         app(NotificationService::class)->appointmentRejected($appointment);
 
-        Mail::to($appointment->customer->email)->send(
+        Mail::to($appointment->customer->email)->queue(
             new BookingRejectedMail($appointment)
         );
 

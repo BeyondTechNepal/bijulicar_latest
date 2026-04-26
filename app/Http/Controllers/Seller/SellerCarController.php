@@ -231,15 +231,30 @@ class SellerCarController extends Controller
             'rent_deposit'       => $isRentable ? $request->rent_deposit : null,
         ]);
 
-        // Remove selected images
+        // Remove selected images first, so the count check below reflects
+        // what will actually remain after this request.
         if ($request->filled('remove_images')) {
             $car->images()
                 ->whereIn('id', $request->remove_images)
                 ->each(fn($img) => $img->delete());
         }
 
-        // Upload new images
+        // Upload new images — enforce the 8-image total cap across existing
+        // + newly uploaded files. The validation rule 'max:8' on new_images
+        // only checks the incoming array size; this check accounts for images
+        // that are already stored against this car after removals above.
         if ($request->hasFile('new_images')) {
+            $existingCount = $car->images()->count();
+            $newCount      = count($request->file('new_images'));
+
+            if ($existingCount + $newCount > 8) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'new_images' => "You can only have 8 images per listing. This car already has {$existingCount} image(s), so you can add at most " . (8 - $existingCount) . " more.",
+                    ]);
+            }
+
             $currentMax = $car->images()->max('sort_order') ?? -1;
 
             foreach ($request->file('new_images') as $index => $file) {

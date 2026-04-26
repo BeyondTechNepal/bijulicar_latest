@@ -157,12 +157,66 @@ class AdminAdvertisementController extends Controller
             ->with('success', $message);
     }
 
+    // ── Admin force-delete (any status, including live) ───────────────────
+
+    public function forceDelete(Advertisement $advertisement): \Illuminate\Http\RedirectResponse
+    {
+        $title = $advertisement->title;
+
+        // If the ad was live, remove it from the homepage ad cache immediately
+        // so it stops showing to visitors the moment it's deleted.
+        if ($advertisement->is_active) {
+            Cache::forget(HomeController::CACHE_HOME_ADS);
+        }
+
+        if ($advertisement->image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($advertisement->image);
+        }
+
+        $advertisement->delete();
+
+        return redirect()
+            ->route('admin.advertisements.index')
+            ->with('success', "Advertisement \"{$title}\" has been deleted.");
+    }
+
+    // ── Admin force-update (edit title, dates, active toggle — any status) ──
+
+    public function forceUpdate(Request $request, Advertisement $advertisement): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'title'     => ['required', 'string', 'max:150'],
+            'starts_at' => ['required', 'date'],
+            'ends_at'   => ['required', 'date', 'after_or_equal:starts_at'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $wasActive = $advertisement->is_active;
+        $isNowActive = (bool) $request->is_active;
+
+        $advertisement->update([
+            'title'     => $request->title,
+            'starts_at' => $request->starts_at,
+            'ends_at'   => $request->ends_at,
+            'is_active' => $isNowActive,
+        ]);
+
+        // Bust ad cache if active state changed or ad is currently live
+        if ($wasActive !== $isNowActive || $isNowActive) {
+            Cache::forget(HomeController::CACHE_HOME_ADS);
+        }
+
+        return redirect()
+            ->route('admin.advertisements.index')
+            ->with('success', "Advertisement \"{$advertisement->title}\" updated.");
+    }
+
     // ── Private helper ────────────────────────────────────────────────────
 
     private function sendMail(object $mailable, string $to): void
     {
         try {
-            Mail::to($to)->queue($mailable);
+            Mail::to($to)->send($mailable);
         } catch (\Throwable $e) {
             Log::warning("Ad email failed to [{$to}]: " . $e->getMessage());
         }

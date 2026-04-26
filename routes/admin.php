@@ -118,6 +118,8 @@ Route::prefix('admin')
                     Route::post('/{advertisement}/approve',         [AdminAdvertisementController::class, 'approve'])->name('approve');
                     Route::post('/{advertisement}/reject',          [AdminAdvertisementController::class, 'reject'])->name('reject');
                     Route::post('/{advertisement}/confirm-payment', [AdminAdvertisementController::class, 'confirmPayment'])->name('confirm-payment');
+                    Route::patch('/{advertisement}/force-update',   [AdminAdvertisementController::class, 'forceUpdate'])->name('force-update');
+                    Route::delete('/{advertisement}/force-delete',  [AdminAdvertisementController::class, 'forceDelete'])->name('force-delete');
                 });
 
                 // ── Ad pricing matrix ──────────────────────────────────

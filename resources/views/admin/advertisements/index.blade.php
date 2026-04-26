@@ -236,6 +236,7 @@
                         <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Dates</th>
                         <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Paid</th>
                         <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Method</th>
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -262,6 +263,71 @@
                             <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full uppercase">
                                 {{ \App\Models\Advertisement::PAYMENT_METHODS[$ad->payment_method] ?? $ad->payment_method }}
                             </span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-2">
+                                {{-- Edit toggle --}}
+                                <button onclick="toggleForm('edit-ad-{{ $ad->id }}')"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                                    Edit
+                                </button>
+                                {{-- Delete --}}
+                                <form method="POST" action="{{ route('admin.advertisements.force-delete', $ad) }}"
+                                    onsubmit="return confirm('Delete \"{{ addslashes($ad->title) }}\"? This cannot be undone.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 border border-red-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {{-- Inline edit form row (hidden by default) --}}
+                    <tr id="edit-ad-{{ $ad->id }}" class="hidden bg-blue-50/40">
+                        <td colspan="7" class="px-5 py-4">
+                            <form method="POST" action="{{ route('admin.advertisements.force-update', $ad) }}">
+                                @csrf
+                                @method('PATCH')
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Title</label>
+                                        <input type="text" name="title" required
+                                            value="{{ old('title', $ad->title) }}"
+                                            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Start Date</label>
+                                        <input type="date" name="starts_at" required
+                                            value="{{ $ad->starts_at?->toDateString() }}"
+                                            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">End Date</label>
+                                        <input type="date" name="ends_at" required
+                                            value="{{ $ad->ends_at?->toDateString() }}"
+                                            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 transition-all">
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="hidden" name="is_active" value="0">
+                                        <input type="checkbox" name="is_active" value="1"
+                                            {{ $ad->is_active ? 'checked' : '' }}
+                                            class="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                                        <span class="text-sm font-bold text-gray-700">Active (showing to visitors)</span>
+                                    </label>
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all">
+                                        Save Changes
+                                    </button>
+                                    <button type="button" onclick="toggleForm('edit-ad-{{ $ad->id }}')"
+                                        class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-bold transition-all">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
                         </td>
                     </tr>
                     @endforeach

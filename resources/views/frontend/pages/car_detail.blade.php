@@ -326,8 +326,9 @@
                         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <span
-                                    class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-base">⭐</span>
-                                <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Reviews</span>
+                                    class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-base"><i class="fa-solid fa-star" style="color: #facc15;"></i></span>
+                                <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Buyer
+                                    Reviews</span>
                             </div>
                             @if ($reviewCount > 0)
                                 <div class="flex items-center gap-2">

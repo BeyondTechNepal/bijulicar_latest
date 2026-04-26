@@ -8,6 +8,7 @@ use App\Models\Negotiation;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BuyerOrderController extends Controller
 {
@@ -40,56 +41,68 @@ class BuyerOrderController extends Controller
             'notes'       => ['nullable', 'string', 'max:500'],
         ]);
 
-        $car     = Car::findOrFail($request->car_id);
         $buyerId = Auth::guard('web')->id();
 
-        abort_if(!$car->isAvailable(), 422, 'This car is no longer available.');
-        abort_if(!$car->inStock(),     422, 'This car is currently out of stock.');
-        abort_if($car->seller_id == $buyerId, 422, 'You cannot order your own listing.');
-        abort_if(!$car->isSaleable(),  422, 'This car is not listed for sale.');
+        $result = DB::transaction(function () use ($request, $buyerId) {
+            // Lock the car row for the duration of this transaction.
+            // Any concurrent request hitting this same car will block here
+            // until we commit or roll back, preventing double-orders.
+            $car = Car::lockForUpdate()->findOrFail($request->car_id);
 
-        // Block purchase if the car is currently out on an active rental
-        abort_if(
-            $car->hasActiveRental(),
-            422,
-            'This car is currently out on rental and cannot be ordered right now. Please try again once the rental period ends.'
-        );
+            abort_if(!$car->isAvailable(), 422, 'This car is no longer available.');
+            abort_if(!$car->inStock(),     422, 'This car is currently out of stock.');
+            abort_if($car->seller_id == $buyerId, 422, 'You cannot order your own listing.');
+            abort_if(!$car->isSaleable(),  422, 'This car is not listed for sale.');
 
-        $hasActiveOrder = Order::where('buyer_id', $buyerId)
-            ->where('car_id', $car->id)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->exists();
+            // Block purchase if the car is currently out on an active rental
+            abort_if(
+                $car->hasActiveRental(),
+                422,
+                'This car is currently out on rental and cannot be ordered right now. Please try again once the rental period ends.'
+            );
 
-        abort_if($hasActiveOrder, 422, 'You already have an active order for this car.');
+            $hasActiveOrder = Order::where('buyer_id', $buyerId)
+                ->where('car_id', $car->id)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->exists();
 
-        // Check for an accepted negotiation — use that price instead of listed price
-        $acceptedNegotiation = Negotiation::where('buyer_id', $buyerId)
-            ->where('car_id', $car->id)
-            ->where('status', 'accepted')
-            ->first();
+            abort_if($hasActiveOrder, 422, 'You already have an active order for this car.');
 
-        $finalPrice = $acceptedNegotiation
-            ? $acceptedNegotiation->offered_price
-            : $car->price;
+            // Check for an accepted negotiation — use that price instead of listed price
+            $acceptedNegotiation = Negotiation::where('buyer_id', $buyerId)
+                ->where('car_id', $car->id)
+                ->where('status', 'accepted')
+                ->first();
 
-        $order = Order::create([
-            'buyer_id'          => $buyerId,
-            'seller_id'         => $car->seller_id,
-            'car_id'            => $car->id,
-            'car_snapshot_name' => $car->displayName(),
-            'status'            => 'pending',
-            'total_price'       => $finalPrice,
-            'buyer_name'        => $request->buyer_name,
-            'buyer_phone'       => $request->buyer_phone,
-            'buyer_email'       => $request->buyer_email,
-            'notes'             => $request->notes,
-            'ordered_at'        => now(),
-        ]);
+            $finalPrice = $acceptedNegotiation
+                ? $acceptedNegotiation->offered_price
+                : $car->price;
 
-        // Mark the negotiation as converted to an order
-        if ($acceptedNegotiation) {
-            $acceptedNegotiation->update(['status' => 'ordered']);
-        }
+            $order = Order::create([
+                'buyer_id'          => $buyerId,
+                'seller_id'         => $car->seller_id,
+                'car_id'            => $car->id,
+                'car_snapshot_name' => $car->displayName(),
+                'status'            => 'pending',
+                'total_price'       => $finalPrice,
+                'buyer_name'        => $request->buyer_name,
+                'buyer_phone'       => $request->buyer_phone,
+                'buyer_email'       => $request->buyer_email,
+                'notes'             => $request->notes,
+                'ordered_at'        => now(),
+            ]);
+
+            // Mark the negotiation as converted to an order
+            if ($acceptedNegotiation) {
+                $acceptedNegotiation->update(['status' => 'ordered']);
+            }
+
+            return ['order' => $order, 'negotiation' => $acceptedNegotiation, 'finalPrice' => $finalPrice];
+        });
+
+        $order               = $result['order'];
+        $acceptedNegotiation = $result['negotiation'];
+        $finalPrice          = $result['finalPrice'];
 
         $suffix = $acceptedNegotiation
             ? ' Negotiated price of NRs ' . number_format($finalPrice) . ' applied.'

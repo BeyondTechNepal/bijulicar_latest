@@ -88,16 +88,24 @@ class SellerPreOrderController extends Controller
 
         $car = $preOrder->car;
 
-        // Create the full order (already confirmed since deposit was paid)
+        // Create the full order (already confirmed since deposit was paid).
+        // seller_id      — required so the order appears in the seller's dashboard
+        //                  (SellerOrderController::index filters by seller_id).
+        // car_snapshot_name — preserves the car name if the listing is later deleted.
+        // ordered_at     — mirrors what BuyerOrderController::store() sets so
+        //                  sorting by ordered_at works consistently across all orders.
         $order = Order::create([
-            'buyer_id'    => $preOrder->buyer_id,
-            'car_id'      => $car->id,
-            'status'      => 'confirmed',
-            'total_price' => $car->price,
-            'buyer_name'  => $preOrder->buyer_name,
-            'buyer_phone' => $preOrder->buyer_phone,
-            'buyer_email' => $preOrder->buyer_email,
-            'notes'       => 'Converted from pre-order #' . $preOrder->id . '. Deposit of ' . $preOrder->formattedDeposit() . ' already paid.',
+            'buyer_id'          => $preOrder->buyer_id,
+            'seller_id'         => $car->seller_id,
+            'car_id'            => $car->id,
+            'car_snapshot_name' => $car->displayName(),
+            'status'            => 'confirmed',
+            'total_price'       => $car->price,
+            'buyer_name'        => $preOrder->buyer_name,
+            'buyer_phone'       => $preOrder->buyer_phone,
+            'buyer_email'       => $preOrder->buyer_email,
+            'ordered_at'        => now(),
+            'notes'             => 'Converted from pre-order #' . $preOrder->id . '. Deposit of ' . $preOrder->formattedDeposit() . ' already paid.',
         ]);
 
         // Mark the pre-order as converted, link to the new order

@@ -16,6 +16,8 @@ class BusinessDirectoryController extends Controller
     {
         $query = User::role('business')
             ->with(['businessVerification', 'listedCars'])
+            ->withAvg('receivedReviews', 'rating')
+            ->withCount('receivedReviews')
             ->whereHas('businessVerification', fn($q) => $q->where('status', 'approved'));
 
         if ($request->filled('location')) {
@@ -36,9 +38,10 @@ class BusinessDirectoryController extends Controller
         $businesses = $query->get()->map(function ($user) {
             $activeCars      = $user->listedCars->whereIn('status', ['available', 'upcoming']);
             $rentableCars    = $activeCars->whereIn('listing_type', ['rent', 'both']);
-            $allReviews      = Review::where('seller_id', $user->id)->get();
-            $avgRating       = $allReviews->avg('rating') ?? 0;
-            $reviewCount     = $allReviews->count();
+
+            // Use pre-aggregated values from withAvg/withCount — no extra query per business
+            $avgRating       = $user->received_reviews_avg_rating ?? 0;
+            $reviewCount     = $user->received_reviews_count ?? 0;
 
             $drivetrains = $activeCars->pluck('drivetrain')->unique();
             if ($drivetrains->count() > 1)        $spec = 'Multi-Brand';

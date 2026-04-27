@@ -91,7 +91,7 @@
                 </ul>
             </div>
 
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2"> 
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Support</h4>
                 <ul class="space-y-4 text-sm font-bold text-slate-600">
                     <li><a href="{{ route('contact') }}" class="hover:text-[#16a34a] transition">Contact Us</a></li>

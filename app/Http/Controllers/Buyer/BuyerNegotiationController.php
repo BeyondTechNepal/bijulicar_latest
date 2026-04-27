@@ -28,7 +28,7 @@ class BuyerNegotiationController extends Controller
 
     public function show(Negotiation $negotiation)
     {
-        abort_if($negotiation->buyer_id !== $this->authUserId(), 403);
+        abort_if($negotiation->buyer_id != $this->authUserId(), 403);
         $negotiation->load(['car', 'seller']);
 
         return view('dashboard.buyer.negotiations.show', compact('negotiation'));
@@ -82,7 +82,7 @@ class BuyerNegotiationController extends Controller
 
     public function accept(Negotiation $negotiation)
     {
-        abort_if($negotiation->buyer_id !== $this->authUserId(), 403);
+        abort_if($negotiation->buyer_id != $this->authUserId(), 403);
         abort_if(!$negotiation->isPendingBuyer(), 422, 'Nothing to accept right now.');
 
         $negotiation->update(['status' => 'accepted', 'expires_at' => null]);
@@ -96,7 +96,7 @@ class BuyerNegotiationController extends Controller
 
     public function counter(Request $request, Negotiation $negotiation)
     {
-        abort_if($negotiation->buyer_id !== $this->authUserId(), 403);
+        abort_if($negotiation->buyer_id != $this->authUserId(), 403);
         abort_if(!$negotiation->isPendingBuyer(), 422, 'It is not your turn to counter.');
         abort_if(!$negotiation->canCounter(),     422, 'Maximum negotiation rounds reached.');
 
@@ -128,7 +128,7 @@ class BuyerNegotiationController extends Controller
 
     public function cancel(Negotiation $negotiation)
     {
-        abort_if($negotiation->buyer_id !== $this->authUserId(), 403);
+        abort_if($negotiation->buyer_id != $this->authUserId(), 403);
         abort_if($negotiation->isClosed(), 422, 'This negotiation is already closed.');
 
         $negotiation->update(['status' => 'cancelled', 'expires_at' => null]);

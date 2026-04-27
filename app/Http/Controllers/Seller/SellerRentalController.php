@@ -51,7 +51,7 @@ class SellerRentalController extends Controller
 
     public function show(CarRental $carRental)
     {
-        abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
+        abort_if($carRental->owner_id != Auth::guard('web')->id(), 403);
 
         $ctx = $this->context();
         $carRental->load(['car' => fn ($q) => $q->withTrashed(), 'renter']);
@@ -63,7 +63,7 @@ class SellerRentalController extends Controller
 
     public function confirm(CarRental $carRental)
     {
-        abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
+        abort_if($carRental->owner_id != Auth::guard('web')->id(), 403);
         abort_if($carRental->status !== 'pending', 422, 'Only pending bookings can be confirmed.');
 
         // Check for overlapping confirmed/active rentals before locking in dates
@@ -99,7 +99,7 @@ class SellerRentalController extends Controller
 
     public function activate(CarRental $carRental)
     {
-        abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
+        abort_if($carRental->owner_id != Auth::guard('web')->id(), 403);
         abort_if($carRental->status !== 'confirmed', 422, 'Only confirmed bookings can be marked as active.');
 
         $carRental->update(['status' => 'active']);
@@ -126,7 +126,7 @@ class SellerRentalController extends Controller
 
     public function complete(Request $request, CarRental $carRental)
     {
-        abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
+        abort_if($carRental->owner_id != Auth::guard('web')->id(), 403);
         abort_if(
             !in_array($carRental->status, ['confirmed', 'active']),
             422,
@@ -162,7 +162,7 @@ class SellerRentalController extends Controller
 
     public function cancel(Request $request, CarRental $carRental)
     {
-        abort_if($carRental->owner_id !== Auth::guard('web')->id(), 403);
+        abort_if($carRental->owner_id != Auth::guard('web')->id(), 403);
         abort_if(!$carRental->isCancellable(), 422, 'This booking can no longer be cancelled.');
 
         $request->validate([

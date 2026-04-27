@@ -48,7 +48,7 @@ class PublicBookingController extends Controller
     public function cancelAppointment(GarageAppointment $appointment)
     {
         // Only the customer who made it can cancel
-        abort_if($appointment->customer_user_id !== auth()->id(), 403);
+        abort_if($appointment->customer_user_id != auth()->id(), 403);
 
         // Can only cancel while still pending — once approved, the garage
         // has committed a bay, so the customer must contact them directly
@@ -92,7 +92,7 @@ class PublicBookingController extends Controller
     public function cancelSlot(EvStationSlot $slot)
     {
         // Only the customer who requested it can cancel
-        abort_if($slot->occupied_by !== auth()->id(), 403);
+        abort_if($slot->occupied_by != auth()->id(), 403);
 
         // Can only cancel a pending request — once booked/occupied the
         // station has committed, so the customer must contact them directly

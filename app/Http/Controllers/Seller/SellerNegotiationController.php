@@ -40,7 +40,7 @@ class SellerNegotiationController extends Controller
     /** Show a single negotiation */
     public function show(Negotiation $negotiation)
     {
-        abort_if($negotiation->seller_id !== $this->authUserId(), 403);
+        abort_if($negotiation->seller_id != $this->authUserId(), 403);
         $ctx = $this->context();
         $negotiation->load(['car', 'buyer']);
 
@@ -53,7 +53,7 @@ class SellerNegotiationController extends Controller
      */
     public function accept(Negotiation $negotiation)
     {
-        abort_if($negotiation->seller_id !== $this->authUserId(), 403);
+        abort_if($negotiation->seller_id != $this->authUserId(), 403);
         abort_if(!$negotiation->isPendingSeller(), 422, 'Nothing to accept right now.');
 
         $negotiation->update([
@@ -75,7 +75,7 @@ class SellerNegotiationController extends Controller
      */
     public function counter(Request $request, Negotiation $negotiation)
     {
-        abort_if($negotiation->seller_id !== $this->authUserId(), 403);
+        abort_if($negotiation->seller_id != $this->authUserId(), 403);
         abort_if(!$negotiation->isPendingSeller(), 422, 'It is not your turn to counter.');
         abort_if(!$negotiation->canCounter(),      422, 'Maximum negotiation rounds reached.');
 
@@ -118,7 +118,7 @@ class SellerNegotiationController extends Controller
      */
     public function decline(Negotiation $negotiation)
     {
-        abort_if($negotiation->seller_id !== $this->authUserId(), 403);
+        abort_if($negotiation->seller_id != $this->authUserId(), 403);
         abort_if(!$negotiation->isPendingSeller(), 422, 'Nothing to decline right now.');
 
         $negotiation->update([

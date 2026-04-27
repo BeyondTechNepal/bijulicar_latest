@@ -40,7 +40,7 @@ class BuyerReviewController extends Controller
         if ($request->filled('rental_id')) {
             $rental = CarRental::findOrFail($request->rental_id);
 
-            abort_if($rental->renter_id !== Auth::id(), 403);
+            abort_if($rental->renter_id != Auth::id(), 403);
             abort_if(!$rental->isCompleted(), 403, 'You can only review a rental after it has been completed.');
 
             $car = Car::withTrashed()->findOrFail($rental->car_id);
@@ -106,7 +106,7 @@ class BuyerReviewController extends Controller
 
         if ($rental) {
             // ── Rental review guards ──────────────────────────────────
-            abort_if($rental->renter_id !== Auth::id(), 403);
+            abort_if($rental->renter_id != Auth::id(), 403);
             abort_if(!$rental->isCompleted(), 403, 'You can only review a rental after it has been completed.');
             abort_if($rental->car_id !== $car->id, 422, 'Car does not match rental booking.');
 

@@ -155,27 +155,42 @@
             </div>
             <div class="space-y-3">
                 @foreach ($recentOrders as $order)
-                    <div class="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
+                    <div class="border border-slate-100 rounded-xl p-4 sm:p-0 sm:border-0 sm:rounded-none 
+                                flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 
+                                sm:py-3 sm:border-b sm:last:border-0">
+
+                        <!-- Left Section -->
                         <div class="flex items-center gap-3">
                             <div
                                 class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase">
-                                EV</div>
+                                EV
+                            </div>
+
                             <div>
-                                <p class="text-sm font-black text-slate-900">{{ $order->car ? $order->car->displayName() : 'Listing removed' }}</p>
+                                <p class="text-sm font-black text-slate-900">
+                                    {{ $order->car ? $order->car->displayName() : 'Listing removed' }}
+                                </p>
                                 <p class="text-[11px] text-slate-400 font-medium mt-0.5">
-                                    {{ $order->ordered_at->diffForHumans() }}</p>
+                                    {{ $order->ordered_at->diffForHumans() }}
+                                </p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <p class="text-sm font-black text-slate-700 hidden sm:block">
-                                {{ $order->car ? $order->car->formattedPrice() : 'NRs ' . number_format($order->total_price) }}</p>
+
+                        <!-- Right Section -->
+                        <div class="flex items-center justify-between sm:justify-end gap-3">
+                            <p class="text-sm font-black text-slate-700">
+                                {{ $order->car ? $order->car->formattedPrice() : 'NRs ' . number_format($order->total_price) }}
+                            </p>
+
                             <span @class([
                                 'text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider',
                                 'bg-yellow-100 text-yellow-700' => $order->status === 'pending',
                                 'bg-blue-100 text-blue-700' => $order->status === 'confirmed',
                                 'bg-[#4ade80]/15 text-[#16a34a]' => $order->status === 'completed',
                                 'bg-red-100 text-red-600' => $order->status === 'cancelled',
-                            ])>{{ ucfirst($order->status) }}</span>
+                            ])>
+                                {{ ucfirst($order->status) }}
+                            </span>
                         </div>
                     </div>
                 @endforeach
@@ -212,19 +227,37 @@
             <div class="space-y-3">
                 @foreach($recentRentals as $rental)
                     <a href="{{ route('buyer.rentals.show', $rental) }}"
-                        class="flex items-center justify-between py-3 px-4 -mx-4 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50/60 transition-all group">
+                        class="border border-slate-100 rounded-xl p-4 
+                            flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+                            sm:py-3 sm:px-4 sm:-mx-4 sm:border-transparent 
+                            sm:hover:border-slate-100 sm:hover:bg-slate-50/60 
+                            transition-all group">
+
+                        <!-- Left Section -->
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-base shrink-0">🚗</div>
+                            <div class="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-base shrink-0">
+                                🚗
+                            </div>
+
                             <div>
-                                <p class="text-sm font-black text-slate-900">{{ $rental->carDisplayName() }}</p>
+                                <p class="text-sm font-black text-slate-900">
+                                    {{ $rental->carDisplayName() }}
+                                </p>
                                 <p class="text-[11px] text-slate-400 font-medium mt-0.5">
                                     {{ $rental->pickup_date->format('d M') }} → {{ $rental->return_date->format('d M Y') }}
                                     · {{ $rental->total_days }} days
                                 </p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3 shrink-0">
-                            <p class="text-sm font-black text-slate-700 hidden sm:block">NRs {{ number_format($rental->total_price) }}</p>
+
+                        <!-- Right Section -->
+                        <div class="flex items-center justify-between sm:justify-end gap-3">
+                            <!-- Price (now visible on mobile too) -->
+                            <p class="text-sm font-black text-slate-700">
+                                NRs {{ number_format($rental->total_price) }}
+                            </p>
+
+                            <!-- Status -->
                             <span @class([
                                 'text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider',
                                 'bg-yellow-100 text-yellow-700' => $rental->status === 'pending',
@@ -232,8 +265,13 @@
                                 'bg-green-100 text-green-700'   => $rental->status === 'active',
                                 'bg-slate-100 text-slate-600'   => $rental->status === 'completed',
                                 'bg-red-100 text-red-600'       => $rental->status === 'cancelled',
-                            ])>{{ $rental->statusLabel() }}</span>
-                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ])>
+                                {{ $rental->statusLabel() }}
+                            </span>
+
+                            <!-- Arrow (desktop only) -->
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors hidden sm:block"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </div>

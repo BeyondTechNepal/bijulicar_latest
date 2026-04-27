@@ -52,28 +52,28 @@
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Vehicle Types</h4>
                 <ul class="space-y-4 text-sm font-bold text-slate-600">
                     <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+                        <a href="{{ route('marketplace') }}" class="flex items-center gap-2 hover:text-[#16a34a] transition">
                             <span><i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i></span>
                             Electric
                         </a>
                     </li>
 
                     <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+                        <a href="{{ route('marketplace') }}" class="flex items-center gap-2 hover:text-[#16a34a] transition">
                             <span><i class="fa-solid fa-bolt-lightning mr-1" style="color: rgb(52, 152, 219);"></i></span>
                             Hybrid
                         </a>
                     </li>
 
                     <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+                        <a href="{{ route('marketplace') }}" class="flex items-center gap-2 hover:text-[#16a34a] transition">
                             <span><i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i></span>
                             Traditional
                         </a>
                     </li>
 
                     <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-[#16a34a] transition">
+                        <a href="{{ route('marketplace') }}" class="flex items-center gap-2 hover:text-[#16a34a] transition">
                             <span><i class="fa-solid fa-car-side mr-1" style="color: rgb(100, 116, 139);"></i></span>
                             All Inventory
                         </a>
@@ -84,20 +84,20 @@
             <div class="lg:col-span-2">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Services</h4>
                 <ul class="space-y-4 text-sm font-bold text-slate-600">
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Sell Your Vehicle</a></li>
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Loan Calculator</a></li>
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Compare Models</a></li>
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Map Search</a></li>
+                    <li><a href="{{ route('rent') }}" class="hover:text-[#16a34a] transition">Rent a Car</a></li>
+                    <li><a href="{{ route('loan_calculator') }}" class="hover:text-[#16a34a] transition">Loan Calculator</a></li>
+                    <li><a href="{{ route('compare_cars') }}" class="hover:text-[#16a34a] transition">Compare Models</a></li>
+                    <li><a href="{{ route('map_location') }}" class="hover:text-[#16a34a] transition">Map Search</a></li>
                 </ul>
             </div>
 
             <div class="lg:col-span-2">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Support</h4>
                 <ul class="space-y-4 text-sm font-bold text-slate-600">
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Contact Us</a></li>
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Help Center</a></li>
+                    <li><a href="{{ route('contact') }}" class="hover:text-[#16a34a] transition">Contact Us</a></li>
+                    <li><a href="{{ route('contact') }}" class="hover:text-[#16a34a] transition">Help Center</a></li>
                     <li><a href="#" class="hover:text-[#16a34a] transition">Terms of Service</a></li>
-                    <li><a href="#" class="hover:text-[#16a34a] transition">Privacy Policy</a></li>
+                    <li><a href="{{ route('contact') }}" class="hover:text-[#16a34a] transition">FAQs</a></li>
                 </ul>
             </div>
 
@@ -141,8 +141,8 @@
             <p class="text-[10px] text-slate-500">
                 Developed and maintained by
                 <a href="https://beyondtechnepal.com" target="_blank" rel="noopener noreferrer"
-                class="font-bold text-black hover:text-[#4ade80] transition-colors">
-                    Beyond Tech Nepal
+                class="font-bold text-black hover:underline transition-colors">
+                    <span class="text-red-600">Beyond</span> <span class="text-blue-800">Tech Nepal</span>
                 </a>
             </p>
         </div>

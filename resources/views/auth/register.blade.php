@@ -674,8 +674,7 @@
 
             <div
                 class="px-8 py-6 border-t border-slate-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] text-slate-400 font-medium text-center md:text-left">By proceeding, you
-                    acknowledge that you have read and agree to all 18 sections of the BijuliCar agreement.</p>
+                <p class="text-[10px] text-slate-400 font-medium text-center md:text-left">By proceeding, you acknowledge that you have read and agree to all 18 sections of the BijuliCar agreement.</p>
                 <div class="flex gap-3 w-full md:w-auto">
                     <button @click="openTerms = false"
                         class="flex-1 md:flex-none px-10 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition shadow-lg shadow-emerald-100">I
@@ -684,8 +683,6 @@
             </div>
         </div>
     </div>
-
-
 
 </body>
 

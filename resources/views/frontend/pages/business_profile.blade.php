@@ -212,11 +212,27 @@
                             @endif
                         </div>
                         <div class="absolute top-3 right-3 flex flex-col gap-1 items-end">
-                            <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/60 text-white backdrop-blur-sm">{{ strtoupper($car->drivetrain) }}</span>
-                            @if(in_array($car->listing_type, ['rent','both']))
-                            <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-600/80 text-white backdrop-blur-sm">Rentable</span>
-                            @endif
-                        </div>
+    <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/60 text-white backdrop-blur-sm">
+        @php
+            $drivetrainIcons = [
+                'ev' => '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i>EV',
+                'hybrid' => '<i class="fa-solid fa-leaf mr-1" style="color: rgb(46, 204, 113);"></i>/<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>Hybrid',
+                'petrol' => '<i class="fa-solid fa-gas-pump mr-1" style="color: rgb(231, 76, 60);"></i>Petrol',
+                'diesel' => '<i class="fa-solid fa-oil-can mr-1" style="color: rgb(241, 196, 15);"></i>Diesel'
+            ];
+
+            $type = strtolower($car->drivetrain);
+        @endphp
+
+        {!! $drivetrainIcons[$type] ?? strtoupper($type) !!}
+    </span>
+
+    @if(in_array($car->listing_type, ['rent','both']))
+        <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-600/80 text-white backdrop-blur-sm">
+            Rentable
+        </span>
+    @endif
+</div>
                     </div>
                     <div class="p-5">
                         <h3 class="text-[15px] font-black text-slate-900 leading-tight group-hover:text-[#16a34a] transition-colors">{{ $car->displayName() }}</h3>

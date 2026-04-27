@@ -139,7 +139,7 @@
             </p>
         
             <p class="text-[10px] text-slate-500">
-                Developed and maintained by
+                Developed and Maintained By
                 <a href="https://beyondtechnepal.com" target="_blank" rel="noopener noreferrer"
                 class="font-bold text-black hover:underline transition-colors">
                     <span class="text-red-600">Beyond</span> <span class="text-blue-800">Tech Nepal</span>

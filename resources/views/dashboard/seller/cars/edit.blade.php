@@ -314,10 +314,11 @@
                 <div class="bg-white border border-slate-200 rounded-2xl p-6">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Pricing</p>
                     <div class="space-y-4">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Price (NRs) <span class="text-red-400">*</span></label>
-                            <input type="number" name="price" value="{{ old('price', $car->price) }}"
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all">
+                        <div class="space-y-2" id="price-field">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Price (NRs) <span class="text-red-400" id="price-required-star">*</span></label>
+                            <input type="number" name="price" id="price-input" value="{{ old('price', $car->price) }}"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 focus:outline-none focus:border-[#16a34a] focus:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                            <p class="text-xs text-slate-400 font-medium hidden" id="price-rent-note">Not required for rent-only listings.</p>
                             @error('price')<p class="text-red-500 text-xs font-bold">{{ $message }}</p>@enderror
                         </div>
                         <label class="flex items-center gap-3 cursor-pointer">
@@ -478,10 +479,22 @@
                     </div>
                     <script>
                     (function(){
-                        const radios = document.querySelectorAll('input[name="listing_type"]');
-                        const panel  = document.getElementById('rental-fields');
-                        function toggle(){ const v = document.querySelector('input[name="listing_type"]:checked')?.value; panel.classList.toggle('hidden', !['rent','both'].includes(v)); }
+                        const radios      = document.querySelectorAll('input[name="listing_type"]');
+                        const panel       = document.getElementById('rental-fields');
+                        const priceInput  = document.getElementById('price-input');
+                        const priceStar   = document.getElementById('price-required-star');
+                        const priceNote   = document.getElementById('price-rent-note');
+                        function toggle(){
+                            const v = document.querySelector('input[name="listing_type"]:checked')?.value;
+                            panel.classList.toggle('hidden', !['rent','both'].includes(v));
+                            const rentOnly = v === 'rent';
+                            priceInput.disabled = rentOnly;
+                            if (rentOnly) { priceInput.value = ''; }
+                            priceStar.classList.toggle('hidden', rentOnly);
+                            priceNote.classList.toggle('hidden', !rentOnly);
+                        }
                         radios.forEach(r => r.addEventListener('change', toggle));
+                        toggle(); // initialise state on page load
                     })();
                     </script>
                 </div>

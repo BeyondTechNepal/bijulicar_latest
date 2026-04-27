@@ -35,7 +35,7 @@ class BuyerRentalController extends Controller
 
     public function show(CarRental $carRental)
     {
-        abort_if($carRental->renter_id !== Auth::id(), 403);
+        abort_if($carRental->renter_id != Auth::id(), 403);
 
         $carRental->load(['car' => fn ($q) => $q->withTrashed(), 'owner']);
 
@@ -149,7 +149,7 @@ class BuyerRentalController extends Controller
 
     public function cancel(CarRental $carRental)
     {
-        abort_if($carRental->renter_id !== Auth::id(), 403);
+        abort_if($carRental->renter_id != Auth::id(), 403);
         abort_if(!$carRental->isCancellable(), 422, 'This booking can no longer be cancelled.');
 
         $carRental->update([

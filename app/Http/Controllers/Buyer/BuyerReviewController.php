@@ -108,7 +108,7 @@ class BuyerReviewController extends Controller
             // ── Rental review guards ──────────────────────────────────
             abort_if($rental->renter_id != Auth::id(), 403);
             abort_if(!$rental->isCompleted(), 403, 'You can only review a rental after it has been completed.');
-            abort_if($rental->car_id !== $car->id, 422, 'Car does not match rental booking.');
+            abort_if($rental->car_id != $car->id, 422, 'Car does not match rental booking.');
 
             $alreadyReviewed = Review::where('buyer_id', Auth::id())
                 ->where('car_rental_id', $rental->id)

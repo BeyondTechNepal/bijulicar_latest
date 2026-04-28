@@ -231,7 +231,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    Map Location
+                    My Map Location
                     @php $hasLoc = auth()->user()->location()->exists(); @endphp
                     @if ($hasLoc)
                         <span class="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>

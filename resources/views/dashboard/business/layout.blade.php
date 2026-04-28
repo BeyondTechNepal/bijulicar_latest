@@ -242,6 +242,7 @@
                     @endif
                 </a>
 
+
                 <!-- {{-- Bulk Operations — coming soon --}}
                     <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-600 cursor-not-allowed select-none"
                          title="Coming soon">
@@ -249,10 +250,7 @@
                         Bulk Operations
                         <span class="ml-auto text-[9px] bg-slate-800 text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider">Soon</span>
                     </div> -->
-
-                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Explore
-                    Navigations</p>
-
+                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Visibility</p>
                 <a href="{{ route('business.location.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
                         {{ request()->routeIs('business.location*') ? 'bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
@@ -268,7 +266,8 @@
                         <span class="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     @endif
                 </a>
-
+                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Explore
+                    Navigations</p>
                 <a href="{{ route('marketplace') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
                     onclick="closeSidebar()">

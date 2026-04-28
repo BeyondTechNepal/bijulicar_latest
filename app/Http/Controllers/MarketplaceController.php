@@ -152,10 +152,11 @@ class MarketplaceController extends Controller
         $minYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('year') ?? date('Y'));
         $maxYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('year') ?? date('Y'));
         $priceStep = 50000; // must match the slider step in marketplace.blade.php
-        $minPrice  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('price') ?? 0);
-        $rawMax    = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('price') ?? 20000000);
-        // Round UP to the nearest step so the slider max can always reach the most expensive car
-        $maxPrice  = (int) (ceil($rawMax / $priceStep) * $priceStep);
+        $rawMin    = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('price') ?? 0);
+        $rawMax    = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('price') ?? 10000000);
+        // Floor min DOWN and ceil max UP to nearest step so slider always covers all prices cleanly
+        $minPrice  = (int) (floor($rawMin / $priceStep) * $priceStep);
+        $maxPrice  = (int) (ceil($rawMax  / $priceStep) * $priceStep);
 
         $marketplaceAds = \App\Models\Advertisement::with('car')
             ->where('placement', 'marketplace')

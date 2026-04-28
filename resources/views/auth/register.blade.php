@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/x-icon" />
 
 
     <style>
@@ -102,14 +102,13 @@
             {{-- Brand Logo --}}
             <div class="mb-2">
                 <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-4 group no-underline">
-                    <div
-                        class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
-                        <svg class="w-5 h-5 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                    {{-- Center: logo --}}
+                    <div class="flex items-center shrink-0 px-2 xl:px-4">
+                        <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
+                            <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                                class="h-12 md:h-14 lg:h-16 w-auto object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm">
+                        </a>
                     </div>
-                    <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span
-                            class="text-[#16a34a]">car</span></span>
                 </a>
                 <div class="w-full h-1 bg-slate-100 rounded-full">
                     <div class="w-1/2 h-full bg-[#16a34a] shadow-[0_0_8px_rgba(22,163,74,0.4)]"></div>
@@ -138,9 +137,9 @@
                     </div>
                 </div>
             @endif
-            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+            <form method="POST" action="{{ route('register') }}" class="space-y-3">
                 @csrf
-
+k
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Full Name -->
                     <div class="space-y-1">
@@ -676,7 +675,8 @@
 
             <div
                 class="px-8 py-6 border-t border-slate-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] text-slate-400 font-medium text-center md:text-left">By proceeding, you acknowledge that you have read and agree to all 18 sections of the BijuliCar agreement.</p>
+                <p class="text-[10px] text-slate-400 font-medium text-center md:text-left">By proceeding, you
+                    acknowledge that you have read and agree to all 18 sections of the BijuliCar agreement.</p>
                 <div class="flex gap-3 w-full md:w-auto">
                     <button @click="openTerms = false"
                         class="flex-1 md:flex-none px-10 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition shadow-lg shadow-emerald-100">I

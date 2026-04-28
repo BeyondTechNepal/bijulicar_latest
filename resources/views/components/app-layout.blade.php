@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,17 +14,22 @@
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
 
 </head>
+
 <body class="font-sans antialiased bg-slate-100 min-h-screen">
 
     {{-- Top nav bar --}}
     <nav class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
         <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
-            <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-[#16a34a] transition-all duration-500 shadow-lg group-hover:rotate-[360deg]">
-                <span class="text-white font-bold text-sm italic">BC</span>
+            {{-- Center: logo --}}
+            <div class="flex items-center shrink-0 px-2 xl:px-4">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
+                    <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                        class="h-12 md:h-14 lg:h-16 w-auto object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm">
+                </a>
             </div>
-            <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
         </a>
-        <a href="{{ url()->previous() }}" class="text-xs font-black text-slate-500 uppercase tracking-widest hover:text-slate-900 transition-colors">
+        <a href="{{ url()->previous() }}"
+            class="text-xs font-black text-slate-500 uppercase tracking-widest hover:text-slate-900 transition-colors">
             ← Back
         </a>
     </nav>
@@ -43,4 +49,5 @@
     </main>
 
 </body>
+
 </html>

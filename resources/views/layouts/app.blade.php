@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
-        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon"/>
+        <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/x-icon"/>
 
         {{-- Tailwind CSS import --}}
         <script src="https://cdn.tailwindcss.com"></script> 

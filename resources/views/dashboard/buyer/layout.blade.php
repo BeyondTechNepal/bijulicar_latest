@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') — BijuliCar</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/x-icon" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -95,18 +95,22 @@
         <aside id="sidebar" class="w-64 bg-slate-900 flex flex-col fixed inset-y-0 left-0 z-40 lg:translate-x-0">
 
             {{-- Logo --}}
-            <div class="px-5 py-5 border-b border-slate-700 flex items-center justify-between">
-                <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <div
-                        class="w-8 h-8 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <span class="text-white font-black tracking-tighter uppercase text-sm">Bijuli<span
-                            class="text-[#4ade80]">Car</span></span>
-                </a>
-                {{-- Close button (mobile only) --}}
+            <div class="px-5 pt-2 border-b border-slate-700 flex items-center justify-between">
+
+                <!-- Empty spacer (left side for balance) -->
+                <div class="w-8 lg:hidden"></div>
+
+                <!-- Centered Logo -->
+                <div class="flex-1 flex justify-center py-1">
+                    <a href="{{ route('home') }}" class="no-underline">
+                        <div class="bg-white rounded-xl shadow-md px-4 py-2 flex items-center justify-center group">
+                            <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                                class="h-14 md:h-16 lg:h-[75px] w-auto object-contain transition-all duration-500 group-hover:scale-110">
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Close button -->
                 <button onclick="closeSidebar()"
                     class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
                     aria-label="Close sidebar">
@@ -115,6 +119,7 @@
                             d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
+
             </div>
 
             {{-- Buyer Portal label --}}
@@ -139,7 +144,7 @@
 
                 <a href="{{ route('buyer.dashboard') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                    {{ request()->routeIs('buyer.dashboard') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.dashboard') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                     onclick="closeSidebar()">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -153,7 +158,7 @@
                 @can('manage own orders')
                     <a href="{{ route('buyer.orders.index') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                        {{ request()->routeIs('buyer.orders*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.orders*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                         onclick="closeSidebar()">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -171,7 +176,7 @@
                 @can('manage own orders')
                     <a href="{{ route('buyer.rentals.index') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                        {{ request()->routeIs('buyer.rentals*') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.rentals*') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                         onclick="closeSidebar()">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -189,7 +194,7 @@
 
                 <a href="{{ route('buyer.preorders.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                    {{ request()->routeIs('buyer.preorders*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.preorders*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                     onclick="closeSidebar()">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -200,7 +205,7 @@
 
                 <a href="{{ route('buyer.negotiations.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                    {{ request()->routeIs('buyer.negotiations*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.negotiations*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                     onclick="closeSidebar()">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -223,7 +228,7 @@
                 @can('purchase vehicle')
                     <a href="{{ route('buyer.purchases.index') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                        {{ request()->routeIs('buyer.purchases*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.purchases*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                         onclick="closeSidebar()">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -235,7 +240,7 @@
                 @can('write reviews')
                     <a href="{{ route('buyer.reviews.index') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
-                        {{ request()->routeIs('buyer.reviews*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+{{ request()->routeIs('buyer.reviews*') ? 'bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                         onclick="closeSidebar()">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -371,9 +376,9 @@
                 </div>
 
                 <!-- <a href="{{ route('marketplace') }}"
-            class="inline-flex items-center gap-1.5 bg-slate-900 text-white px-3 py-2 rounded-xl text-[10px] sm:text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shrink-0 whitespace-nowrap">
-            ⚡ <span class="hidden xs:inline">Browse</span> EVs
-        </a> -->
+class="inline-flex items-center gap-1.5 bg-slate-900 text-white px-3 py-2 rounded-xl text-[10px] sm:text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shrink-0 whitespace-nowrap">
+⚡ <span class="hidden xs:inline">Browse</span> EVs
+</a> -->
             </header>
 
             {{-- Flash messages --}}

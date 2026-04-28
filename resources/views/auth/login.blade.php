@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bijulicar | Authorize Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/x-icon" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -30,12 +30,13 @@
 
             <div class="mb-8">
                 <a href="{{ route('home') }}" class="inline-flex items-center gap-2 mb-6 group no-underline">
-                    <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
-                        <svg class="w-7 h-7 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                    {{-- Center: logo --}}
+                    <div class="flex items-center shrink-0 px-2 xl:px-4">
+                        <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
+                            <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                                class="h-14 md:h-16 lg:h-[75px] w-auto object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm">
+                        </a>
                     </div>
-                    <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
                 </a>
                 <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">
                     Welcome back to <span class="text-[#16a34a]">BijuliCar</span>
@@ -67,7 +68,8 @@
                 <div class="relative flex items-center justify-center">
                     <div class="w-full h-px bg-slate-100"></div>
                     <span
-                        class="absolute bg-white px-4 text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Use Email</span>
+                        class="absolute bg-white px-4 text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Use
+                        Email</span>
                 </div>
 
                 <form method="POST" action="{{ route('login') }}" class="space-y-4">
@@ -126,7 +128,8 @@
             </div>
 
             <p class="mt-8 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                New to the community? <a href="{{ route('register') }}" class="text-[#16a34a] hover:underline ml-1">Register</a>
+                New to the community? <a href="{{ route('register') }}"
+                    class="text-[#16a34a] hover:underline ml-1">Register</a>
             </p>
         </section>
 

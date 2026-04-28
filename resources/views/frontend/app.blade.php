@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <title>Bijulicar</title>
-    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/x-icon" />
 
     {{-- <link rel="icon" type="image/png" href="{{ asset('imagess/logo.svg') }}" /> --}}
 

@@ -7,7 +7,7 @@
 
         <title>{{ config('app.name', 'BijuliCar') }}</title>
 
-        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
+        <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/x-icon" />
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
         <style>

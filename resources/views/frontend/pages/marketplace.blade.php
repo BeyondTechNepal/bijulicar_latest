@@ -336,8 +336,9 @@
     const ALL_BRANDS    = @json($brands->values());
     const ALL_MODELS    = @json($models->values());
     const ALL_LOCATIONS = @json($locations->values());
+    const PRICE_STEP    = 50000;
     const PRICE_MIN     = {{ $minPrice }};
-    const PRICE_MAX     = {{ $maxPrice }};
+    const PRICE_MAX     = {{ $maxPrice }}; // already rounded up to nearest step in controller
     const SEARCH_URL    = '{{ route("marketplace.search") }}';
     const LOGIN_URL     = '{{ route("login") }}';
     const IS_AUTH       = @json(auth()->check());
@@ -688,8 +689,8 @@
         track.innerHTML = `
             <div class="relative w-full h-1.5 rounded-full" style="background:#1e293b;">
                 <div id="ps-range" class="absolute h-1.5 rounded-full" style="background:#4ade80;"></div>
-                <input id="ps-lo" type="range" min="${PRICE_MIN}" max="${PRICE_MAX}" step="50000" class="absolute w-full appearance-none pointer-events-none h-1.5 bg-transparent" style="top:0;left:0;">
-                <input id="ps-hi" type="range" min="${PRICE_MIN}" max="${PRICE_MAX}" step="50000" class="absolute w-full appearance-none pointer-events-none h-1.5 bg-transparent" style="top:0;left:0;">
+                <input id="ps-lo" type="range" min="${PRICE_MIN}" max="${PRICE_MAX}" step="${PRICE_STEP}" class="absolute w-full appearance-none pointer-events-none h-1.5 bg-transparent" style="top:0;left:0;">
+                <input id="ps-hi" type="range" min="${PRICE_MIN}" max="${PRICE_MAX}" step="${PRICE_STEP}" class="absolute w-full appearance-none pointer-events-none h-1.5 bg-transparent" style="top:0;left:0;">
             </div>`;
         const style = document.createElement('style');
         style.textContent = `#ps-lo,#ps-hi{pointer-events:none}#ps-lo::-webkit-slider-thumb,#ps-hi::-webkit-slider-thumb{pointer-events:all;appearance:none;width:20px;height:20px;border-radius:50%;background:#4ade80;border:2px solid #fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}#ps-lo::-moz-range-thumb,#ps-hi::-moz-range-thumb{pointer-events:all;width:20px;height:20px;border-radius:50%;background:#4ade80;border:2px solid #fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}`;

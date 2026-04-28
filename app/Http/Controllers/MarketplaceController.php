@@ -151,8 +151,11 @@ class MarketplaceController extends Controller
         $models   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->orderBy('model')->pluck('model');
         $minYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('year') ?? date('Y'));
         $maxYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('year') ?? date('Y'));
-        $minPrice = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('price') ?? 0);
-        $maxPrice = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('price') ?? 10000000);
+        $priceStep = 50000; // must match the slider step in marketplace.blade.php
+        $minPrice  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('price') ?? 0);
+        $rawMax    = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('price') ?? 20000000);
+        // Round UP to the nearest step so the slider max can always reach the most expensive car
+        $maxPrice  = (int) (ceil($rawMax / $priceStep) * $priceStep);
 
         $marketplaceAds = \App\Models\Advertisement::with('car')
             ->where('placement', 'marketplace')

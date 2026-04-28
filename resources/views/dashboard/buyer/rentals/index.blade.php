@@ -56,10 +56,13 @@
 
                     {{-- Vehicle --}}
                     <div class="flex items-center gap-3 md:col-span-3">
-                        <div
-                            class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-[10px] font-black text-blue-500 uppercase shrink-0">
-                            🚗
-                        </div>
+                        <div class="w-16 h-16 bg-slate-100 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
+                        @if($rental->car->primaryImage)
+                            <img src="{{ Storage::url($rental->car->primaryImage->path) }}" class="w-full h-full object-cover" alt="{{ $rental->carDisplayName() }}">
+                        @else
+                            <span class="text-2xl opacity-20">🚗</span>
+                        @endif
+                    </div>
 
                         <div>
                             <p class="text-sm font-black text-slate-900">

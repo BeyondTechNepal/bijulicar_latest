@@ -12,8 +12,8 @@
     <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
 
         <div class="relative">
-            <div id="map" class="w-full h-72"></div>
-            <div class="absolute top-3 left-3 right-3 z-[1000]">
+            <div id="map" class="w-full h-72 z-[1]"></div>
+            <div class="absolute top-3 left-3 right-3 z-[1]">
                 <div class="flex gap-2">
                     <input type="text" id="search-input" placeholder="Search address…"
                         class="flex-1 px-4 py-2.5 rounded-xl bg-white shadow-md border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-400" />

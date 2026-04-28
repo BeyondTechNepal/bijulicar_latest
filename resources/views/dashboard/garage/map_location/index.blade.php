@@ -4,15 +4,22 @@
 
 @section('content')
 
-<div class="flex items-center justify-between mb-6">
-    <p class="text-slate-500 text-sm font-medium">Manage your garage's pinned location on the public map.</p>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    {{-- Text Content --}}
+    <div class="max-w-md">
+        <p class="text-slate-500 text-sm font-medium leading-relaxed">
+            Manage your garage's pinned location on the public map.
+        </p>
+    </div>
+
+    {{-- Action Button --}}
     @if (!$location)
         <a href="{{ route('garage.location.create') }}"
-            class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-black uppercase tracking-wider rounded-xl transition-all shadow-sm">
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-[12px] sm:text-sm font-black uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98]">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            Add Location
+            <span>Add Location</span>
         </a>
     @endif
 </div>

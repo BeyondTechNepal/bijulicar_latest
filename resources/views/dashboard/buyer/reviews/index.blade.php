@@ -86,7 +86,7 @@
                                 <button type="submit"
                                     class="w-9 h-9 bg-red-50 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center transition-all"
                                     title="Delete">
-                                    <i class="fa-solid fa-trash text-sm text-red-500 group-hover:text-white"></i>
+                                    <i class="fa-solid fa-trash text-sm text-red-500 hover:text-white"></i>
                                 </button>
                             </form>
 

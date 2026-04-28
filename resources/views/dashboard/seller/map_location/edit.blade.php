@@ -4,160 +4,170 @@
 
 @section('content')
 
-<div class="max-w-2xl">
-    <p class="text-slate-500 text-sm font-medium mb-8">
-        Update your showroom's pin on the public map. Changes go live immediately.
-    </p>
+    <div class="max-w-2xl">
+        <p class="text-slate-500 text-sm font-medium mb-8">
+            Update your showroom's pin on the public map. Changes go live immediately.
+        </p>
 
-    <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+        <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
 
-        <div class="relative">
-            <div id="map" class="w-full h-72"></div>
-            <div class="absolute top-3 left-3 right-3 z-[1000]">
-                <div class="flex gap-2">
-                    <input type="text" id="search-input" placeholder="Search new address…"
-                        class="flex-1 px-4 py-2.5 rounded-xl bg-white shadow-md border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80]" />
-                    <button onclick="searchAddress()"
-                        class="px-4 py-2.5 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 rounded-xl text-sm font-black shadow-md transition-all">
-                        Search
-                    </button>
+            <div class="relative">
+                <div id="map" class="w-full h-72 z-[1]"></div>
+                <div class="absolute top-3 left-3 right-3 z-[1]">
+                    <div class="flex gap-2">
+                        <input type="text" id="search-input" placeholder="Search new address…"
+                            class="flex-1 px-4 py-2.5 rounded-xl bg-white shadow-md border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80]" />
+                        <button onclick="searchAddress()"
+                            class="px-4 py-2.5 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 rounded-xl text-sm font-black shadow-md transition-all">
+                            Search
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="p-6 border-t border-slate-100">
-            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-5">
-                📍 Click map, search, or type coordinates
-            </p>
+            <div class="p-6 border-t border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-5">
+                    📍 Click map, search, or type coordinates
+                </p>
 
-            <form method="POST" action="{{ route('seller.location.update') }}">
-                @csrf
-                @method('PUT')
+                <form method="POST" action="{{ route('seller.location.update') }}">
+                    @csrf
+                    @method('PUT')
 
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1.5">Address</label>
-                        <input type="text" name="address" id="address"
-                            value="{{ old('address', $location->address) }}"
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80] @error('address') border-red-400 @enderror" />
-                        @error('address')
-                            <p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1.5">Latitude</label>
-                            <input type="text" name="latitude" id="latitude"
-                                oninput="manualLocationUpdate()"
-                                value="{{ old('latitude', $location->latitude) }}"
-                                class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm font-mono font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80] @error('latitude') border-red-400 @enderror" />
-                            @error('latitude')
+                            <label
+                                class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1.5">Address</label>
+                            <input type="text" name="address" id="address"
+                                value="{{ old('address', $location->address) }}"
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80] @error('address') border-red-400 @enderror" />
+                            @error('address')
                                 <p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1.5">Longitude</label>
-                            <input type="text" name="longitude" id="longitude"
-                                oninput="manualLocationUpdate()"
-                                value="{{ old('longitude', $location->longitude) }}"
-                                class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm font-mono font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80] @error('longitude') border-red-400 @enderror" />
-                            @error('longitude')
-                                <p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>
-                            @enderror
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1.5">Latitude</label>
+                                <input type="text" name="latitude" id="latitude" oninput="manualLocationUpdate()"
+                                    value="{{ old('latitude', $location->latitude) }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm font-mono font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80] @error('latitude') border-red-400 @enderror" />
+                                @error('latitude')
+                                    <p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-1.5">Longitude</label>
+                                <input type="text" name="longitude" id="longitude" oninput="manualLocationUpdate()"
+                                    value="{{ old('longitude', $location->longitude) }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm font-mono font-medium focus:outline-none focus:ring-2 focus:ring-[#4ade80] @error('longitude') border-red-400 @enderror" />
+                                @error('longitude')
+                                    <p class="text-red-500 text-xs font-bold mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
+
+                        <p
+                            class="text-[11px] text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                            ✓ Changes go <strong>live immediately</strong> — no admin approval required.
+                        </p>
                     </div>
 
-                    <p class="text-[11px] text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
-                        ✓ Changes go <strong>live immediately</strong> — no admin approval required.
-                    </p>
-                </div>
-
-                <div class="flex items-center gap-3 mt-6 pt-5 border-t border-slate-100">
-                    <button type="submit"
-                        class="px-6 py-2.5 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 text-sm font-black uppercase tracking-wider rounded-xl transition-all">
-                        Update Location
-                    </button>
-                    <a href="{{ route('seller.location.index') }}"
-                        class="px-5 py-2.5 text-slate-500 hover:text-slate-800 text-sm font-bold transition-all">
-                        Cancel
-                    </a>
-                </div>
-            </form>
+                    <div class="flex items-center gap-3 mt-6 pt-5 border-t border-slate-100">
+                        <button type="submit"
+                            class="px-6 py-2.5 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 text-sm font-black uppercase tracking-wider rounded-xl transition-all">
+                            Update Location
+                        </button>
+                        <a href="{{ route('seller.location.index') }}"
+                            class="px-5 py-2.5 text-slate-500 hover:text-slate-800 text-sm font-bold transition-all">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<script>
-    const initLat = parseFloat("{{ old('latitude', $location->latitude) }}") || 27.7172;
-    const initLng = parseFloat("{{ old('longitude', $location->longitude) }}") || 85.3240;
+    <script>
+        const initLat = parseFloat("{{ old('latitude', $location->latitude) }}") || 27.7172;
+        const initLng = parseFloat("{{ old('longitude', $location->longitude) }}") || 85.3240;
 
-    const map = L.map('map').setView([initLat, initLng], 15);
+        const map = L.map('map').setView([initLat, initLng], 15);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    let marker = null;
+        let marker = null;
 
-    function placeMarker(lat, lng, label, shouldPan = true) {
-        if (isNaN(lat) || isNaN(lng)) return;
+        function placeMarker(lat, lng, label, shouldPan = true) {
+            if (isNaN(lat) || isNaN(lng)) return;
 
-        if (marker) map.removeLayer(marker);
-        marker = L.marker([lat, lng]).addTo(map);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng]).addTo(map);
 
-        if (label) {
-            marker.bindPopup(label).openPopup();
-            document.getElementById('address').value = label;
+            if (label) {
+                marker.bindPopup(label).openPopup();
+                document.getElementById('address').value = label;
+            }
+
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+
+            if (shouldPan) map.panTo([lat, lng]);
         }
 
-        document.getElementById('latitude').value = lat.toFixed(6);
-        document.getElementById('longitude').value = lng.toFixed(6);
+        function manualLocationUpdate() {
+            const lat = parseFloat(document.getElementById('latitude').value);
+            const lng = parseFloat(document.getElementById('longitude').value);
 
-        if (shouldPan) map.panTo([lat, lng]);
-    }
-
-    function manualLocationUpdate() {
-        const lat = parseFloat(document.getElementById('latitude').value);
-        const lng = parseFloat(document.getElementById('longitude').value);
-
-        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-            placeMarker(lat, lng, null, true);
-            map.setView([lat, lng], 15);
+            if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                placeMarker(lat, lng, null, true);
+                map.setView([lat, lng], 15);
+            }
         }
-    }
 
-    map.on('click', function (e) {
-        placeMarker(e.latlng.lat, e.latlng.lng, null, false);
-    });
+        map.on('click', function(e) {
+            placeMarker(e.latlng.lat, e.latlng.lng, null, false);
+        });
 
-    async function searchAddress() {
-        const q = document.getElementById('search-input').value.trim();
-        if (!q) return;
+        async function searchAddress() {
+            const q = document.getElementById('search-input').value.trim();
+            if (!q) return;
 
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`);
-        const data = await res.json();
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`);
+            const data = await res.json();
 
-        if (data.length) {
-            const { lat, lon, display_name } = data[0];
-            map.setView([lat, lon], 16);
-            placeMarker(parseFloat(lat), parseFloat(lon), display_name);
-        } else {
-            alert('Location not found.');
+            if (data.length) {
+                const {
+                    lat,
+                    lon,
+                    display_name
+                } = data[0];
+                map.setView([lat, lon], 16);
+                placeMarker(parseFloat(lat), parseFloat(lon), display_name);
+            } else {
+                alert('Location not found.');
+            }
         }
-    }
 
-    document.getElementById('search-input').addEventListener('keydown', e => {
-        if (e.key === 'Enter') { e.preventDefault(); searchAddress(); }
-    });
+        document.getElementById('search-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchAddress();
+            }
+        });
 
-    window.onload = () => {
-        placeMarker(initLat, initLng, "{{ old('address', $location->address) }}");
-    };
-</script>
+        window.onload = () => {
+            placeMarker(initLat, initLng, "{{ old('address', $location->address) }}");
+        };
+    </script>
 
 @endsection

@@ -33,8 +33,13 @@
 
                     {{-- Vehicle --}}
                     <div class="flex items-center gap-3 md:col-span-4">
-                        <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">
-                            <span class="text-base">⚡</span>
+                        <div class="w-10 h-10 bg-slate-100 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-slate-200">
+                            @if ($preOrder->car && $preOrder->car->primaryImage)
+                                <img src="{{ $preOrder->car->primaryImage->url() }}" class="w-full h-full object-cover"
+                                    alt="{{ $preOrder->car->displayName() }}">
+                            @else
+                                <span class="text-base opacity-20">⚡</span>
+                            @endif
                         </div>
 
                         <div>

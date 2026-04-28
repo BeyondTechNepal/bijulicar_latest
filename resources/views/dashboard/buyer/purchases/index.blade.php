@@ -36,8 +36,13 @@
                     {{-- Vehicle --}}
                     <div class="flex items-center gap-3 md:col-span-3">
                         <div
-                            class="w-10 h-10 bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-xl flex items-center justify-center text-[10px] font-black text-[#16a34a] uppercase shrink-0">
-                            {{ $purchase->order->car ? strtoupper($purchase->order->car->drivetrain) : '—' }}
+                            class="w-10 h-10 bg-slate-100 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-slate-200">
+                            @if ($purchase->order->car && $purchase->order->car->primaryImage)
+                                <img src="{{ $purchase->order->car->primaryImage->url() }}" class="w-full h-full object-cover"
+                                    alt="{{ $purchase->order->car->displayName() }}">
+                            @else
+                                <span class="text-base opacity-20">⚡</span>
+                            @endif
                         </div>
 
                         <div>

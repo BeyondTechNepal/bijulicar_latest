@@ -9,47 +9,47 @@
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         #sidebar {
             transform: translateX(-100%);
             transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         }
-    
+
         #sidebar.open {
             transform: translateX(0);
         }
-    
+
         @media (min-width: 1024px) {
             #sidebar {
                 transform: translateX(0) !important;
             }
-    
+
             #sidebar-overlay {
                 display: none !important;
             }
         }
-    
+
         /* 1. Global Scrollbar Settings */
         .overflow-y-auto {
             scrollbar-width: thin;
             scrollbar-color: #94a3b8 transparent;
             /* Thumb: Slate-400, Track: Slate-200 */
         }
-    
+
         /* 2. Chrome, Edge, Safari - Main Content Area */
         .overflow-y-auto::-webkit-scrollbar {
             width: 8px;
             /* Slightly wider to be more visible */
             display: block;
         }
-    
+
         .overflow-y-auto::-webkit-scrollbar-track {
             background: #f1f5f9;
             /* Light grey to match body */
         }
-    
+
         .overflow-y-auto::-webkit-scrollbar-thumb {
             background-color: #cbd5e1;
             /* Visible grey */
@@ -57,28 +57,28 @@
             border: 2px solid #f1f5f9;
             /* Creates a padding effect */
         }
-    
+
         .overflow-y-auto::-webkit-scrollbar-thumb:hover {
             background-color: #4ade80;
             /* Bijuli Green on hover */
         }
-    
+
         /* 3. Sidebar Specific (Dark Theme) */
         #sidebar nav::-webkit-scrollbar {
             width: 5px;
         }
-    
+
         #sidebar nav::-webkit-scrollbar-track {
             background: #0f172a;
             /* Dark track */
         }
-    
+
         #sidebar nav::-webkit-scrollbar-thumb {
             background-color: #334155;
             /* Mid-tone thumb */
             border-radius: 20px;
         }
-    
+
         #sidebar nav::-webkit-scrollbar-thumb:hover {
             background-color: #4ade80;
         }
@@ -89,9 +89,7 @@
     <div class="flex h-screen">
 
         {{-- Sidebar Overlay (mobile) --}}
-        <div id="sidebar-overlay"
-            class="fixed inset-0 bg-black/60 z-30 hidden"
-            onclick="closeSidebar()"></div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 hidden" onclick="closeSidebar()"></div>
 
         {{-- Sidebar --}}
         <aside id="sidebar" class="w-64 bg-slate-900 flex flex-col fixed inset-y-0 left-0 z-40 lg:translate-x-0">
@@ -99,17 +97,22 @@
             {{-- Logo --}}
             <div class="px-5 py-5 border-b border-slate-700 flex items-center justify-between">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center shrink-0">
+                    <div
+                        class="w-8 h-8 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                     </div>
-                    <span class="text-white font-black tracking-tighter uppercase text-sm">Bijuli<span class="text-[#4ade80]">Car</span></span>
+                    <span class="text-white font-black tracking-tighter uppercase text-sm">Bijuli<span
+                            class="text-[#4ade80]">Car</span></span>
                 </a>
                 {{-- Close button (mobile only) --}}
-                <button onclick="closeSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors" aria-label="Close sidebar">
+                <button onclick="closeSidebar()"
+                    class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+                    aria-label="Close sidebar">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -123,7 +126,8 @@
             <div class="px-5 py-3 border-b border-slate-700">
                 <div class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Logged in as</div>
                 <div class="text-sm text-white font-bold truncate">{{ auth()->user()->name }}</div>
-                <span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20">
+                <span
+                    class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20">
                     Buyer
                 </span>
             </div>
@@ -158,7 +162,8 @@
                         My Orders
                         @php $pendingCount = auth()->user()->orders()->where('status', 'pending')->count(); @endphp
                         @if ($pendingCount > 0)
-                            <span class="ml-auto text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingCount }}</span>
+                            <span
+                                class="ml-auto text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingCount }}</span>
                         @endif
                     </a>
                 @endcan
@@ -175,11 +180,12 @@
                         My Rentals
                         @php $pendingRentals = auth()->user()->rentalBookings()->where('status', 'pending')->count(); @endphp
                         @if ($pendingRentals > 0)
-                            <span class="ml-auto text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingRentals }}</span>
+                            <span
+                                class="ml-auto text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full font-black">{{ $pendingRentals }}</span>
                         @endif
                     </a>
                 @endcan
-                
+
 
                 <a href="{{ route('buyer.preorders.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
@@ -202,10 +208,15 @@
                     </svg>
                     Negotiations
                     @php
-                        $pendingNegotiations = auth()->user()?->negotiations()->where('status', 'pending_buyer')->count();
+                        $pendingNegotiations = auth()
+                            ->user()
+                            ?->negotiations()
+                            ->where('status', 'pending_buyer')
+                            ->count();
                     @endphp
-                    @if($pendingNegotiations > 0)
-                        <span class="ml-auto bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $pendingNegotiations }}</span>
+                    @if ($pendingNegotiations > 0)
+                        <span
+                            class="ml-auto bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $pendingNegotiations }}</span>
                     @endif
                 </a>
 
@@ -234,7 +245,8 @@
                     </a>
                 @endcan
 
-                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Explore</p>
+                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest px-3 py-2 mt-2">Explore
+                    Navigations</p>
 
                 <a href="{{ route('marketplace') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
@@ -256,6 +268,67 @@
                     Rent a Car
                 </a>
 
+                <a href="{{ route('news') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
+                    onclick="closeSidebar()">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    News
+                </a>
+
+                <a href="{{ route('loan_calculator') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
+                    onclick="closeSidebar()">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h18M7 10v8M11 10v8M15 10v8M2 10l10-8 10 8M5 22h14" />
+                    </svg>
+                    Loan Calculator
+                </a>
+
+                <a href="{{ route('compare_cars') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
+                    onclick="closeSidebar()">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                    </svg>
+                    Compare Cars
+                </a>
+
+                <a href="{{ route('businesses.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
+                    onclick="closeSidebar()">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Businesses
+                </a>
+
+                <a href="{{ route('map_location') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
+                    onclick="closeSidebar()">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Map Search
+                </a>
+
+                <a href="{{ route('contact') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white"
+                    onclick="closeSidebar()">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    Contact
+                </a>
             </nav>
 
             {{-- Logout --}}
@@ -277,51 +350,54 @@
 
         {{-- Main content --}}
         {{-- Main content --}}
-<div class="flex-1 lg:ml-64 w-full max-w-full flex flex-col h-[100dvh] overflow-hidden">
+        <div class="flex-1 lg:ml-64 w-full max-w-full flex flex-col h-[100dvh] overflow-hidden">
 
-    {{-- Top bar --}}
-    <header class="bg-white border-b border-slate-200 px-4 py-3 sm:px-6 lg:px-8 sm:py-4 flex items-center justify-between gap-2 sticky top-0 z-20 w-full">
-        <div class="flex items-center gap-3 min-w-0 flex-1"> {{-- Added flex-1 and min-w-0 --}}
-            {{-- Hamburger (mobile/tablet only) --}}
-            <button id="hamburger-btn"
-                onclick="openSidebar()"
-                class="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0"
-                aria-label="Open sidebar">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-            <h1 class="text-sm sm:text-lg font-black text-slate-900 uppercase italic tracking-tight truncate">
-                @yield('page-title', 'Dashboard')
-            </h1>
-        </div>
-        
-        <!-- <a href="{{ route('marketplace') }}"
+            {{-- Top bar --}}
+            <header
+                class="bg-white border-b border-slate-200 px-4 py-3 sm:px-6 lg:px-8 sm:py-4 flex items-center justify-between gap-2 sticky top-0 z-20 w-full">
+                <div class="flex items-center gap-3 min-w-0 flex-1"> {{-- Added flex-1 and min-w-0 --}}
+                    {{-- Hamburger (mobile/tablet only) --}}
+                    <button id="hamburger-btn" onclick="openSidebar()"
+                        class="lg:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0"
+                        aria-label="Open sidebar">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h1 class="text-sm sm:text-lg font-black text-slate-900 uppercase italic tracking-tight truncate">
+                        @yield('page-title', 'Dashboard')
+                    </h1>
+                </div>
+
+                <!-- <a href="{{ route('marketplace') }}"
             class="inline-flex items-center gap-1.5 bg-slate-900 text-white px-3 py-2 rounded-xl text-[10px] sm:text-[12px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg shrink-0 whitespace-nowrap">
             ⚡ <span class="hidden xs:inline">Browse</span> EVs
         </a> -->
-    </header>
+            </header>
 
-    {{-- Flash messages --}}
-    <div class="px-4 sm:px-6 lg:px-8"> {{-- Wrapper to keep messages from hitting edges --}}
-        @if (session('success'))
-            <div class="mt-4 bg-[#4ade80]/10 border border-[#4ade80]/30 text-[#16a34a] rounded-xl px-4 py-3 text-sm font-bold">
-                {{ session('success') }}
+            {{-- Flash messages --}}
+            <div class="px-4 sm:px-6 lg:px-8"> {{-- Wrapper to keep messages from hitting edges --}}
+                @if (session('success'))
+                    <div
+                        class="mt-4 bg-[#4ade80]/10 border border-[#4ade80]/30 text-[#16a34a] rounded-xl px-4 py-3 text-sm font-bold">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div
+                        class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-bold">
+                        {{ session('error') }}
+                    </div>
+                @endif
             </div>
-        @endif
-        @if (session('error'))
-            <div class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-bold">
-                {{ session('error') }}
+
+            {{-- Content Area --}}
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                @yield('content')
             </div>
-        @endif
-    </div>
 
-    {{-- Content Area --}}
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-        @yield('content')
-    </div>
-
-</div>
+        </div>
 
     </div>
 

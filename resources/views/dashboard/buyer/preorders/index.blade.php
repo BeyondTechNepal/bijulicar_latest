@@ -46,16 +46,21 @@
             @foreach ($preOrders as $preOrder)
                 <div
                     class="border border-slate-100 rounded-xl p-4 
-                flex flex-col gap-3
-                md:grid md:grid-cols-12 md:gap-4 md:px-6 md:py-4 md:items-center 
-                md:border-0 md:rounded-none md:border-b md:last:border-0
-                hover:bg-slate-50/50 transition-colors">
+                        flex flex-col gap-3
+                        md:grid md:grid-cols-12 md:gap-4 md:px-6 md:py-4 md:items-center 
+                        md:border-0 md:rounded-none md:border-b md:last:border-0
+                        hover:bg-slate-50/50 transition-colors">
 
                     {{-- Vehicle --}}
                     <div class="flex items-center gap-3 md:col-span-5">
                         <div
-                            class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase shrink-0">
-                            ⚡
+                            class="w-16 h-16 bg-slate-100 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
+                            @if ($preOrder->car->primaryImage ?? false)
+                                <img src="{{ $preOrder->car->primaryImage->url() }}" class="w-full h-full object-cover"
+                                    alt="{{ $preOrder->car->displayName() }}">
+                            @else
+                                <span class="text-2xl opacity-20">⚡</span>
+                            @endif
                         </div>
 
                         <div>

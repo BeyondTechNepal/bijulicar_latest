@@ -27,7 +27,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
-// ── Public frontend routes ─────────────────────────────────────────────
+// ── Public frontend routes 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])->name('marketplace');
 Route::get('/marketplace/search', [App\Http\Controllers\MarketplaceController::class, 'search'])->name('marketplace.search');
@@ -62,7 +62,7 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
 Route::get('/newsletter/verify/{token}', [NewsletterController::class, 'verify'])
     ->name('newsletter.verify');
 
-// ── Auth-required routes (no verified.account check) ──────────────────
+// ── Auth-required routes (no verified.account check) 
 // Verification forms and public booking must be outside verified.account
 // middleware so unverified users and all roles can reach them.
 // Email must be verified first (verified middleware) before the doc forms.
@@ -100,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
         ->name('notifications.readAll');
 
-    // ── Public booking — requires verified email + approved account ─────
+    // ── Public booking — requires verified email + approved account 
     // Moved inside verified + verified.account so unverified/unapproved
     // users cannot book even if they are logged in.
     Route::middleware(['verified', 'verified.account'])->group(function () {
@@ -122,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
-    // ── Pending approval screen ────────────────────────────────────────
+    // ── Pending approval screen 
     Route::get('/pending-approval', function () {
         $user = auth()->user();
 
@@ -154,7 +154,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('verification.pending');
 });
 
-// ── Dashboard — smart redirect based on role ───────────────────────────
+// ── Dashboard — smart redirect based on role 
 Route::get('/dashboard', function () {
     $user = auth()->user();
     if ($user->hasRole('buyer')) {
@@ -222,7 +222,7 @@ Route::middleware(['auth', 'role:buyer', 'verified.account'])
         Route::patch('/rentals/{carRental}/cancel', [BuyerRentalController::class, 'cancel'])->name('rentals.cancel')->middleware('permission:manage own orders');
     });
 
-// ── SELLER routes ──────────────────────────────────────────────────────
+// ── SELLER routes 
 Route::middleware(['auth', 'role:seller', 'verified.account'])
     ->prefix('seller')
     ->name('seller.')

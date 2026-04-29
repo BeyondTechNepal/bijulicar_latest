@@ -96,21 +96,14 @@
 
             {{-- Logo --}}
             <div class="px-5 pt-2 border-b border-slate-700 flex items-center justify-between">
-
-                <!-- Empty spacer (left side for balance) -->
-                <div class="w-8 lg:hidden"></div>
-
-                <!-- Centered Logo -->
-                <div class="flex-1 flex justify-center py-1">
+                <div class="flex-1 flex justify-start lg:justify-center py-1">
                     <a href="{{ route('home') }}" class="no-underline">
-                        <div class="bg-white rounded-xl shadow-md px-4 py-2 flex items-center justify-center group">
+                        <div class="bg-white rounded-xl shadow-md px-4 flex items-center justify-center group">
                             <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
                                 class="h-14 md:h-16 lg:h-[75px] w-auto object-contain transition-all duration-500 group-hover:scale-110">
                         </div>
                     </a>
                 </div>
-
-                <!-- Close button -->
                 <button onclick="closeSidebar()"
                     class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
                     aria-label="Close sidebar">
@@ -119,7 +112,6 @@
                             d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-
             </div>
 
             {{-- Buyer Portal label --}}

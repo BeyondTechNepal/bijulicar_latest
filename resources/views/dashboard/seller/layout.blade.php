@@ -72,19 +72,18 @@
         <aside id="sidebar" class="w-64 bg-slate-900 flex flex-col fixed inset-y-0 left-0 z-40 lg:translate-x-0">
 
             {{-- Logo --}}
-            <div class="px-5 py-5 border-b border-slate-700 flex items-center justify-between">
-                <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <div
-                        class="w-8 h-8 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <span class="text-white font-black tracking-tighter uppercase text-sm">Bijuli<span
-                            class="text-[#4ade80]">Car</span></span>
-                </a>
+            <div class="px-5 pt-2 border-b border-slate-700 flex items-center justify-between">
+                <div class="flex-1 flex justify-start lg:justify-center py-1">
+                    <a href="{{ route('home') }}" class="no-underline">
+                        <div class="bg-white rounded-xl shadow-md px-4 flex items-center justify-center group">
+                            <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                                class="h-14 md:h-16 lg:h-[75px] w-auto object-contain transition-all duration-500 group-hover:scale-110">
+                        </div>
+                    </a>
+                </div>
                 <button onclick="closeSidebar()"
-                    class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
+                    class="lg:hidden text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+                    aria-label="Close sidebar">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />

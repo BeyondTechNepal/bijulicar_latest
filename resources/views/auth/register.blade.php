@@ -139,7 +139,7 @@
             @endif
             <form method="POST" action="{{ route('register') }}" class="space-y-3">
                 @csrf
-k
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Full Name -->
                     <div class="space-y-1">
@@ -290,7 +290,7 @@ k
                             <i class="fa-solid fa-circle-exclamation text-[8px]"></i> {{ $message }}
                         </p>
                     @enderror
-                    <div class="flex items-center gap-3 px-0.5">
+                    <div class="flex items-center gap-3">
                         <input type="checkbox" name="wants_newsletter" id="news"
                             class="w-4 h-4 text-[#16a34a] border-slate-300 rounded">
                         <label for="news"

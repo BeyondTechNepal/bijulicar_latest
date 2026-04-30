@@ -17,11 +17,19 @@ class ContactDetailsController extends Controller
 
     public function create()
     {
+        if (ContactDetail::count() > 0) {
+            return redirect()->route('admin.contact_details.index')->with('error', 'Only one contact detail record is allowed.');
+        }
+
         return view('admin.contact_detail.form');
     }
 
     public function store(Request $request)
     {
+        if (ContactDetail::count() > 0) {
+            return redirect()->route('admin.contact_details.index')->with('error', 'Contact details already exist. Please edit the existing record.');
+        }
+
         $request->validate([
             'email' => 'nullable|email',
             'phone_no' => 'nullable|string|max:20',
@@ -29,9 +37,9 @@ class ContactDetailsController extends Controller
             'working_hours' => 'nullable|string|max:255',
         ]);
 
-        ContactDetail::create($request->all());
+        ContactDetail::create($request->only(['email', 'phone_no', 'address', 'working_hours']));
 
-        return redirect()->route('admin.contact_details.index');
+        return redirect()->route('admin.contact_details.index')->with('success', 'Contact details created successfully.');
     }
 
     public function edit(ContactDetail $contact_detail)

@@ -22,13 +22,15 @@
                         operational hours.</p>
                 </div>
             </div>
-            {{-- <a href="{{ route('admin.contact_details.create') }}"
-                class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-900/20 flex items-center gap-2">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Add Contact
-            </a> --}}
+            @if ($contacts->count() === 0)
+                <a href="{{ route('admin.contact_details.create') }}"
+                    class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-900/20 flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add Contact
+                </a>
+            @endif
         </div>
 
         {{-- Main Inventory Card --}}

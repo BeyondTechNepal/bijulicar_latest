@@ -11,17 +11,27 @@ class NewsBannerController extends Controller
 {
     public function index()
     {
-        $banners = NewsBanner::latest()->get();
+        $banners = NewsBanner::latest()->get(); // keep as collection
         return view('admin.news_banner.index', compact('banners'));
     }
 
     public function create()
     {
+        // 🚫 Block if already exists
+        if (NewsBanner::count() > 0) {
+            return redirect()->route('admin.news_banner.index')->with('error', 'Only one banner is allowed.');
+        }
+
         return view('admin.news_banner.form');
     }
 
     public function store(Request $request)
     {
+        // 🚫 Double safety (backend protection)
+        if (NewsBanner::count() > 0) {
+            return redirect()->route('admin.news_banner.index')->with('error', 'Cannot create more than one banner.');
+        }
+
         $request->validate([
             'title' => 'nullable|string|max:255',
             'image' => 'nullable|image',
@@ -35,7 +45,7 @@ class NewsBannerController extends Controller
 
         NewsBanner::create($data);
 
-        return redirect()->route('admin.news_banner.index');
+        return redirect()->route('admin.news_banner.index')->with('success', 'Banner created.');
     }
 
     public function edit(NewsBanner $news_banner)
@@ -62,7 +72,7 @@ class NewsBannerController extends Controller
 
         $news_banner->update($data);
 
-        return redirect()->route('admin.news_banner.index');
+        return redirect()->route('admin.news_banner.index')->with('success', 'Banner updated.');
     }
 
     public function destroy(NewsBanner $news_banner)
@@ -73,6 +83,6 @@ class NewsBannerController extends Controller
 
         $news_banner->delete();
 
-        return back();
+        return redirect()->route('admin.news_banner.index')->with('success', 'Banner deleted.');
     }
 }

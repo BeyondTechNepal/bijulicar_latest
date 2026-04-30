@@ -87,7 +87,7 @@
                 <p class="text-[10px] text-slate-400 font-mono italic max-w-xs">Note: Image dimensions should ideally be 1920x600 for optimal resolution.</p>
                 <button type="submit" 
                         class="bg-indigo-600 text-white px-10 py-3.5 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-900/20 active:scale-95">
-                    {{ isset($news_banner) ? 'Synchronize Asset' : 'Deploy Banner' }}
+                    {{ isset($news_banner) ? 'Update Banner' : 'Deploy Banner' }}
                 </button>
             </div>
         </form>

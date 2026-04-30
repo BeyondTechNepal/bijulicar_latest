@@ -19,7 +19,7 @@
             </div>
         </div>
         <a href="{{ route('admin.contact_messages.index') }}" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white transition-colors">
-            &larr; Return to Log
+            &larr; Go Back
         </a>
     </div>
 
@@ -87,7 +87,7 @@
                     <form action="{{ route('admin.contact_messages.read', $message->id) }}" method="POST">
                         @csrf
                         <button class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-900/20">
-                            Authorize Read
+                            Mark as Read
                         </button>
                     </form>
                 @endif
@@ -95,13 +95,13 @@
                 <form action="{{ route('admin.contact_messages.destroy', $message->id) }}" method="POST" onsubmit="return confirm('Permanently purge this record?')">
                     @csrf @method('DELETE')
                     <button class="bg-white border border-slate-200 text-rose-600 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-50 transition-all">
-                        Purge Entry
+                        Delete
                     </button>
                 </form>
             </div>
 
             <a href="{{ route('admin.contact_messages.index') }}" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">
-                Cancel Request
+                Cancel
             </a>
         </div>
     </div>

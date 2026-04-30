@@ -17,11 +17,19 @@ class ContactBannerController extends Controller
 
     public function create()
     {
+        if (ContactBanner::count() > 0) {
+            return redirect()->route('admin.contact_banner.index')->with('error', 'Only one contact banner is allowed.');
+        }
+
         return view('admin.contact_banner.form');
     }
 
     public function store(Request $request)
     {
+        if (ContactBanner::count() > 0) {
+            return redirect()->route('admin.contact_banner.index')->with('error', 'Contact banner already exists. Please edit it instead.');
+        }
+
         $request->validate([
             'title' => 'nullable|string|max:255',
             'image' => 'required|image',
@@ -35,7 +43,7 @@ class ContactBannerController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('admin.contact_banner.index');
+        return redirect()->route('admin.contact_banner.index')->with('success', 'Banner created successfully.');
     }
 
     public function edit(ContactBanner $contact_banner)
@@ -66,9 +74,12 @@ class ContactBannerController extends Controller
 
     public function destroy(ContactBanner $contact_banner)
     {
-        Storage::disk('public')->delete($contact_banner->image);
+        if ($contact_banner->image) {
+            Storage::disk('public')->delete($contact_banner->image);
+        }
+
         $contact_banner->delete();
 
-        return back();
+        return back()->with('success', 'Banner deleted.');
     }
 }

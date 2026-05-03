@@ -77,7 +77,7 @@
 
             {{-- Map container --}}
             <div class="bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3"
-                 style="height: auto; min-height: 760px;">
+                 style="height: 760px;">
 
                 {{-- ── Sidebar ──────────────────────────────────────────── --}}
                 <div class="lg:w-[420px] flex flex-col gap-3 lg:h-full overflow-hidden">
@@ -106,7 +106,7 @@
                         </button>
                     </div>
 
-                    {{-- Legend pills - shown per tab --}}
+                    {{-- Legend pills — shown per tab --}}
                     <div id="tab-legend" class="hidden bg-slate-50 rounded-xl border border-slate-100 px-4 py-2.5 shrink-0">
                         {{-- filled by switchCategory() --}}
                     </div>
@@ -127,7 +127,7 @@
                                 class="rounded border-slate-300 text-emerald-600 w-4 h-4">
                         </label>
 
-                        {{-- Petrol pump radius - only on Petrol tab --}}
+                        {{-- Petrol pump radius — only on Petrol tab --}}
                         <div id="fuel-radius-wrap" class="hidden p-3 bg-white border border-slate-200 rounded-xl space-y-2">
                             <div class="flex items-center justify-between">
                                 <span class="text-[10px] font-bold text-slate-600 uppercase">⛽ Pump search radius</span>
@@ -140,7 +140,7 @@
                         </div>
                     </div>
 
-                    {{-- FIX: Jump to location - hidden on petrol tab via JS --}}
+                    {{-- FIX: Jump to location — hidden on petrol tab via JS --}}
                     <div id="jump-to-location-wrap" class="bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 shrink-0">
                         <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 block italic">
                             Jump to location
@@ -162,7 +162,7 @@
                     <div id="fuel-status" class="hidden shrink-0 bg-orange-50 border border-orange-200 text-orange-700 text-[10px] font-bold px-4 py-2.5 rounded-xl"></div>
 
                     {{-- Location list --}}
-                    <div class="lg:flex-1 overflow-y-auto space-y-2 pr-0.5 max-h-64 lg:max-h-none" id="location-list">
+                    <div class="overflow-y-auto space-y-2 pr-1" id="location-list" style="max-height: calc(2 * 88px + 8px); min-height: 88px;">
                         {{-- Filled by JS --}}
                     </div>
 
@@ -219,7 +219,7 @@
                 <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors text-slate-500 font-black text-sm">✕</button>
             </div>
 
-            {{-- Modal body - filled by JS --}}
+            {{-- Modal body — filled by JS --}}
             <div id="modal-body" class="px-6 py-5"></div>
 
         </div>
@@ -241,6 +241,10 @@
         .pill-red { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
         .pill-amber { background: #fffbeb; color: #d97706; border-color: #fde68a; }
         .pill-gray { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+        #location-list::-webkit-scrollbar { width: 4px; }
+        #location-list::-webkit-scrollbar-track { background: transparent; }
+        #location-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        #location-list::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         @keyframes locatePulse {
             0%   { transform: scale(1); opacity: .6; }
             70%  { transform: scale(2.5); opacity: 0; }
@@ -425,9 +429,9 @@
                                     : s.status === 'booked'    ? '#bfdbfe'
                                     : '#fecaca';
                         const label = s.status === 'pending' ? '~' : s.slot_number;
-                        const tip   = s.status === 'pending' ? `Port #${s.slot_number} - pending approval`
-                                    : s.status === 'booked'  ? `Port #${s.slot_number} - booked (arriving soon)`
-                                    : `Port #${s.slot_number} - ${s.status}`;
+                        const tip   = s.status === 'pending' ? `Port #${s.slot_number} — pending approval`
+                                    : s.status === 'booked'  ? `Port #${s.slot_number} — booked (arriving soon)`
+                                    : `Port #${s.slot_number} — ${s.status}`;
                         slotGrid += `<div title="${tip}"
                                           style="width:28px;height:28px;border-radius:6px;background:${bg};border:1px solid ${bdr};
                                                  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:${color}">
@@ -871,7 +875,7 @@
         let userLocationMarker  = null;
         let userLocationCircle  = null;
 
-        // Build Google Maps directions URL - includes origin if we have location
+        // Build Google Maps directions URL — includes origin if we have location
         function buildGmapsUrl(destLat, destLng) {
             const dest = `${destLat},${destLng}`;
             if (userLat !== null && userLng !== null) {
@@ -939,7 +943,7 @@
             );
         }
 
-        // ── Overpass API - Petrol Pumps ────────────────────────────────────
+        // ── Overpass API — Petrol Pumps ────────────────────────────────────
         let petrolMarkers = [];
         let petrolLoading = false;
         let petrolAbort   = null;   // AbortController for in-flight requests
@@ -984,7 +988,7 @@
                 const { pumps } = await res.json();
 
                 pumps.forEach(pump => {
-                    // FIX: corrected icon - emoji centred over unrotated overlay, pin shape rotated separately
+                    // FIX: corrected icon — emoji centred over unrotated overlay, pin shape rotated separately
                     const pumpIcon = L.divIcon({
                         className : '',
                         html      : `<div style="position:relative;width:32px;height:42px">
@@ -1035,7 +1039,7 @@
             }
         }
 
-        // ── Boot - auto-detect location on page load ───────────────────────
+        // ── Boot — auto-detect location on page load ───────────────────────
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -1047,12 +1051,12 @@
                     // Load petrol pumps since we start on ev tab (not petrol tab, so skip)
                     if (currentCategory === 'petrol') loadPetrolPumps();
                 },
-                () => { /* silent - user can still click the locate button */ },
+                () => { /* silent — user can still click the locate button */ },
                 { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
             );
         }
 
-        // ── Deep-link: ?user_id=X - switch to business tab & open that pin ──
+        // ── Deep-link: ?user_id=X — switch to business tab & open that pin ──
         const _origLoadLocations = loadLocations;
         async function loadLocationsWithDeepLink() {
             try {

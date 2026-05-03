@@ -26,7 +26,7 @@
                 </h1>
 
                 <p class="mt-3 lg:mt-4 text-slate-400 text-xs lg:text-base font-medium max-w-sm lg:max-w-md leading-relaxed">
-                    Browse verified cars available for daily rental — EVs, hybrids, and traditional machines from trusted sellers and businesses.
+                    Browse verified cars available for daily rental - EVs, hybrids, and traditional machines from trusted sellers and businesses.
                 </p>
             </div>
 

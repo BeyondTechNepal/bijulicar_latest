@@ -80,7 +80,7 @@
             {{-- ── BUYER ACTIONS ── --}}
             @if($negotiation->isPendingBuyer())
             <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">The seller countered at NRs {{ number_format($negotiation->offered_price) }} — what would you like to do?</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">The seller countered at NRs {{ number_format($negotiation->offered_price) }} - what would you like to do?</p>
 
                 {{-- Accept seller's counter --}}
                 <form method="POST" action="{{ route('buyer.negotiations.accept', $negotiation) }}">

@@ -1,5 +1,5 @@
 @extends('dashboard.garage.layout')
-@section('title', 'Appointments — BijuliCar')
+@section('title', 'Appointments - BijuliCar')
 @section('page-title', 'Appointment Manager')
 
 @section('content')
@@ -75,7 +75,7 @@
 </div>
 
 {{-- ══════════════════════════════════════════════════════════════════ --}}
-{{-- ── BAY STATUS GRID — manual walk-in control ─────────────────── --}}
+{{-- ── BAY STATUS GRID - manual walk-in control ─────────────────── --}}
 {{-- ══════════════════════════════════════════════════════════════════ --}}
 @if ($bays->count())
 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-8">
@@ -213,13 +213,13 @@
 @endif
 
 {{-- ══════════════════════════════════════════════════════════════════ --}}
-{{-- ── PENDING APPOINTMENTS — action required ──────────────────────── --}}
+{{-- ── PENDING APPOINTMENTS - action required ──────────────────────── --}}
 {{-- ══════════════════════════════════════════════════════════════════ --}}
 @if ($pending->count())
 <div class="bg-white border border-amber-200 rounded-2xl shadow-sm overflow-hidden mb-6">
     <div class="px-6 py-4 border-b border-amber-100 bg-amber-50/50 flex items-center gap-2">
         <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
-        <h2 class="text-sm font-black text-amber-700 uppercase italic tracking-tight">Pending — Action Required</h2>
+        <h2 class="text-sm font-black text-amber-700 uppercase italic tracking-tight">Pending - Action Required</h2>
     </div>
 
     <div class="divide-y divide-slate-100">
@@ -233,7 +233,7 @@
                         Service: <span class="text-slate-900">{{ $appt->service_description }}</span>
                     </p>
                     <p class="text-xs text-slate-600 font-bold mt-0.5">
-                        Requested: <span class="text-slate-900">{{ $appt->requested_at->format('D, d M Y — h:i A') }}</span>
+                        Requested: <span class="text-slate-900">{{ $appt->requested_at->format('D, d M Y - h:i A') }}</span>
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2 shrink-0">
@@ -322,7 +322,7 @@
 @if ($approved->count())
 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
     <div class="px-6 py-4 border-b border-slate-100">
-        <h2 class="text-sm font-black text-slate-900 uppercase italic tracking-tight">In Progress — Appointments</h2>
+        <h2 class="text-sm font-black text-slate-900 uppercase italic tracking-tight">In Progress - Appointments</h2>
     </div>
     <div class="divide-y divide-slate-100">
         @foreach ($approved as $appt)
@@ -331,7 +331,7 @@
                 <p class="text-sm font-black text-slate-900">{{ $appt->customer->name }}</p>
                 <p class="text-xs text-slate-500 font-medium mt-0.5">
                     {{ $appt->service_description }}
-                    @if ($appt->bay_number) — Bay #{{ $appt->bay_number }} @endif
+                    @if ($appt->bay_number) - Bay #{{ $appt->bay_number }} @endif
                 </p>
                 @if ($appt->estimated_finish_at)
                 <p class="text-xs text-emerald-600 font-bold mt-0.5">
@@ -363,7 +363,7 @@
         <div class="px-6 py-4 flex items-center justify-between gap-3">
             <div>
                 <p class="text-sm font-bold text-slate-700">{{ $appt->customer->name }}</p>
-                <p class="text-xs text-slate-400 font-medium">{{ $appt->service_description }} — {{ $appt->requested_at->format('d M Y') }}</p>
+                <p class="text-xs text-slate-400 font-medium">{{ $appt->service_description }} - {{ $appt->requested_at->format('d M Y') }}</p>
             </div>
             <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border {{ $appt->statusColour() }}">
                 {{ ucfirst($appt->status) }}

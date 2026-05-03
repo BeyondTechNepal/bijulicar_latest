@@ -120,7 +120,7 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Owner</p>
-                        <p class="text-xs font-bold text-slate-700">{{ $rental->owner?->name ?? '—' }}</p>
+                        <p class="text-xs font-bold text-slate-700">{{ $rental->owner?->name ?? '-' }}</p>
                     </div>
                 </div>
                 @else

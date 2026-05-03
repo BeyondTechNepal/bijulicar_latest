@@ -226,7 +226,7 @@
                             <span class="text-[12px] font-black uppercase tracking-widest text-slate-700">Vehicle
                                 Details</span>
                         </div>
-                        {{-- 2-column grid — icon prominent left, label + value stacked right --}}
+                        {{-- 2-column grid - icon prominent left, label + value stacked right --}}
                         <div class="grid grid-cols-2 divide-x divide-slate-50">
                             @php
                                 $specs = [
@@ -253,7 +253,7 @@
                                     [
                                         'icon' => '<i class="fa-solid fa-palette" style="color: #6366f1;"></i>', 
                                         'label' => 'Color', 
-                                        'value' => $car->color ?? '—'
+                                        'value' => $car->color ?? '-'
                                     ],
                                     [
                                         'icon' => '<i class="fa-solid fa-cubes" style="color: #0ea5e9;"></i>',
@@ -467,7 +467,7 @@
                             @auth
                                 @if (auth()->user()->hasRole('buyer') && !$alreadyOrdered)
                                     @if ($activeNegotiation?->isAccepted())
-                                        {{-- Accepted — show agreed price banner --}}
+                                        {{-- Accepted - show agreed price banner --}}
                                         <div class="mt-2 bg-green-50 border border-green-200 rounded-xl p-3">
                                             <p class="text-[10px] font-black text-green-600 uppercase tracking-widest">🤝 Offer Accepted</p>
                                             <p class="text-xl font-black text-green-700 mt-0.5">NRs {{ number_format($activeNegotiation->offered_price) }}</p>
@@ -481,7 +481,7 @@
                                             <a href="{{ route('buyer.negotiations.show', $activeNegotiation) }}" class="inline-block mt-1.5 text-[10px] font-black text-amber-700 uppercase tracking-widest underline">View Negotiation →</a>
                                         </div>
                                     @else
-                                        {{-- No active negotiation — show offer button --}}
+                                        {{-- No active negotiation - show offer button --}}
                                         <p class="text-[11px] font-black text-green-600 uppercase tracking-widest mt-1">✓ Price is negotiable</p>
                                         <button onclick="document.getElementById('negotiationPanel').classList.toggle('hidden')"
                                             class="mt-2 w-full py-2.5 rounded-xl bg-green-50 border border-green-200 text-green-700 text-[11px] font-black uppercase tracking-widest hover:bg-green-100 transition-all">
@@ -514,7 +514,7 @@
 
                         <div class="mt-5 pt-5 border-t border-slate-100 space-y-3">
                             @if ($isSoldOut)
-                                {{-- ── SOLD OUT — car confirmed to another buyer ── --}}
+                                {{-- ── SOLD OUT - car confirmed to another buyer ── --}}
                                 <div class="w-full py-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[12px] font-black uppercase tracking-widest text-center">
                                     ✕ Sold Out
                                 </div>
@@ -593,7 +593,7 @@
                                             View My Orders
                                         </a>
                                     @elseif ($blockedBySaleRental)
-                                        {{-- All units are out on confirmed/active rental — buying not possible right now --}}
+                                        {{-- All units are out on confirmed/active rental - buying not possible right now --}}
                                         <div class="w-full py-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[12px] font-black uppercase tracking-widest text-center">
                                             🚗 Currently On Rental
                                         </div>
@@ -835,7 +835,7 @@
                                                     <div id="rental-cost-preview" class="hidden mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
                                                         <div class="flex items-center justify-between">
                                                             <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Estimated Total</span>
-                                                            <span class="text-base font-black text-blue-700" id="rental-cost-amount">—</span>
+                                                            <span class="text-base font-black text-blue-700" id="rental-cost-amount">-</span>
                                                         </div>
                                                         <p class="text-[10px] text-blue-400 font-medium mt-0.5" id="rental-cost-days"></p>
                                                     </div>

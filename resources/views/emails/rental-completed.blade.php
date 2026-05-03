@@ -33,7 +33,7 @@
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
                 Your rental has been marked as <strong style="color: #16a34a;">completed</strong>.
-                Thank you for using BijuliCar — we hope to see you again soon!
+                Thank you for using BijuliCar - we hope to see you again soon!
             </p>
 
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; margin: 0 0 24px;">

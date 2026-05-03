@@ -2,7 +2,7 @@
     Horizontal banner ad component.
     Usage: <x-ads.horizontal-banner :ads="$carDetailAds" />
 
-    Full-width dark banner — text left, image right with left-edge gradient fade.
+    Full-width dark banner - text left, image right with left-edge gradient fade.
     Matches home/marketplace ad style.
     Premium = gold, Featured = purple, Standard = green/white.
 --}}

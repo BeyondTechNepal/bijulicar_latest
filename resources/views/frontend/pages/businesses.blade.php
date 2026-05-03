@@ -381,7 +381,7 @@
                                 <div>
                                     <div class="flex items-center gap-1">
                                         <p class="text-xl font-black text-slate-900">
-                                            {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '—' }}</p>
+                                            {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '-' }}</p>
                                         @if ($biz['avg_rating'] > 0)
                                             <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <path

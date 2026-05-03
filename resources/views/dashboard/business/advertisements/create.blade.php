@@ -33,7 +33,7 @@
                         </label>
                         <input type="text" name="title" value="{{ old('title') }}"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all"
-                            placeholder="e.g. Summer EV Sale — 0% EMI">
+                            placeholder="e.g. Summer EV Sale - 0% EMI">
                         @error('title')
                             <p class="text-red-500 text-[11px] font-bold mt-1">{{ $message }}</p>
                         @enderror
@@ -151,7 +151,7 @@
                             Image</label>
                         <input type="file" name="image" accept="image/*" id="image-input"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-all">
-                        <p class="text-[11px] text-slate-400 font-medium mt-1">JPG, PNG or WebP — max 2 MB.</p>
+                        <p class="text-[11px] text-slate-400 font-medium mt-1">JPG, PNG or WebP - max 2 MB.</p>
                         <p id="image-size-error" class="text-red-500 text-[11px] font-bold mt-1 hidden">
                             Image is too large. Please use an image under 2 MB.
                         </p>
@@ -168,10 +168,10 @@
                         </label>
                         <select name="car_id"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all appearance-none">
-                            <option value="">— No specific car —</option>
+                            <option value="">- No specific car -</option>
                             @foreach ($cars as $car)
                                 <option value="{{ $car->id }}" {{ old('car_id') == $car->id ? 'selected' : '' }}>
-                                    {{ $car->displayName() }} — NRs {{ number_format($car->price) }}
+                                    {{ $car->displayName() }} - NRs {{ number_format($car->price) }}
                                 </option>
                             @endforeach
                         </select>
@@ -429,11 +429,11 @@
 
     <script>
         // ── Instant client-side image size check ──────────────────────────────
-        // Validates the file the moment the user picks it — before any form
-        // submission — so they don't have to wait for a server round-trip to
+        // Validates the file the moment the user picks it - before any form
+        // submission - so they don't have to wait for a server round-trip to
         // discover the file is too large.
         (function () {
-            const MAX_BYTES = 2 * 1024 * 1024; // 2 MB — matches server-side max:2048
+            const MAX_BYTES = 2 * 1024 * 1024; // 2 MB - matches server-side max:2048
             const input    = document.getElementById('image-input');
             const error    = document.getElementById('image-size-error');
             const form     = input ? input.closest('form') : null;

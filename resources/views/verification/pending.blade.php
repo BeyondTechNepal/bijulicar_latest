@@ -207,7 +207,7 @@
                         <div class="flex items-center justify-between border-t border-slate-200 pt-3">
                             <span class="text-xs font-bold text-slate-500">Submitted at</span>
                             <span
-                                class="text-xs font-bold text-slate-900">{{ $verification->created_at->format('M d, Y — h:i A') }}</span>
+                                class="text-xs font-bold text-slate-900">{{ $verification->created_at->format('M d, Y - h:i A') }}</span>
                         </div>
                     </div>
 
@@ -264,7 +264,7 @@
     <p class="text-slate-500 text-sm mt-3">Your account is approved. Redirecting to dashboard...</p>
 
                 @else
-                    {{-- Not submitted yet — shouldn't normally land here, but just in case --}}
+                    {{-- Not submitted yet - shouldn't normally land here, but just in case --}}
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Action Required
                     </p>
                     <h1 class="text-2xl font-black text-slate-900 uppercase italic tracking-tight mb-3">

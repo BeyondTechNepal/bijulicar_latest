@@ -34,7 +34,7 @@
                         </svg>
                     </div>
                     <p class="text-sm font-black text-slate-500 uppercase italic">Click or drag to upload hero image</p>
-                    <p class="text-xs text-slate-400 mt-1">JPG, PNG, WEBP — max 4MB</p>
+                    <p class="text-xs text-slate-400 mt-1">JPG, PNG, WEBP - max 4MB</p>
                 </div>
                 <img id="hero-preview" src="#" alt="Preview" class="hidden mx-auto max-h-48 rounded-xl object-cover">
             </div>
@@ -71,7 +71,7 @@
                 <label class="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">Category</label>
                 <select name="category_id"
                     class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent bg-white">
-                    <option value="">— Select a category —</option>
+                    <option value="">- Select a category -</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
                             {{ $cat->name }}

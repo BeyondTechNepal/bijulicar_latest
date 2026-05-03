@@ -36,7 +36,7 @@
                         </h2>
                         <p class="text-sm text-slate-500 font-medium mt-1">
                             {{ ucfirst($carRental->car->condition) }} ·
-                            {{ $carRental->car->color ?? '—' }} ·
+                            {{ $carRental->car->color ?? '-' }} ·
                             {{ $carRental->car->location }}
                         </p>
                         <div class="flex flex-wrap gap-2 mt-3">
@@ -137,7 +137,7 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Owner</p>
-                        <p class="text-xs font-bold text-slate-700">{{ $carRental->owner?->name ?? '—' }}</p>
+                        <p class="text-xs font-bold text-slate-700">{{ $carRental->owner?->name ?? '-' }}</p>
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 space-y-2">

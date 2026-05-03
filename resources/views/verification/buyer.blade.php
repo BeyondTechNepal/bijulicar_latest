@@ -40,7 +40,7 @@
             </div>
         </section>
 
-        {{-- Right panel — form --}}
+        {{-- Right panel - form --}}
         <section class="w-full lg:w-[50%] h-full flex flex-col justify-center px-8 md:px-20 bg-white relative z-10 overflow-y-auto no-scrollbar">
 
             {{-- Progress bar --}}
@@ -119,7 +119,7 @@
                 {{-- National ID upload --}}
                 <div class="space-y-1">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        National ID <span class="text-slate-300">(JPG, PNG or PDF — max 4MB)</span>
+                        National ID <span class="text-slate-300">(JPG, PNG or PDF - max 4MB)</span>
                     </label>
 
                     <label class="block cursor-pointer group">
@@ -169,7 +169,7 @@
                 label.innerHTML = `
                     <div class="text-2xl mb-1">✅</div>
                     <p class="text-sm font-bold text-[#16a34a]">${file.name}</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">${sizeMB} MB — click to change</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">${sizeMB} MB - click to change</p>
                 `;
                 label.classList.add('border-[#16a34a]', 'bg-green-50/30');
                 label.classList.remove('border-dashed');

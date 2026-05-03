@@ -183,7 +183,7 @@
                 label.innerHTML = `
                     <div class="text-xl mb-0.5">📡</div>
                     <p class="text-sm font-bold text-emerald-600">${file.name}</p>
-                    <p class="text-[10px] text-slate-400 mt-0">${sizeMB} MB — Uplink ready</p>
+                    <p class="text-[10px] text-slate-400 mt-0">${sizeMB} MB - Uplink ready</p>
                 `;
                 label.classList.add('border-emerald-500', 'bg-emerald-50/20');
                 label.classList.remove('border-dashed');

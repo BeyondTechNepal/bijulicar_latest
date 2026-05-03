@@ -85,7 +85,7 @@
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Reviewing</p>
                 <div class="flex items-start gap-3">
                     <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-slate-500 uppercase shrink-0">
-                        {{ $review->car ? strtoupper($review->car->drivetrain) : '—' }}
+                        {{ $review->car ? strtoupper($review->car->drivetrain) : '-' }}
                     </div>
                     <div>
                         <p class="text-sm font-black text-slate-900 uppercase italic tracking-tight leading-tight">

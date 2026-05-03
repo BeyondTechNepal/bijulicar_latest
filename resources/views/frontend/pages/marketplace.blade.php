@@ -158,7 +158,7 @@
                                 </ul>
                             </div>
 
-                            {{-- Year range — custom dropdowns --}}
+                            {{-- Year range - custom dropdowns --}}
                             <div class="space-y-3 lg:col-span-2">
                                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     Year Range
@@ -431,7 +431,7 @@
                 PRE_ORDERED_IDS = new Set((data.cars || []).filter(c => c.already_pre_ordered).map(c => c.id));
             }
 
-            // Scroll to listings section always — whether results found or not
+            // Scroll to listings section always - whether results found or not
             if (scroll) {
                 document.getElementById('listings-section')
                     .scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -855,7 +855,7 @@
         // Restore seller filter (set when arriving from map "View Listings" button)
         if (sp.get('seller_id')) activeSellerId = sp.get('seller_id');
 
-        // Initial load — no scroll if page just opened fresh
+        // Initial load - no scroll if page just opened fresh
         fetchResults(parseInt(sp.get('page') || 1), window.location.search.length > 1);
     });
     </script>

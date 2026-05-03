@@ -1,5 +1,5 @@
 @extends('dashboard.station.layout')
-@section('title', 'Slot Manager — BijuliCar')
+@section('title', 'Slot Manager - BijuliCar')
 @section('page-title', 'Charging Slot Manager')
 
 @section('content')
@@ -73,13 +73,13 @@
         </div>
     </div>
 
-    {{-- ── Pending requests — action required ─────────────────────── --}}
+    {{-- ── Pending requests - action required ─────────────────────── --}}
     @if ($pendingSlots->count())
     <div class="bg-white border border-amber-200 rounded-2xl shadow-sm overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-amber-100 bg-amber-50/60 flex items-center gap-2">
             <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
             <h2 class="text-sm font-black text-amber-700 uppercase italic tracking-tight">
-                Pending Requests — Action Required
+                Pending Requests - Action Required
             </h2>
         </div>
 
@@ -98,7 +98,7 @@
                                 {{ $slot->occupant->name ?? 'Unknown customer' }}
                             </p>
                             <p class="text-xs text-slate-400 font-medium mt-0.5">
-                                {{ $slot->occupant->email ?? '—' }}
+                                {{ $slot->occupant->email ?? '-' }}
                             </p>
                             @if ($slot->occupant->phone ?? false)
                             <p class="text-xs text-slate-500 font-medium mt-0.5">
@@ -114,7 +114,7 @@
                     {{-- Approve / Reject actions --}}
                     <div class="flex flex-wrap items-center gap-2 shrink-0">
 
-                        {{-- Approve — opens inline form to set free_at time --}}
+                        {{-- Approve - opens inline form to set free_at time --}}
                         <button type="button"
                             onclick="document.getElementById('approve-form-{{ $slot->id }}').classList.toggle('hidden')"
                             class="px-4 py-2 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-emerald-600 transition-colors">
@@ -161,10 +161,10 @@
                  class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
                 <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
                     <h3 class="text-sm font-black text-slate-900 uppercase italic mb-1">
-                        Reject request — Port #{{ $slot->slot_number }}
+                        Reject request - Port #{{ $slot->slot_number }}
                     </h3>
                     <p class="text-xs text-slate-400 font-medium mb-4">
-                        Customer: {{ $slot->occupant->name ?? '—' }}
+                        Customer: {{ $slot->occupant->name ?? '-' }}
                     </p>
                     <form method="POST" action="{{ route('station.slots.reject', $slot) }}">
                         @csrf
@@ -237,7 +237,7 @@
                             <p class="text-xs text-slate-400 font-medium mt-0.5">
                                 {{ $slot->occupant->name }}
                                 @if ($slot->free_at)
-                                    — free by {{ $slot->free_at->format('h:i A, d M') }}
+                                    - free by {{ $slot->free_at->format('h:i A, d M') }}
                                     <span class="text-amber-500 font-bold">({{ $slot->freeAtLabel() }})</span>
                                 @endif
                             </p>
@@ -253,14 +253,14 @@
                     {{ ucfirst($slot->status) }}
                 </span>
 
-                {{-- Manual toggle — disabled for pending slots (must use approve/reject above) --}}
+                {{-- Manual toggle - disabled for pending slots (must use approve/reject above) --}}
                 @if ($slot->isPending())
                     <span class="text-[10px] text-amber-500 font-bold italic">
                         Approve or reject above ↑
                     </span>
 
                 @elseif ($slot->isBooked())
-                    {{-- Vehicle confirmed booked — station marks occupied when they arrive --}}
+                    {{-- Vehicle confirmed booked - station marks occupied when they arrive --}}
                     <div class="flex flex-wrap items-center gap-2">
                         <form method="POST" action="{{ route('station.slots.update', $slot) }}" class="flex flex-wrap items-center gap-2">
                             @csrf @method('PATCH')
@@ -270,7 +270,7 @@
                                 min="{{ now()->addMinutes(5)->format('Y-m-d\TH:i') }}">
                             <button type="submit"
                                 class="px-3 py-1.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-600 transition-colors">
-                                Vehicle Arrived — Mark Occupied
+                                Vehicle Arrived - Mark Occupied
                             </button>
                         </form>
                         <form method="POST" action="{{ route('station.slots.update', $slot) }}">
@@ -278,7 +278,7 @@
                             <input type="hidden" name="status" value="available">
                             <button type="submit"
                                 class="px-3 py-1.5 border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-colors">
-                                No Show — Free Slot
+                                No Show - Free Slot
                             </button>
                         </form>
                     </div>

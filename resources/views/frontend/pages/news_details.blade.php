@@ -151,7 +151,7 @@
                             @if ($news->quote_author)
                                 <cite
                                     class="block mt-4 text-sm font-black text-[#4ade80] uppercase tracking-widest not-italic">
-                                    —
+                                    -
                                     {{ $news->quote_author }}{{ $news->quote_author_title ? ', ' . $news->quote_author_title : '' }}
                                 </cite>
                             @endif

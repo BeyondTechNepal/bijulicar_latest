@@ -33,7 +33,7 @@
                             {{ $preOrder->car->displayName() }}
                         </h2>
                         <p class="text-sm text-slate-500 font-medium mt-1">
-                            {{ ucfirst($preOrder->car->condition) }} · {{ $preOrder->car->color ?? '—' }} · {{ $preOrder->car->location }}
+                            {{ ucfirst($preOrder->car->condition) }} · {{ $preOrder->car->color ?? '-' }} · {{ $preOrder->car->location }}
                         </p>
                         @if($preOrder->car->expected_arrival_date)
                         <p class="text-xs font-black text-[#16a34a] mt-2">
@@ -94,7 +94,7 @@
                 @endif
             </div>
 
-            {{-- Deposit record — shown after confirmation --}}
+            {{-- Deposit record - shown after confirmation --}}
             @if($preOrder->status !== 'pending_deposit' && $preOrder->payment_method)
             <div class="bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-2xl p-6">
                 <p class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest mb-4">✓ Deposit Received</p>
@@ -175,7 +175,7 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Actions</p>
 
-                {{-- Confirm deposit — pending only --}}
+                {{-- Confirm deposit - pending only --}}
                 @if($preOrder->status === 'pending_deposit')
                 <a href="{{ route($prefix . '.preorders.confirm_deposit.form', $preOrder) }}"
                     class="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#16a34a] transition-all shadow-lg block text-center">
@@ -186,7 +186,7 @@
                 </p>
                 @endif
 
-                {{-- Convert to full order — deposit_paid only --}}
+                {{-- Convert to full order - deposit_paid only --}}
                 @if($preOrder->status === 'deposit_paid')
                 <form method="POST" action="{{ route($prefix . '.preorders.convert', $preOrder) }}"
                     onsubmit="return confirm('Convert this pre-order to a full order? The car will be marked as available and a confirmed order will be created.')">
@@ -257,7 +257,7 @@
                     </li>
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5 shrink-0">→</span>
-                        Once the car arrives, click <strong class="text-white">Convert to Order</strong> — a confirmed order will be created automatically.
+                        Once the car arrives, click <strong class="text-white">Convert to Order</strong> - a confirmed order will be created automatically.
                     </li>
                 </ul>
             </div>

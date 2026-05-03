@@ -75,7 +75,7 @@
                 <label class="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">Category</label>
                 <select name="category_id"
                     class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent bg-white">
-                    <option value="">— Select a category —</option>
+                    <option value="">- Select a category -</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}"
                             {{ old('category_id', $article->category_id) == $cat->id ? 'selected' : '' }}>

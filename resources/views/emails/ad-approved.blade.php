@@ -79,9 +79,9 @@
                     Payment Options
                 </p>
                 <p style="font-size: 13px; color: #1e3a8a; line-height: 1.8; margin: 0;">
-                    <strong>Cash</strong> — visit our office<br>
-                    <strong>eSewa</strong> — 9800000000<br>
-                    <strong>Bank transfer</strong> — Account: 12345678901, XYZ Bank, Bijulicar Pvt Ltd
+                    <strong>Cash</strong> - visit our office<br>
+                    <strong>eSewa</strong> - 9800000000<br>
+                    <strong>Bank transfer</strong> - Account: 12345678901, XYZ Bank, Bijulicar Pvt Ltd
                 </p>
             </div>
 

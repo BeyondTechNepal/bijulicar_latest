@@ -4,7 +4,7 @@
 
     <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
 
-        {{-- Top accent bar — blue for email verification --}}
+        {{-- Top accent bar - blue for email verification --}}
         <div style="height: 4px; background: #2563eb;"></div>
 
         {{-- Header --}}
@@ -35,7 +35,7 @@
             </p>
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
-                Welcome to <strong style="color: #0f172a;">Bijulicar</strong> — Nepal's electric vehicle marketplace.
+                Welcome to <strong style="color: #0f172a;">Bijulicar</strong> - Nepal's electric vehicle marketplace.
                 Please verify your email address to activate your account and move on to document verification.
             </p>
 
@@ -94,7 +94,7 @@
             </div>
 
             <p style="font-size: 13px; color: #94a3b8; line-height: 1.7; margin: 0;">
-                If you did not create an account, you can safely ignore this email — no action is required.
+                If you did not create an account, you can safely ignore this email - no action is required.
             </p>
         </div>
 

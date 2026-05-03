@@ -1,5 +1,5 @@
 @extends('dashboard.garage.layout')
-@section('title', 'Appointment Detail — BijuliCar')
+@section('title', 'Appointment Detail - BijuliCar')
 @section('page-title', 'Appointment Detail')
 
 @section('content')
@@ -35,7 +35,7 @@
 
         <div>
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Requested At</p>
-            <p class="text-sm font-bold text-slate-900">{{ $appointment->requested_at->format('D, d M Y — h:i A') }}</p>
+            <p class="text-sm font-bold text-slate-900">{{ $appointment->requested_at->format('D, d M Y - h:i A') }}</p>
         </div>
 
         @if ($appointment->bay_number)
@@ -48,7 +48,7 @@
         @if ($appointment->estimated_finish_at)
         <div>
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Est. Finish Time</p>
-            <p class="text-sm font-bold text-emerald-700">{{ $appointment->estimated_finish_at->format('D, d M Y — h:i A') }}</p>
+            <p class="text-sm font-bold text-emerald-700">{{ $appointment->estimated_finish_at->format('D, d M Y - h:i A') }}</p>
         </div>
         @endif
 

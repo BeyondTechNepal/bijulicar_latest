@@ -36,7 +36,7 @@
                         </h2>
                         <p class="text-sm text-slate-500 font-medium mt-1">
                             {{ ucfirst($order->car->condition) }} ·
-                            {{ $order->car->color ?? '—' }} ·
+                            {{ $order->car->color ?? '-' }} ·
                             {{ $order->car->location }}
                         </p>
                         <div class="flex flex-wrap gap-2 mt-3">
@@ -86,7 +86,7 @@
             </div>
             @endif
 
-            {{-- Payment record — shown after seller marks completed --}}
+            {{-- Payment record - shown after seller marks completed --}}
             @if($order->purchase)
             <div class="bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-2xl p-6">
                 <p class="text-[10px] font-black text-[#16a34a] uppercase tracking-widest mb-4">Payment Confirmed</p>
@@ -140,7 +140,7 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Seller</p>
-                        <p class="text-xs font-bold text-slate-700">{{ optional(optional($order->car)->seller)->name ?? '—' }}</p>
+                        <p class="text-xs font-bold text-slate-700">{{ optional(optional($order->car)->seller)->name ?? '-' }}</p>
                     </div>
                     <div class="pt-3 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-2">

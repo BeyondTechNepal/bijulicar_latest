@@ -385,14 +385,14 @@
                                 "The infrastructure for ICE exists in every corner of the globe. If we change the fuel, we
                                 don't have to rebuild the world."
                             </blockquote>
-                            <cite class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">— Dr. Helena
+                            <cite class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">- Dr. Helena
                                 Vane, Propulsion Lead</cite>
                         </div>
 
                         <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6 mt-12">III. The Industrial
                             Pivot</h2>
                         <p class="text-lg leading-relaxed text-slate-600 mb-8">
-                            The most compelling argument for H2-ICE is not ecological—it's economic. A total shift to EVs
+                            The most compelling argument for H2-ICE is not ecological-it's economic. A total shift to EVs
                             requires trillions in new battery gigafactories and a complete overhaul of the power grid.
                             Conversely, H2-ICE allows giants like Cummins, Toyota, and JCB to utilize 90% of their existing
                             supply chains.

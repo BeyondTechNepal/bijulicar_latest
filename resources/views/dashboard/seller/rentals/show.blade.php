@@ -36,7 +36,7 @@
                         </h2>
                         <p class="text-sm text-slate-500 font-medium mt-1">
                             {{ ucfirst($carRental->car->condition) }} ·
-                            {{ $carRental->car->color ?? '—' }} ·
+                            {{ $carRental->car->color ?? '-' }} ·
                             {{ $carRental->car->location }}
                         </p>
                         <div class="flex flex-wrap gap-2 mt-3">
@@ -83,7 +83,7 @@
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Actual Return</p>
                         <p class="text-base font-black text-slate-900">
-                            {{ $carRental->actual_return_date?->format('d M Y') ?? '—' }}
+                            {{ $carRental->actual_return_date?->format('d M Y') ?? '-' }}
                         </p>
                     </div>
                 </div>

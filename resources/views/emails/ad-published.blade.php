@@ -35,7 +35,7 @@
             </p>
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
-                Great news — your advertisement is now <strong style="color: #16a34a;">live</strong> on Bijulicar
+                Great news - your advertisement is now <strong style="color: #16a34a;">live</strong> on Bijulicar
                 and visible to all visitors.
             </p>
 

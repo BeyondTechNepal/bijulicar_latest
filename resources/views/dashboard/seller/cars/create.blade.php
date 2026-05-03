@@ -386,7 +386,7 @@
                     </div>
                     @error('listing_type')<p class="text-red-500 text-xs font-bold mt-2">{{ $message }}</p>@enderror
 
-                    {{-- Rental fields — revealed when rent or both is selected --}}
+                    {{-- Rental fields - revealed when rent or both is selected --}}
                     <div id="rental-fields" class="{{ in_array(old('listing_type'), ['rent','both']) ? '' : 'hidden' }} mt-5 pt-5 border-t border-slate-100 space-y-4">
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rental Settings</p>
                         <div class="grid grid-cols-2 gap-4">

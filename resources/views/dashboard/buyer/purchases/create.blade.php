@@ -54,7 +54,7 @@
                     <div class="mb-8">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">
                             Transaction Reference
-                            <span class="text-slate-300 normal-case font-medium ml-1">(optional — for bank transfers)</span>
+                            <span class="text-slate-300 normal-case font-medium ml-1">(optional - for bank transfers)</span>
                         </label>
                         <input type="text"
                             name="transaction_ref"

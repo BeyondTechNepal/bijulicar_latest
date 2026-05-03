@@ -99,7 +99,7 @@
                                     {{ ucfirst($car->condition) }}
                                 </span>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-800">
-                                    {{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}
+                                    {{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "-")) }}
                                 </span>
                             </div>
                         </div>
@@ -203,7 +203,7 @@
                         <p class="text-sm text-slate-400 font-medium mt-0.5">{{ $car->year }}{{ $car->variant ? ' · ' . $car->variant : '' }}</p>
 
                         <div class="mt-4 pt-4 border-t border-slate-100">
-                            <p class="text-2xl font-black text-slate-900">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}</p>
+                            <p class="text-2xl font-black text-slate-900">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "-")) }}</p>
                             <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">
                                 {{ $car->price_negotiable ? '✓ Price negotiable' : 'Fixed price' }}
                             </p>
@@ -250,7 +250,7 @@
         @php
             $verdictItems = [];
 
-            // Best Value — only show if there's a unique cheapest
+            // Best Value - only show if there's a unique cheapest
             $minPrice = $selected->min('price');
             $cheapestCars = $selected->filter(fn($c) => $c->price === $minPrice);
             if ($cheapestCars->count() === 1) {
@@ -259,7 +259,7 @@
                 $verdictItems[] = ['label' => 'Best Value', 'car' => $cheapest->brand . ' ' . $cheapest->model, 'detail' => 'NRs ' . number_format($cheapest->price), 'idx' => $cheapIdx];
             }
 
-            // Longest Range — only show if there's a unique best
+            // Longest Range - only show if there's a unique best
             $evCarsWithRange = $selected->filter(fn($c) => $c->range_km);
             if ($evCarsWithRange->count() >= 1) {
                 $maxRange = $evCarsWithRange->max('range_km');
@@ -271,7 +271,7 @@
                 }
             }
 
-            // Highest Mileage — only show if there's a unique highest
+            // Highest Mileage - only show if there's a unique highest
             $maxMileage = $selected->max('mileage');
             $highestMileageCars = $selected->filter(fn($c) => $c->mileage == $maxMileage);
             if ($highestMileageCars->count() === 1) {
@@ -298,7 +298,7 @@
         @else
         <div class="bg-slate-900 rounded-2xl p-6 mb-8 text-center">
             <p class="text-[10px] font-black text-[#4ade80] uppercase tracking-widest mb-2">Quick Verdict</p>
-            <p class="text-slate-400 text-sm font-medium">These vehicles are evenly matched — no clear winner across price, range, or mileage.</p>
+            <p class="text-slate-400 text-sm font-medium">These vehicles are evenly matched - no clear winner across price, range, or mileage.</p>
         </div>
         @endif
 
@@ -311,7 +311,7 @@
                 <div class="mb-4 last:mb-0">
                     <div class="flex justify-between items-baseline mb-1.5">
                         <span class="text-[13px] font-bold text-slate-800">{{ $car->brand }} {{ $car->model }}</span>
-                        <span class="text-[13px] font-black {{ $accentText[$i] }}">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}</span>
+                        <span class="text-[13px] font-black {{ $accentText[$i] }}">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "-")) }}</span>
                     </div>
                     <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                         <div class="{{ $accentBg[$i] }} h-full rounded-full" style="width: {{ $pct }}%; transition: width 1s ease"></div>
@@ -401,7 +401,7 @@
                             if (str_contains($row['key'], '.')) {
                                 [$rel, $field] = explode('.', $row['key'], 2);
                                 if ($field === 'roles') {
-                                    return $car->$rel ? ucfirst($car->$rel->getRoleNames()->first() ?? '—') : '—';
+                                    return $car->$rel ? ucfirst($car->$rel->getRoleNames()->first() ?? '-') : '-';
                                 }
                                 return $car->$rel ? $car->$rel->$field : null;
                             }
@@ -425,7 +425,7 @@
 
                         // Format function
                         $fmt = function($v) use ($row) {
-                            if (is_null($v) || $v === '' || $v === '—') return '—';
+                            if (is_null($v) || $v === '' || $v === '-') return '-';
                             $f = $row['format'] ?? '';
                             if ($f === 'price')   return 'NRs ' . number_format($v);
                             if ($f === 'bool')    return $v ? 'Yes ✓' : 'No';
@@ -470,7 +470,7 @@
                     @php $borderColors = ['border-l-green-400','border-l-blue-400','border-l-amber-400']; @endphp
                     <div class="bg-white rounded-2xl border border-slate-100 border-l-4 {{ $borderColors[$i] }} shadow-sm p-5">
                         <p class="text-[11px] font-black {{ $accentText[$i] }} uppercase tracking-widest mb-2">
-                            {{ $car->brand }} {{ $car->model }} — Seller Notes
+                            {{ $car->brand }} {{ $car->model }} - Seller Notes
                         </p>
                         <p class="text-[13px] text-slate-600 leading-relaxed">{{ $car->description }}</p>
                     </div>
@@ -513,7 +513,7 @@
         <div class="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6 text-4xl">🚗</div>
         <h2 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter mb-3">Start Comparing</h2>
         <p class="text-slate-500 text-sm mb-8 max-w-sm mx-auto leading-relaxed">
-            Select 2 or 3 vehicles from our marketplace and get a full side-by-side breakdown — specs, price, range, and more.
+            Select 2 or 3 vehicles from our marketplace and get a full side-by-side breakdown - specs, price, range, and more.
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <button onclick="openPicker(0)"
@@ -614,7 +614,7 @@
                     </div>
 
                     <div class="text-right shrink-0">
-                        <p class="text-[13px] font-black text-slate-800">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "—")) }}</p>
+                        <p class="text-[13px] font-black text-slate-800">{{ ($car->price ? "NRs " . number_format($car->price) : ($car->rent_price_per_day ? "NRs " . number_format($car->rent_price_per_day) . "/day" : "-")) }}</p>
                         @if ($alreadySelected)
                             <p class="text-[10px] font-bold text-green-600 uppercase">Added ✓</p>
                         @endif

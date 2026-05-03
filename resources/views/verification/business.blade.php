@@ -119,7 +119,7 @@
                 {{-- Registration document upload --}}
                 <div class="space-y-1">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Business Registration Document <span class="text-slate-300">(JPG, PNG or PDF — max 4MB)</span>
+                        Business Registration Document <span class="text-slate-300">(JPG, PNG or PDF - max 4MB)</span>
                     </label>
 
                     <label class="block cursor-pointer group">
@@ -169,7 +169,7 @@
                 label.innerHTML = `
                     <div class="text-2xl mb-1">✅</div>
                     <p class="text-sm font-bold text-[#a855f7]">${file.name}</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">${sizeMB} MB — click to change</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">${sizeMB} MB - click to change</p>
                 `;
                 label.classList.add('border-purple-500', 'bg-purple-50/20');
                 label.classList.remove('border-dashed');

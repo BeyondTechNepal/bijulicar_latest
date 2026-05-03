@@ -181,7 +181,7 @@
                 label.innerHTML = `
                     <div class="text-xl mb-0.5">📦</div>
                     <p class="text-xs font-bold text-amber-600">${file.name}</p>
-                    <p class="text-[9px] text-slate-400">${sizeMB} MB — Ready</p>
+                    <p class="text-[9px] text-slate-400">${sizeMB} MB - Ready</p>
                 `;
                 label.classList.add('border-amber-500', 'bg-amber-50/20');
                 label.classList.remove('border-dashed');

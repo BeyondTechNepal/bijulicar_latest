@@ -34,7 +34,7 @@
         </div>
         <p class="font-black text-slate-900 uppercase italic tracking-tight">No Location Set</p>
         <p class="text-sm text-slate-500 font-medium mt-1 max-w-xs">
-            Pin your business on the public map. It goes live immediately — no approval needed.
+            Pin your business on the public map. It goes live immediately.
         </p>
         <a href="{{ route('business.location.create') }}"
             class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 bg-[#a855f7] hover:bg-[#9333ea] text-white text-sm font-black uppercase tracking-wider rounded-xl transition-all">

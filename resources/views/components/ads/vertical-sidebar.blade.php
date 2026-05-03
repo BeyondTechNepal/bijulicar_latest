@@ -29,7 +29,7 @@
                 {{-- Dark vignette so bottom text is readable --}}
                 <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-slate-900/80"></div>
 
-                {{-- AD label watermark — top right --}}
+                {{-- AD label watermark - top right --}}
                 <div class="absolute top-3 right-3 z-10">
                     <span class="text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded
                         {{ $ad->priority === 2 ? 'bg-amber-400/90 text-slate-900' : ($ad->priority === 1 ? 'bg-purple-600/90 text-white' : 'bg-black/50 text-white/70 border border-white/20') }}
@@ -38,7 +38,7 @@
                     </span>
                 </div>
 
-                {{-- Priority badge — top left --}}
+                {{-- Priority badge - top left --}}
                 @if($ad->priority >= 1)
                 <div class="absolute top-3 left-3 z-10">
                     <span class="text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full

@@ -36,7 +36,7 @@
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
                 The EV station has <strong style="color: #2563eb;">confirmed your booking</strong> for the slot below.
-                Please head over to the station — the station owner will mark your port active once your vehicle arrives.
+                Please head over to the station - the station owner will mark your port active once your vehicle arrives.
             </p>
 
             {{-- Slot details card --}}
@@ -53,12 +53,12 @@
                     </tr>
                     <tr style="border-top: 1px solid #dbeafe;">
                         <td style="padding: 8px 0; color: #93c5fd; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Status</td>
-                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">Booked — arrive to activate</td>
+                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">Booked - arrive to activate</td>
                     </tr>
                     @if ($slot->free_at)
                     <tr style="border-top: 1px solid #dbeafe;">
                         <td style="padding: 8px 0; color: #93c5fd; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Available until</td>
-                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">{{ $slot->free_at->format('D, d M Y — h:i A') }}</td>
+                        <td style="padding: 8px 0; color: #1e3a5f; font-weight: 700;">{{ $slot->free_at->format('D, d M Y - h:i A') }}</td>
                     </tr>
                     @endif
                 </table>

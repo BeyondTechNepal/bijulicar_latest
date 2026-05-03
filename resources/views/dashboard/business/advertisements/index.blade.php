@@ -19,13 +19,13 @@
     <div class="flex items-center gap-3 mb-5 flex-wrap">
         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Priority tiers:</span>
         <span class="text-[10px] font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 uppercase tracking-wider">★
-            Premium — shown first</span>
+            Premium - shown first</span>
         <span
             class="text-[10px] font-black px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 uppercase tracking-wider">◆
-            Featured — shown second</span>
+            Featured - shown second</span>
         <span
             class="text-[10px] font-black px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 uppercase tracking-wider">Standard
-            — shown after</span>
+            - shown after</span>
     </div>
 
     @if ($ads->isNotEmpty())
@@ -97,7 +97,7 @@
                             <span class="lg:hidden block text-[9px] font-bold text-slate-400 uppercase mb-1">Schedule</span>
                             @if ($ad->starts_at || $ad->ends_at)
                                 <p class="text-[11px] text-slate-500 font-medium">
-                                    {{ $ad->starts_at?->format('d M') ?? '—' }} → {{ $ad->ends_at?->format('d M') ?? '—' }}
+                                    {{ $ad->starts_at?->format('d M') ?? '-' }} → {{ $ad->ends_at?->format('d M') ?? '-' }}
                                 </p>
                             @else
                                 <p class="text-[11px] text-slate-400 font-medium">No schedule</p>

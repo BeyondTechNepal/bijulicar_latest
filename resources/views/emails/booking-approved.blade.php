@@ -35,7 +35,7 @@
             </p>
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
-                Great news — your garage appointment has been <strong style="color: #16a34a;">approved</strong>.
+                Great news - your garage appointment has been <strong style="color: #16a34a;">approved</strong>.
                 Here are your booking details:
             </p>
 
@@ -53,7 +53,7 @@
                     </tr>
                     <tr style="border-top: 1px solid #f1f5f9;">
                         <td style="padding: 8px 0; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Appointment</td>
-                        <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">{{ $appointment->requested_at->format('D, d M Y — h:i A') }}</td>
+                        <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">{{ $appointment->requested_at->format('D, d M Y - h:i A') }}</td>
                     </tr>
                     @if ($appointment->bay_number)
                     <tr style="border-top: 1px solid #f1f5f9;">
@@ -64,7 +64,7 @@
                     @if ($appointment->estimated_finish_at)
                     <tr style="border-top: 1px solid #f1f5f9;">
                         <td style="padding: 8px 0; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">Est. Finish</td>
-                        <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">{{ $appointment->estimated_finish_at->format('D, d M Y — h:i A') }}</td>
+                        <td style="padding: 8px 0; color: #0f172a; font-weight: 700;">{{ $appointment->estimated_finish_at->format('D, d M Y - h:i A') }}</td>
                     </tr>
                     @endif
                     @if ($appointment->garage_note)

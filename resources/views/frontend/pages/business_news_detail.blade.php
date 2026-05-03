@@ -121,7 +121,7 @@
                         </p>
                         @if($news->quote_author)
                             <cite class="block mt-4 text-sm font-black text-purple-500 uppercase tracking-widest not-italic">
-                                — {{ $news->quote_author }}
+                                - {{ $news->quote_author }}
                             </cite>
                         @endif
                     </blockquote>

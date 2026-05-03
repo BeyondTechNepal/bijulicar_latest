@@ -6,7 +6,7 @@
 
 <div class="max-w-2xl">
     <p class="text-slate-500 text-sm font-medium mb-8">
-        Pin your business on the public map. It goes live immediately — no approval needed.
+        Pin your business on the public map. It goes live immediately.
     </p>
 
     <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
@@ -71,7 +71,7 @@
                     </div>
 
                     <p class="text-[11px] text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
-                        ✓ Your pin will go <strong>live on the map immediately</strong> after saving — no admin approval required.
+                        ✓ Your pin will go <strong>live on the map immediately</strong> after saving.
                     </p>
                 </div>
 

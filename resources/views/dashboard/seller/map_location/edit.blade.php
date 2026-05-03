@@ -72,7 +72,7 @@
 
                         <p
                             class="text-[11px] text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
-                            ✓ Changes go <strong>live immediately</strong> — no admin approval required.
+                            ✓ Changes go <strong>live immediately.</strong>
                         </p>
                     </div>
 

@@ -650,7 +650,7 @@
                             Rent a Car <span class="text-slate-500">on BijuliCar</span>
                         </h2>
                         <p class="text-slate-400 text-sm mt-3 max-w-md leading-relaxed font-medium">
-                            Flexible daily rentals from verified owners across Nepal — no long-term commitment needed.
+                            Flexible daily rentals from verified owners across Nepal - no long-term commitment needed.
                         </p>
                     </div>
                     <a href="{{ route('rent') }}"
@@ -673,7 +673,7 @@
                             </svg>
                         </div>
                         <h4 class="text-lg font-black text-white uppercase italic tracking-tight mb-3">Pick Your Dates</h4>
-                        <p class="text-slate-400 text-sm leading-relaxed">Choose your pickup and return dates. Rentals available from 1 day to long-term — completely on your schedule.</p>
+                        <p class="text-slate-400 text-sm leading-relaxed">Choose your pickup and return dates. Rentals available from 1 day to long-term - completely on your schedule.</p>
                     </div>
 
                     {{-- Card 2: Verified owners --}}
@@ -823,7 +823,7 @@
                                                 <div class="w-px h-8 bg-white/10"></div>
                                                 <div>
                                                     <p class="text-xl font-black text-white flex items-center gap-1.5">
-                                                        {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '—' }}
+                                                        {{ $biz['avg_rating'] > 0 ? number_format($biz['avg_rating'], 1) : '-' }}
                                                         @if ($biz['avg_rating'] > 0)
                                                             <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path
@@ -1013,7 +1013,7 @@
                             </svg>
                         </div>
                         <h4 class="text-lg font-extrabold text-slate-900 uppercase tracking-tight mb-4 italic">Car Rental</h4>
-                        <p class="text-slate-500 text-sm leading-relaxed">Daily rentals from verified owners. Filter by location, drivetrain, and budget — no long-term commitment.</p>
+                        <p class="text-slate-500 text-sm leading-relaxed">Daily rentals from verified owners. Filter by location, drivetrain, and budget - no long-term commitment.</p>
                     </a>
 
                 </div>

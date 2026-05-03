@@ -132,7 +132,7 @@
                 <ul class="space-y-2.5">
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5 shrink-0">1.</span>
-                        You place the pre-order — no payment needed yet.
+                        You place the pre-order - no payment needed yet.
                     </li>
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5 shrink-0">2.</span>
@@ -140,7 +140,7 @@
                     </li>
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5 shrink-0">3.</span>
-                        Seller confirms deposit received — your status updates automatically.
+                        Seller confirms deposit received - your status updates automatically.
                     </li>
                     <li class="text-xs font-medium text-slate-400 flex items-start gap-2">
                         <span class="text-[#4ade80] mt-0.5 shrink-0">4.</span>

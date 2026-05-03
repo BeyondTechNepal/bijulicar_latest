@@ -55,7 +55,7 @@
                     {{-- Buyer --}}
                     <div class="flex items-center justify-between md:block md:col-span-2">
                         <p class="text-sm font-black text-slate-800">
-                            {{ $neg->buyer->name ?? '—' }}
+                            {{ $neg->buyer->name ?? '-' }}
                         </p>
                     </div>
 

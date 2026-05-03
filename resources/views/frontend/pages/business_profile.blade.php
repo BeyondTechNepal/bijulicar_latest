@@ -109,7 +109,7 @@
                 @endif
                 <div class="w-px h-10 bg-white/10 hidden sm:block"></div>
                 <div class="text-center">
-                    <p class="text-3xl font-black text-white">{{ $avgRating > 0 ? number_format($avgRating, 1) : '—' }}</p>
+                    <p class="text-3xl font-black text-white">{{ $avgRating > 0 ? number_format($avgRating, 1) : '-' }}</p>
                     <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Avg Rating</p>
                 </div>
                 <div class="w-px h-10 bg-white/10 hidden sm:block"></div>
@@ -244,7 +244,7 @@
                             <div>
                                 <p class="text-xs font-bold text-slate-400">Sale Price</p>
                                 <p class="text-base font-black text-slate-900">
-                                    @if($car->price) NRs {{ number_format($car->price) }} @else — @endif
+                                    @if($car->price) NRs {{ number_format($car->price) }} @else - @endif
                                     @if($car->price_negotiable)<span class="text-[10px] font-bold text-green-600 ml-1">Negotiable</span>@endif
                                 </p>
                             </div>

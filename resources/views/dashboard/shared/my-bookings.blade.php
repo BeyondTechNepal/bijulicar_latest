@@ -35,7 +35,7 @@
                                 {{ $appt->service_description }}
                             </p>
                             <p class="text-xs text-slate-400 mt-0.5">
-                                {{ $appt->requested_at->format('D, d M Y — h:i A') }}
+                                {{ $appt->requested_at->format('D, d M Y - h:i A') }}
                                 @if ($appt->estimated_finish_at)
                                     · Est. finish {{ $appt->estimated_finish_at->format('h:i A') }}
                                 @endif
@@ -51,7 +51,7 @@
                             <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border {{ $appt->statusColour() }}">
                                 {{ ucfirst($appt->status) }}
                             </span>
-                            {{-- Cancel button — only shown while still pending --}}
+                            {{-- Cancel button - only shown while still pending --}}
                             @if ($appt->isPending())
                                 <form method="POST" action="{{ route('booking.garage.cancel', $appt->id) }}"
                                       onsubmit="return confirm('Cancel this appointment?')">
@@ -106,7 +106,7 @@
                                {{ $slot->isOccupied()  ? 'bg-red-50 text-red-600 border-red-200'             : '' }}">
                                {{ ucfirst($slot->status) }}
                             </span>
-                            {{-- Cancel button — only shown while still pending --}}
+                            {{-- Cancel button - only shown while still pending --}}
                             @if ($slot->isPending())
                                 <form method="POST" action="{{ route('booking.slot.cancel', $slot->id) }}"
                                       onsubmit="return confirm('Cancel this slot request? The slot will be freed immediately.')">

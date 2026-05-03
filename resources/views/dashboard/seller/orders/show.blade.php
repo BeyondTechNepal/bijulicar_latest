@@ -34,7 +34,7 @@
                         </h2>
                         <p class="text-sm text-slate-500 font-medium mt-1">
                             {{ ucfirst($order->car->condition) }} ·
-                            {{ $order->car->color ?? '—' }} ·
+                            {{ $order->car->color ?? '-' }} ·
                             {{ $order->car->location }}
                         </p>
                         <div class="flex flex-wrap gap-2 mt-3">
@@ -202,7 +202,7 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Actions</p>
 
-                {{-- Confirm button — pending only --}}
+                {{-- Confirm button - pending only --}}
                 @if($order->status === 'pending')
                 <form method="POST" action="{{ route($prefix . '.orders.confirm', $order) }}">
                     @csrf
@@ -217,7 +217,7 @@
                 </p>
                 @endif
 
-                {{-- Mark as completed — confirmed only --}}
+                {{-- Mark as completed - confirmed only --}}
                 @if($order->status === 'confirmed' && !$order->purchase)
                 <a href="{{ route($prefix . '.orders.complete.form', $order) }}"
                     class="w-full flex items-center justify-center gap-2 bg-[#16a34a] text-white py-3 rounded-xl text-[11px] font-black uppercase italic tracking-widest hover:bg-[#15803d] transition-all shadow-lg block text-center">

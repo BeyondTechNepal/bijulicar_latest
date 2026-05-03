@@ -32,7 +32,7 @@
             </p>
 
             <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0 0 24px;">
-                Your rental is now <strong style="color: #16a34a;">active</strong> — the car has been handed over to you.
+                Your rental is now <strong style="color: #16a34a;">active</strong> - the car has been handed over to you.
                 Please remember to return it by the date below.
             </p>
 

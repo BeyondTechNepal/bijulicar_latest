@@ -304,8 +304,8 @@
                 <div class="flex items-center gap-3">
                     <span class="text-[10px] font-bold text-slate-400 uppercase italic">Sort:</span>
                     <button data-sort="newest" class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Newest</button>
-                    <button data-sort="price_asc" class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↑</button>
-                    <button data-sort="price_desc"class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↓</button>
+                    <button data-sort="price_desc" class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↑</button>
+                    <button data-sort="price_asc"class="sort-btn text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Price ↓</button>
                 </div>
             </div>
 

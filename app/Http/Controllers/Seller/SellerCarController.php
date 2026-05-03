@@ -81,6 +81,8 @@ class SellerCarController extends Controller
             'rent_deposit'       => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // FIX: price is only relevant for sale/both listings, not rent-only.
+        $isSaleable = in_array($request->listing_type, ['sale', 'both']);
         $isRentable = in_array($request->listing_type, ['rent', 'both']);
 
         $car = Car::create([
@@ -95,7 +97,7 @@ class SellerCarController extends Controller
             'battery_kwh'      => $request->battery_kwh,
             'color'            => $request->color,
             'condition'        => $request->condition,
-            'price'            => $request->price,
+            'price'            => $isSaleable ? $request->price : null,  // FIX
             'price_negotiable' => $request->boolean('price_negotiable'),
             'location'         => $request->location,
             'description'      => $request->description,
@@ -130,7 +132,6 @@ class SellerCarController extends Controller
                 }
             }
         }
-
 
         // Bust homepage caches
         Cache::forget(HomeController::CACHE_FLEET_COUNTS);
@@ -196,7 +197,10 @@ class SellerCarController extends Controller
 
         // Determine correct status
         $newStatus  = $request->status;
+        // FIX: price is only relevant for sale/both listings, not rent-only.
+        $isSaleable = in_array($request->listing_type, ['sale', 'both']);
         $isRentable = in_array($request->listing_type, ['rent', 'both']);
+
         if ($request->boolean('is_preorder')) {
             $newStatus = 'upcoming';
         } elseif ($request->stock_quantity > 0 && $car->status === 'sold') {
@@ -214,7 +218,7 @@ class SellerCarController extends Controller
             'battery_kwh'      => $request->battery_kwh,
             'color'            => $request->color,
             'condition'        => $request->condition,
-            'price'            => $request->price,
+            'price'            => $isSaleable ? $request->price : null,  // FIX
             'price_negotiable' => $request->boolean('price_negotiable'),
             'location'         => $request->location,
             'description'      => $request->description,
@@ -277,7 +281,6 @@ class SellerCarController extends Controller
             $car->images()->update(['is_primary' => false]);
             $firstImage->update(['is_primary' => true]);
         }
-
 
         // Bust homepage caches
         Cache::forget(HomeController::CACHE_FLEET_COUNTS);

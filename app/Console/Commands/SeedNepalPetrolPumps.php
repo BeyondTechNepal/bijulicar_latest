@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Log;
  * country area filter — no tile grid, no rate-limit torture.
  *
  * Run once:  php artisan pumps:seed-nepal
- * Monthly:   Schedule::command('pumps:seed-nepal --force')->monthly();
+ * Monthly:   Schedule::command('pumps:seed-nepal')->monthlyOn(1, '02:00');
+ *
+ * Safe-by-default: existing data is never wiped until a successful fetch
+ * is confirmed. Stale pumps (closed/removed in OSM) are cleaned up after
+ * a successful run rather than via a blind truncate.
  */
 class SeedNepalPetrolPumps extends Command
 {
@@ -78,7 +82,7 @@ OQL;
         }
 
         if (!$response || !$response->successful()) {
-            $this->error('All Overpass endpoints failed. Try again later.');
+            $this->error('All Overpass endpoints failed. Existing data is untouched. Try again later.');
             return self::FAILURE;
         }
 
@@ -86,20 +90,19 @@ OQL;
         $this->info('Elements returned: ' . count($elements));
 
         if (empty($elements)) {
-            $this->warn('No pumps returned. The query may have timed out on Overpass side.');
+            $this->warn('No pumps returned — Overpass may have timed out server-side. Existing data is untouched.');
             return self::FAILURE;
         }
 
-        // Clear old data and re-insert
-        if ($this->option('force')) {
-            PetrolPump::truncate();
-            DB::table('petrol_pump_cache_tiles')->truncate();
-        }
-
+        // ── Safe upsert: collect all valid OSM IDs first, then clean up stale ones ──
+        // The old approach (--force truncate) wiped data BEFORE confirming the fetch succeeded.
+        // This approach only removes stale pumps AFTER a confirmed healthy response with results.
         $bar = $this->output->createProgressBar(count($elements));
         $bar->start();
 
+        $fetchedOsmIds = [];
         $inserted = 0;
+
         foreach ($elements as $el) {
             $lat = $el['lat'] ?? ($el['center']['lat'] ?? null);
             $lng = $el['lon'] ?? ($el['center']['lon'] ?? null);
@@ -112,10 +115,11 @@ OQL;
                 continue;
             }
 
-            $tags = $el['tags'] ?? [];
+            $tags  = $el['tags'] ?? [];
+            $osmId = (string) $el['id'];
 
             PetrolPump::updateOrCreate(
-                ['osm_id' => (string) $el['id']],
+                ['osm_id' => $osmId],
                 [
                     'name'          => $tags['name'] ?? $tags['brand'] ?? null,
                     'latitude'      => $lat,
@@ -125,12 +129,24 @@ OQL;
                     'phone'         => $tags['phone'] ?? $tags['contact:phone'] ?? null,
                 ]
             );
+
+            $fetchedOsmIds[] = $osmId;
             $inserted++;
             $bar->advance();
         }
 
         $bar->finish();
         $this->newLine();
+
+        // ── Remove pumps that OSM no longer returns (closed/removed stations) ──
+        // Only runs after a confirmed healthy fetch — never on a failed/empty response.
+        if (!empty($fetchedOsmIds)) {
+            $staleCount = PetrolPump::whereNotIn('osm_id', $fetchedOsmIds)->count();
+            if ($staleCount > 0) {
+                PetrolPump::whereNotIn('osm_id', $fetchedOsmIds)->delete();
+                $this->info("Removed {$staleCount} stale pump(s) no longer in OSM.");
+            }
+        }
 
         // Mark as seeded using tile (0,0) as a sentinel record
         DB::table('petrol_pump_cache_tiles')->upsert(

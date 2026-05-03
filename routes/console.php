@@ -27,8 +27,8 @@ Schedule::command('ads:sync-status')
 
 // I just disabled this schedular - Kee-Rn
 
-// Schedule::command('pumps:seed-nepal --force')
-//     ->monthlyOn(1, '02:00')        
-//     ->timezone('Asia/Kathmandu')
-//     ->withoutOverlapping()
-//     ->runInBackground();
+Schedule::command('pumps:seed-nepal')
+    ->monthlyOn(1, '02:00')
+    ->timezone('Asia/Kathmandu')
+    ->withoutOverlapping()
+    ->runInBackground();

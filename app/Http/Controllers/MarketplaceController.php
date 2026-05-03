@@ -114,6 +114,7 @@ class MarketplaceController extends Controller
         if ($request->filled('location') && $request->location !== 'all') {
             $query->where('location', 'like', '%' . $request->location . '%');
         }
+        if ($request->filled('seller_id'))  { $query->where('seller_id', $request->seller_id); }
         if ($request->filled('brand'))      { $query->where('brand', 'like', '%' . $request->brand . '%'); }
         if ($request->filled('model_name')) { $query->where('model', 'like', '%' . $request->model_name . '%'); }
         if ($request->filled('year_from'))  { $query->where('year', '>=', $request->year_from); }
@@ -183,10 +184,16 @@ class MarketplaceController extends Controller
                 ->pluck('car_id');
         }
 
+        // Seller filter context — used to show a "Viewing listings by [name]" banner
+        $sellerFilter = null;
+        if ($request->filled('seller_id')) {
+            $sellerFilter = \App\Models\User::select('id', 'name')->find($request->seller_id);
+        }
+
         return view('frontend.pages.marketplace', compact(
             'cars', 'locations', 'totalActive', 'marketplaceAds',
             'brands', 'models', 'minYear', 'maxYear', 'minPrice', 'maxPrice',
-            'orderedCarIds', 'preOrderedCarIds'
+            'orderedCarIds', 'preOrderedCarIds', 'sellerFilter'
         ));
     }
 }

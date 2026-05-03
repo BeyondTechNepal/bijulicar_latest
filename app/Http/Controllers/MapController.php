@@ -82,7 +82,7 @@ class MapController extends Controller
                 $base['listing_count'] = \App\Models\Car::where('seller_id', $loc->user_id)
                     ->where('status', 'available')
                     ->count();
-                $base['profile_url'] = route('marketplace') . '?seller=' . $loc->user_id;
+                $base['profile_url'] = route('marketplace') . '?seller_id=' . $loc->user_id;
 
             } elseif ($loc->type === 'business') {
                 // Enrich with business info

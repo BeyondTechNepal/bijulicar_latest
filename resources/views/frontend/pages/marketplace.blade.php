@@ -294,6 +294,24 @@
         </section>
     @endif
 
+    {{-- ── Seller filter banner (shown when browsing a specific seller) ── --}}
+    @if(isset($sellerFilter) && $sellerFilter)
+    <div id="seller-filter-banner" class="bg-emerald-50 border-b border-emerald-200">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-2 text-sm font-bold text-emerald-800">
+                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Showing listings by <span class="text-emerald-900 font-black ml-1">{{ $sellerFilter->name }}</span>
+            </div>
+            <a href="{{ route('marketplace') }}"
+               class="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-600 px-3 py-1.5 rounded-lg transition-all">
+                ✕ Clear filter - Show all listings
+            </a>
+        </div>
+    </div>
+    @endif
+
     {{-- ── Car listings grid ───────────────────────────────────────────── --}}
     <section id="listings-section" class="py-20 bg-[#f1f5f9]">
         <div class="max-w-7xl mx-auto px-6">
@@ -353,6 +371,7 @@
     // ── State ─────────────────────────────────────────────────────────────
     let currentSort = 'newest';
     let currentPage = 1;
+    let activeSellerId = null; // set when arriving from map "View Listings"
 
     // ── Toggle advanced panel ─────────────────────────────────────────────
     function toggleFilters() {
@@ -371,6 +390,8 @@
         });
         const oa = f.elements['only_available'];
         if (oa?.checked) p.set('only_available', '1');
+        // Preserve seller_id filter if set (from map "View Listings" deep-link)
+        if (activeSellerId) p.set('seller_id', activeSellerId);
         p.set('sort', currentSort);
         p.set('page', page);
         return p;
@@ -631,6 +652,10 @@
         document.getElementById('price_max').value = PRICE_MAX;
         currentSort = 'newest';
         updateSortUI();
+        // Clear seller filter if one was active
+        activeSellerId = null;
+        const banner = document.getElementById('seller-filter-banner');
+        if (banner) banner.remove();
         fetchResults(1, false);
     }
 
@@ -827,6 +852,8 @@
             const el = document.getElementById('quick-form').elements[k];
             if (el && sp.get(k)) el.value = sp.get(k);
         });
+        // Restore seller filter (set when arriving from map "View Listings" button)
+        if (sp.get('seller_id')) activeSellerId = sp.get('seller_id');
 
         // Initial load — no scroll if page just opened fresh
         fetchResults(parseInt(sp.get('page') || 1), window.location.search.length > 1);

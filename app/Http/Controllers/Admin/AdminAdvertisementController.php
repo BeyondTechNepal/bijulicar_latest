@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AdminAdvertisementController extends Controller
 {
@@ -121,10 +122,6 @@ class AdminAdvertisementController extends Controller
         $today    = now()->toDateString();
         $startsAt = $advertisement->starts_at?->toDateString();
 
-        // ── KEY FIX ────────────────────────────────────────────────────────
-        // Only flip is_active to true immediately if the ad's start date has
-        // already arrived. If starts_at is in the future, keep is_active false
-        // — the daily ads:sync-status command will activate it on the right day.
         $isActiveNow = $startsAt === null || $startsAt <= $today;
 
         $advertisement->update([
@@ -143,7 +140,6 @@ class AdminAdvertisementController extends Controller
             $advertisement->owner->email
         );
 
-        // Only bust the cache if the ad is actually live right now
         if ($isActiveNow) {
             Cache::forget(HomeController::CACHE_HOME_ADS);
         }
@@ -163,14 +159,12 @@ class AdminAdvertisementController extends Controller
     {
         $title = $advertisement->title;
 
-        // If the ad was live, remove it from the homepage ad cache immediately
-        // so it stops showing to visitors the moment it's deleted.
         if ($advertisement->is_active) {
             Cache::forget(HomeController::CACHE_HOME_ADS);
         }
 
         if ($advertisement->image) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($advertisement->image);
+            Storage::disk('public')->delete($advertisement->image);
         }
 
         $advertisement->delete();
@@ -180,25 +174,55 @@ class AdminAdvertisementController extends Controller
             ->with('success', "Advertisement \"{$title}\" has been deleted.");
     }
 
-    // ── Admin force-update (edit title, dates, active toggle — any status) ──
+    // ── Admin force-update (full edit — any status, any field) ───────────
+    //
+    // Admins can change everything: title, description, image, placement,
+    // priority, dates, link URL, car link, and active toggle.
+    // This does NOT reset status to pending_review — admin edits are
+    // authoritative and take effect immediately.
 
     public function forceUpdate(Request $request, Advertisement $advertisement): \Illuminate\Http\RedirectResponse
     {
+        $validPlacements = implode(',', array_keys(Advertisement::PLACEMENTS));
+
         $request->validate([
-            'title'     => ['required', 'string', 'max:150'],
-            'starts_at' => ['required', 'date'],
-            'ends_at'   => ['required', 'date', 'after_or_equal:starts_at'],
-            'is_active' => ['nullable', 'boolean'],
+            'title'       => ['required', 'string', 'max:150'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'placement'   => ['required', "in:{$validPlacements}"],
+            'priority'    => ['required', 'integer', 'in:0,1,2'],
+            'starts_at'   => ['required', 'date'],
+            'ends_at'     => ['required', 'date', 'after_or_equal:starts_at'],
+            'link_url'    => ['nullable', 'url', 'max:255'],
+            'car_id'      => ['nullable', 'exists:cars,id'],
+            'image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'is_active'   => ['nullable', 'boolean'],
         ]);
 
-        $wasActive = $advertisement->is_active;
+        $wasActive   = $advertisement->is_active;
         $isNowActive = (bool) $request->is_active;
 
+        // Handle image replacement
+        if ($request->hasFile('image')) {
+            // Delete old image from storage first
+            if ($advertisement->image) {
+                Storage::disk('public')->delete($advertisement->image);
+            }
+            $imagePath = $request->file('image')->store('ad-banners', 'public');
+        } else {
+            $imagePath = $advertisement->image; // keep existing
+        }
+
         $advertisement->update([
-            'title'     => $request->title,
-            'starts_at' => $request->starts_at,
-            'ends_at'   => $request->ends_at,
-            'is_active' => $isNowActive,
+            'title'       => $request->title,
+            'description' => $request->description,
+            'placement'   => $request->placement,
+            'priority'    => (int) $request->priority,
+            'starts_at'   => $request->starts_at,
+            'ends_at'     => $request->ends_at,
+            'link_url'    => $request->link_url,
+            'car_id'      => $request->car_id ?: null,
+            'image'       => $imagePath,
+            'is_active'   => $isNowActive,
         ]);
 
         // Bust ad cache if active state changed or ad is currently live

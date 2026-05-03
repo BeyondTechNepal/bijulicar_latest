@@ -9,6 +9,10 @@
     $totalApproved  = $approved->count();
     $totalPublished = $published->total();
     $totalRejected  = $rejected->total();
+
+    // Flatten placements to value => label for the edit form selects
+    $placementOptions = collect(\App\Models\Advertisement::PLACEMENTS)->map(fn($p) => $p['label'])->all();
+    $priorityOptions  = \App\Models\Advertisement::PRIORITIES;
 @endphp
 
 {{-- Stats row --}}
@@ -147,8 +151,13 @@
                             </div>
                         </div>
 
-                        {{-- Confirm Payment toggle --}}
-                        <div class="shrink-0">
+                        <div class="shrink-0 flex items-center gap-2">
+                            {{-- Edit toggle for approved ads --}}
+                            <button onclick="toggleForm('edit-ad-{{ $ad->id }}')"
+                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-black uppercase tracking-wider transition-all">
+                                Edit
+                            </button>
+                            {{-- Confirm payment --}}
                             <button onclick="toggleForm('payment-{{ $ad->id }}')"
                                 class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,7 +168,12 @@
                         </div>
                     </div>
 
-                    {{-- Payment confirmation form (hidden by default) --}}
+                    {{-- Full edit form for approved ads --}}
+                    <div id="edit-ad-{{ $ad->id }}" class="hidden mt-4 pt-4 border-t border-gray-100">
+                        @include('admin.advertisements._edit_form', ['ad' => $ad, 'placementOptions' => $placementOptions, 'priorityOptions' => $priorityOptions])
+                    </div>
+
+                    {{-- Payment confirmation form --}}
                     <div id="payment-{{ $ad->id }}" class="hidden mt-4 pt-4 border-t border-gray-100">
                         <form method="POST" action="{{ route('admin.advertisements.confirm-payment', $ad) }}">
                             @csrf
@@ -226,113 +240,78 @@
             <p class="text-sm font-bold text-gray-400">No live ads yet</p>
         </div>
     @else
-        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-4">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-gray-100">
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Business</th>
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ad</th>
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Placement</th>
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Dates</th>
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Paid</th>
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Method</th>
-                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                    @foreach ($published as $ad)
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-5 py-3.5">
-                            <div class="font-bold text-gray-800">{{ $ad->owner->name }}</div>
-                            <div class="text-xs text-gray-400">{{ $ad->owner->email }}</div>
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <div class="font-bold text-gray-800">{{ $ad->title }}</div>
-                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-full {{ $ad->priorityBadgeClass() }}">
-                                {{ $ad->priorityLabel() }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3.5 text-xs text-gray-600">{{ $ad->placementLabel() }}</td>
-                        <td class="px-5 py-3.5 text-xs text-gray-600">
-                            {{ $ad->starts_at?->format('M d') }} – {{ $ad->ends_at?->format('M d, Y') }}
-                        </td>
-                        <td class="px-5 py-3.5 text-xs font-black text-emerald-600">
-                            Rs {{ number_format($ad->amount_paid, 2) }}
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full uppercase">
-                                {{ \App\Models\Advertisement::PAYMENT_METHODS[$ad->payment_method] ?? $ad->payment_method }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <div class="flex items-center gap-2">
-                                {{-- Edit toggle --}}
-                                <button onclick="toggleForm('edit-ad-{{ $ad->id }}')"
-                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
-                                    Edit
-                                </button>
-                                {{-- Delete --}}
-                                <form method="POST" action="{{ route('admin.advertisements.force-delete', $ad) }}"
-                                    onsubmit="return confirm('Delete \"{{ addslashes($ad->title) }}\"? This cannot be undone.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 border border-red-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
-                                        Delete
-                                    </button>
-                                </form>
+        <div class="space-y-3 mb-4">
+            @foreach ($published as $ad)
+                {{-- Summary row --}}
+                <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-4 p-5">
+
+                        {{-- Thumbnail --}}
+                        @if ($ad->image)
+                            <div class="shrink-0">
+                                <img src="{{ asset('storage/' . $ad->image) }}"
+                                    alt="{{ $ad->title }}"
+                                    class="h-14 w-24 object-cover rounded-lg border border-gray-100">
                             </div>
-                        </td>
-                    </tr>
-                    {{-- Inline edit form row (hidden by default) --}}
-                    <tr id="edit-ad-{{ $ad->id }}" class="hidden bg-blue-50/40">
-                        <td colspan="7" class="px-5 py-4">
-                            <form method="POST" action="{{ route('admin.advertisements.force-update', $ad) }}">
+                        @endif
+
+                        {{-- Info --}}
+                        <div class="flex-1 grid grid-cols-2 md:grid-cols-5 gap-4">
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Business</p>
+                                <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $ad->owner->name }}</p>
+                                <p class="text-xs text-gray-400">{{ $ad->owner->email }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ad</p>
+                                <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $ad->title }}</p>
+                                <span class="text-[10px] font-black px-1.5 py-0.5 rounded-full {{ $ad->priorityBadgeClass() }}">
+                                    {{ $ad->priorityLabel() }}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Placement</p>
+                                <p class="text-xs text-gray-600 mt-0.5">{{ $ad->placementLabel() }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dates</p>
+                                <p class="text-xs text-gray-600 mt-0.5">
+                                    {{ $ad->starts_at?->format('M d') }} – {{ $ad->ends_at?->format('M d, Y') }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paid · Method</p>
+                                <p class="text-xs font-black text-emerald-600 mt-0.5">Rs {{ number_format($ad->amount_paid, 2) }}</p>
+                                <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full uppercase">
+                                    {{ \App\Models\Advertisement::PAYMENT_METHODS[$ad->payment_method] ?? $ad->payment_method }}
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Actions --}}
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button onclick="toggleForm('edit-ad-{{ $ad->id }}')"
+                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                                Edit
+                            </button>
+                            <form method="POST" action="{{ route('admin.advertisements.force-delete', $ad) }}"
+                                onsubmit="return confirm('Delete \"{{ addslashes($ad->title) }}\"? This cannot be undone.')">
                                 @csrf
-                                @method('PATCH')
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Title</label>
-                                        <input type="text" name="title" required
-                                            value="{{ old('title', $ad->title) }}"
-                                            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 transition-all">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Start Date</label>
-                                        <input type="date" name="starts_at" required
-                                            value="{{ $ad->starts_at?->toDateString() }}"
-                                            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 transition-all">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">End Date</label>
-                                        <input type="date" name="ends_at" required
-                                            value="{{ $ad->ends_at?->toDateString() }}"
-                                            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 transition-all">
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4">
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="hidden" name="is_active" value="0">
-                                        <input type="checkbox" name="is_active" value="1"
-                                            {{ $ad->is_active ? 'checked' : '' }}
-                                            class="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500">
-                                        <span class="text-sm font-bold text-gray-700">Active (showing to visitors)</span>
-                                    </label>
-                                    <button type="submit"
-                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all">
-                                        Save Changes
-                                    </button>
-                                    <button type="button" onclick="toggleForm('edit-ad-{{ $ad->id }}')"
-                                        class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-bold transition-all">
-                                        Cancel
-                                    </button>
-                                </div>
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 border border-red-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                                    Delete
+                                </button>
                             </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+
+                    {{-- Full edit form (hidden by default) --}}
+                    <div id="edit-ad-{{ $ad->id }}" class="hidden border-t border-blue-100 bg-blue-50/30 px-5 py-5">
+                        @include('admin.advertisements._edit_form', ['ad' => $ad, 'placementOptions' => $placementOptions, 'priorityOptions' => $priorityOptions])
+                    </div>
+                </div>
+            @endforeach
         </div>
         {{ $published->links() }}
     @endif

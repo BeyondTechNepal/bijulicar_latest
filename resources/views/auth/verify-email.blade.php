@@ -22,6 +22,12 @@
             50%       { transform: translateY(-6px); }
         }
         .float { animation: float 3s ease-in-out infinite; }
+
+        /* ── BUG 1 FIX: spinner shown while polling detects verification ── */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spin { animation: spin 1s linear infinite; }
     </style>
 </head>
 
@@ -102,6 +108,20 @@
                     </div>
                 @endif
 
+                {{-- ── BUG 1 FIX: auto-detected banner ─────────────────────────────
+                     Shown by JS once polling discovers the email has been verified.
+                     Hidden by default (hidden class). JS removes 'hidden' and then
+                     redirects after a short delay so the user sees the message.
+                ──────────────────────────────────────────────────────────────────── --}}
+                <div id="verified-banner" class="hidden mt-5 flex items-start md:items-center gap-2 text-left md:text-center justify-center bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                    <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5 md:mt-0 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-xs md:text-sm font-bold text-green-700">
+                        Email verified! Taking you to the next step…
+                    </span>
+                </div>
+
                 {{-- What to expect box --}}
                 <div class="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-4 md:p-5 text-left space-y-3">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">What happens next</p>
@@ -139,8 +159,22 @@
                     </form>
                 </div>
 
+                {{-- ── BUG 1 FIX: "already verified" escape hatch ────────────────────
+                     If the user verified in another browser or tab they can click this
+                     link rather than waiting for the poll. It hits /verify-email (GET)
+                     which is EmailVerificationPromptController — that controller already
+                     checks hasVerifiedEmail() and forwards verified users to the doc form.
+                     This is a zero-cost safety net on top of the JS polling below.
+                ──────────────────────────────────────────────────────────────────── --}}
                 <p class="text-[10px] md:text-[11px] text-slate-400 font-medium mt-4">
                     Didn't get it? Check your spam folder or resend above.
+                </p>
+                <p class="text-[10px] md:text-[11px] text-slate-400 font-medium mt-2">
+                    Already clicked the link in another browser?
+                    <a href="{{ route('verification.notice') }}"
+                       class="text-blue-500 font-bold underline hover:text-blue-700 transition-colors">
+                        Continue here
+                    </a>
                 </p>
 
             </div>
@@ -158,5 +192,90 @@
         </div>
 
     </div>
+
+    {{-- ── BUG 1 FIX: Cross-browser polling ────────────────────────────────────
+         Problem: When the user verifies their email in Browser B, the database
+         email_verified_at column is updated, but Browser A is just sitting on
+         this static page. It never makes another server request, so it never
+         discovers the verification happened. The user is stuck indefinitely.
+
+         Solution: Poll the /check-email-verified endpoint every 4 seconds.
+         That endpoint (added below) is a tiny JSON route that returns
+         {"verified": true/false} by re-querying the DB for the current user.
+         As soon as we get {"verified": true} we show a confirmation banner
+         and redirect to /verify-email (GET) which is EmailVerificationPromptController —
+         that controller already handles forwarding verified users to the doc form.
+
+         Why not poll /verify-email directly?
+         /verify-email (GET) returns a full HTML page redirect, not JSON.
+         Following redirects with fetch() in the same origin would land us
+         on the doc-form page, but we can't detect that cleanly across
+         all browsers. A dedicated JSON endpoint is simpler and more reliable.
+
+         Why 4 seconds?
+         Fast enough that the user barely notices the delay; slow enough to
+         not hammer the server. With throttle:20,1 on the route it is safe.
+    ──────────────────────────────────────────────────────────────────────── --}}
+    <script>
+        (function () {
+            var banner   = document.getElementById('verified-banner');
+            var interval = null;
+            var stopped  = false;
+
+            function checkVerified() {
+                if (stopped) return;
+
+                fetch('{{ route('verification.check') }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') 
+                                        ? document.querySelector('meta[name="csrf-token"]').content 
+                                        : ''
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(function (res) {
+                    if (!res.ok) return null;
+                    return res.json();
+                })
+                .then(function (data) {
+                    if (!data) return;
+                    if (data.verified === true) {
+                        stopped = true;
+                        clearInterval(interval);
+
+                        // Show the "Email verified!" banner
+                        banner.classList.remove('hidden');
+                        banner.classList.add('flex');
+
+                        // Redirect after 1.5 s so the user sees the banner
+                        setTimeout(function () {
+                            window.location.href = '{{ route('verification.notice') }}';
+                        }, 1500);
+                    }
+                })
+                .catch(function () {
+                    // Network error — silently ignore, keep polling
+                });
+            }
+
+            // Start polling immediately, then every 4 seconds
+            checkVerified();
+            interval = setInterval(checkVerified, 4000);
+
+            // Stop polling if the tab becomes hidden (saves requests)
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    clearInterval(interval);
+                } else {
+                    // Tab became visible again — check immediately then resume
+                    checkVerified();
+                    interval = setInterval(checkVerified, 4000);
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>

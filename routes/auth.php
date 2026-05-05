@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\EmailVerificationStatusController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -46,6 +47,16 @@ Route::middleware('auth')->group(function () {
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
+    // ── BUG 1 FIX: polling endpoint ───────────────────────────────────────
+    // The verify-email blade polls this every 4 seconds. It returns a tiny
+    // JSON payload {"verified": true/false} so Browser A can detect when the
+    // email was verified in Browser B and auto-advance without user action.
+    // throttle:20,1 = max 20 requests per minute per user — safe for 4-s polling.
+    // ─────────────────────────────────────────────────────────────────────
+    Route::get('email/verified-status', EmailVerificationStatusController::class)
+        ->middleware('throttle:20,1')
+        ->name('verification.check');
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');

@@ -9,14 +9,24 @@
 
         {{-- Header --}}
         <div style="padding: 32px 40px 24px; border-bottom: 1px solid #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 32px; height: 32px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    ⚡
-                </div>
-                <span style="font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #0f172a;">
-                    Bijuli<span style="color: #16a34a;">Car</span>
-                </span>
-            </div>
+            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                <tr>
+                    <td style="vertical-align: middle; padding-right: 8px;">
+                        <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 32px; height: 32px; background: #0f172a; border-radius: 8px; text-align: center; vertical-align: middle; font-size: 18px; line-height: 32px;">
+                                    ⚡
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <span style="font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #0f172a;">
+                            Bijuli<span style="color: #16a34a;">Car</span>
+                        </span>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         {{-- Body --}}
@@ -42,31 +52,57 @@
             {{-- Step indicator --}}
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 0 0 28px;">
                 <p style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #94a3b8; margin: 0 0 12px;">Your registration steps</p>
-                <div style="display: flex; align-items: center; gap: 0;">
-                    {{-- Step 1 - active --}}
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 22px; height: 22px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 9px; font-weight: 900; color: #ffffff;">1</span>
-                        </div>
-                        <span style="font-size: 10px; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em;">Verify Email</span>
-                    </div>
-                    <div style="flex: 1; height: 1px; background: #e2e8f0; margin: 0 8px;"></div>
-                    {{-- Step 2 --}}
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 22px; height: 22px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 9px; font-weight: 900; color: #94a3b8;">2</span>
-                        </div>
-                        <span style="font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Documents</span>
-                    </div>
-                    <div style="flex: 1; height: 1px; background: #e2e8f0; margin: 0 8px;"></div>
-                    {{-- Step 3 --}}
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 22px; height: 22px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 9px; font-weight: 900; color: #94a3b8;">3</span>
-                        </div>
-                        <span style="font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Approved</span>
-                    </div>
-                </div>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse: collapse;">
+                    <tr>
+                        {{-- Step 1 circle --}}
+                        <td width="22" style="vertical-align: middle;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                                <tr>
+                                    <td width="22" height="22" style="background: #2563eb; border-radius: 50%; text-align: center; vertical-align: middle; font-size: 9px; font-weight: 900; color: #ffffff; line-height: 22px; font-family: Arial, sans-serif;">
+                                        1
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 6px; white-space: nowrap;">
+                            <span style="font-size: 10px; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; font-family: Arial, sans-serif;">Verify Email</span>
+                        </td>
+                        {{-- Connector line --}}
+                        <td style="vertical-align: middle; padding: 0 8px;">
+                            <div style="height: 1px; background: #e2e8f0; font-size: 0; line-height: 0;">&nbsp;</div>
+                        </td>
+                        {{-- Step 2 circle --}}
+                        <td width="22" style="vertical-align: middle;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                                <tr>
+                                    <td width="22" height="22" style="background: #e2e8f0; border-radius: 50%; text-align: center; vertical-align: middle; font-size: 9px; font-weight: 900; color: #94a3b8; line-height: 22px; font-family: Arial, sans-serif;">
+                                        2
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 6px; white-space: nowrap;">
+                            <span style="font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; font-family: Arial, sans-serif;">Documents</span>
+                        </td>
+                        {{-- Connector line --}}
+                        <td style="vertical-align: middle; padding: 0 8px;">
+                            <div style="height: 1px; background: #e2e8f0; font-size: 0; line-height: 0;">&nbsp;</div>
+                        </td>
+                        {{-- Step 3 circle --}}
+                        <td width="22" style="vertical-align: middle;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                                <tr>
+                                    <td width="22" height="22" style="background: #e2e8f0; border-radius: 50%; text-align: center; vertical-align: middle; font-size: 9px; font-weight: 900; color: #94a3b8; line-height: 22px; font-family: Arial, sans-serif;">
+                                        3
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="vertical-align: middle; padding-left: 6px; white-space: nowrap;">
+                            <span style="font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; font-family: Arial, sans-serif;">Approved</span>
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             {{-- CTA button --}}

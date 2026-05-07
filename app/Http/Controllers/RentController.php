@@ -13,10 +13,17 @@ class RentController extends Controller
     // Only cars where listing_type is 'rent' or 'both', and status is
     // 'available'. Upcoming/preorder cars are excluded from the rent page
     // because a renter needs a physical car to pick up.
+    //
+    // scopeWithActiveRentalCount() is included here so that any call to
+    // hasActiveRental() or availableStockForRent() on cars returned by this
+    // query reads from the pre-loaded `active_rentals_count` attribute rather
+    // than firing a separate COUNT query per car. On a page of 9 cars this
+    // reduces up to 18 extra queries down to zero.
 
     private function baseQuery()
     {
         return Car::with(['seller', 'primaryImage'])
+            ->withActiveRentalCount()
             ->whereIn('listing_type', ['rent', 'both'])
             ->where('status', 'available');
     }

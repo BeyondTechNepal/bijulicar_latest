@@ -192,32 +192,69 @@ class Car extends Model
     }
 
     /**
-     * Returns true only when ALL stock units are out on confirmed/active rental —
-     * i.e. there is no physical unit left to hand over.
+     * Eager-load scope: adds `active_rentals_count` to any Car query so that
+     * hasActiveRental() and availableStockForRent() can read it without firing
+     * an extra COUNT query per car.
      *
-     * A 3-stock car with 1 unit on rental still has 2 units free → returns false.
-     * A 1-stock car with 1 unit on rental has nothing left → returns true.
+     * Usage:
+     *   Car::withActiveRentalCount()->paginate(9);
+     *   Car::with([...])->withActiveRentalCount()->findOrFail($id);
      */
-    public function hasActiveRental(): bool
+    public function scopeWithActiveRentalCount($query)
     {
-        $activeCount = $this->rentals()
+        return $query->withCount([
+            'rentals as active_rentals_count' => fn ($q) =>
+                $q->whereIn('status', ['confirmed', 'active']),
+        ]);
+    }
+
+    /**
+     * Resolve the number of confirmed/active rentals for this car.
+     *
+     * If the model was loaded via scopeWithActiveRentalCount() the count is
+     * already present as an attribute — no extra query needed.
+     * Otherwise fall back to a live COUNT so the method is always safe to call
+     * even on a model fetched without the scope.
+     */
+    private function resolveActiveRentalCount(): int
+    {
+        // withCount() stores the result as a snake_case attribute on the model.
+        if (array_key_exists('active_rentals_count', $this->getAttributes())) {
+            return (int) $this->active_rentals_count;
+        }
+
+        // Fallback: single COUNT query (single-car contexts such as order placement).
+        return $this->rentals()
             ->whereIn('status', ['confirmed', 'active'])
             ->count();
-
-        return $activeCount >= $this->stock_quantity;
     }
 
     /**
      * How many units are free to be rented right now.
      * stock_quantity minus the number of confirmed/active rentals.
+     *
+     * Uses the eager-loaded `active_rentals_count` when available so that
+     * iterating over a paginated collection does not fire a query per car.
      */
     public function availableStockForRent(): int
     {
-        $activeCount = $this->rentals()
-            ->whereIn('status', ['confirmed', 'active'])
-            ->count();
+        return max(0, $this->stock_quantity - $this->resolveActiveRentalCount());
+    }
 
-        return max(0, $this->stock_quantity - $activeCount);
+    /**
+     * Returns true only when ALL stock units are out on confirmed/active rental —
+     * i.e. there is no physical unit left to hand over.
+     *
+     * A 3-stock car with 1 unit on rental still has 2 units free → returns false.
+     * A 1-stock car with 1 unit on rental has nothing left → returns true.
+     *
+     * Delegates to availableStockForRent() so both methods share a single
+     * COUNT query (or a single eager-loaded attribute) instead of each firing
+     * their own query.
+     */
+    public function hasActiveRental(): bool
+    {
+        return $this->availableStockForRent() === 0;
     }
 
     /**

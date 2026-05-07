@@ -16,11 +16,17 @@ class CarController extends Controller
 
         $isSoldOut = $car->status === 'sold';
 
-        $car->load([
-            'seller',
-            'images',
-            'reviews' => fn($q) => $q->with('buyer')->latest()->take(10),
-        ]);
+        // Reload the car with all required relations AND the eager-loaded
+        // active_rentals_count so that hasActiveRental() and
+        // availableStockForRent() read from the attribute instead of each
+        // firing their own COUNT query against car_rentals.
+        $car = Car::withActiveRentalCount()
+            ->with([
+                'seller',
+                'images',
+                'reviews' => fn($q) => $q->with('buyer')->latest()->take(10),
+            ])
+            ->findOrFail($car->id);
 
         // Other listings by the same seller (excluding current)
         $otherListings = Car::where('seller_id', $car->seller_id)
@@ -109,9 +115,10 @@ class CarController extends Controller
                     ->whereIn('status', ['pending', 'confirmed', 'active'])
                     ->exists();
             }
-            // Block sale orders only when ALL units are out on active rental
+
+            // Both calls below read from the eager-loaded active_rentals_count
+            // attribute — no extra queries fired against car_rentals.
             $blockedBySaleRental = $car->isSaleable() ? $car->hasActiveRental() : false;
-            // How many units are free to rent right now
             $availableForRent    = $car->isRentable() ? $car->availableStockForRent() : 0;
         } catch (\Exception $e) {
             // car_rentals table doesn't exist yet — migration not run

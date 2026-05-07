@@ -9,14 +9,24 @@
 
         {{-- Header --}}
         <div style="padding: 32px 40px 24px; border-bottom: 1px solid #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 32px; height: 32px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    ⚡
-                </div>
-                <span style="font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #0f172a;">
-                    Bijuli<span style="color: #16a34a;">Car</span>
-                </span>
-            </div>
+            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                <tr>
+                    <td style="vertical-align: middle; padding-right: 8px;">
+                        <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 32px; height: 32px; background: #0f172a; border-radius: 8px; text-align: center; vertical-align: middle; font-size: 18px; line-height: 32px;">
+                                    ⚡
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <span style="font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #0f172a;">
+                            Bijuli<span style="color: #16a34a;">Car</span>
+                        </span>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         {{-- Body --}}

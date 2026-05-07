@@ -114,18 +114,38 @@ class BuyerOrderController extends Controller
     }
 
     public function cancel(Order $order)
-    {
-        abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
-        abort_if(!$order->isCancellable(), 422, 'This order can no longer be cancelled.');
+{
+    abort_if($order->buyer_id != Auth::guard('web')->id(), 403);
+    abort_if(!$order->isCancellable(), 422, 'This order can no longer be cancelled.');
+
+    DB::transaction(function () use ($order) {
+        $wasConfirmed = $order->status === 'confirmed';
 
         $order->update(['status' => 'cancelled']);
 
-        if ($order->car && $order->car->status === 'reserved') {
-            $order->car->update(['status' => 'available']);
-        }
+        if ($order->car && !$order->car->trashed()) {
+            // Fix: check for both 'reserved' and 'sold', matching seller cancel logic
+            if (in_array($order->car->status, ['reserved', 'sold'])) {
+                $order->car->update(['status' => 'available']);
+            }
 
-        return redirect()
-            ->route('buyer.orders.index')
-            ->with('success', 'Order cancelled. The listing is available again.');
-    }
+            // If cancelling a confirmed order, reinstate any sold_out sibling orders
+            if ($wasConfirmed) {
+                $soldOutOrders = Order::where('car_id', $order->car_id)
+                    ->where('id', '!=', $order->id)
+                    ->where('status', 'sold_out')
+                    ->get();
+
+                foreach ($soldOutOrders as $sibling) {
+                    $sibling->update(['status' => 'pending']);
+                    // optionally notify: app(NotificationService::class)->orderReinstated($sibling);
+                }
+            }
+        }
+    });
+
+    return redirect()
+        ->route('buyer.orders.index')
+        ->with('success', 'Order cancelled. The listing is available again.');
+}
 }

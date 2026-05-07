@@ -23,34 +23,16 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        // ── BUG 2 FIX ─────────────────────────────────────────────────────────
-        // When the user clicks the verification link in Browser B (where they are
-        // not logged in), Laravel's 'auth' middleware intercepts the request and
-        // stores the full signed URL via redirect()->intended() before sending them
-        // to /login. After they log in here, that intended URL must be honoured
-        // BEFORE our own early-return redirect logic runs — otherwise we return
-        // redirect()->route('verification.notice') on line 28 and the stored signed
-        // URL is silently discarded, leaving the user stuck on the waiting page.
-        //
-        // We detect this by checking whether a pending intended URL exists in the
-        // session and whether it is a verification link. If it is, we let
-        // redirect()->intended() replay it so VerifyEmailController can run normally.
-        // ──────────────────────────────────────────────────────────────────────
-        $intendedUrl = $request->session()->get('url.intended', '');
-
-        if ($intendedUrl && str_contains($intendedUrl, '/verify-email/')) {
-            // The user was trying to hit their verification link — restore that
-            // journey. VerifyEmailController will mark the email as verified and
-            // then forward them to the correct doc-submission form.
-            return redirect()->intended(route('dashboard', absolute: false));
-        }
-
-        // Step 1: email not verified yet
+        // Step 1: email not verified yet — wait on the verify-email page.
+        // Browser A sits here and polls /email/verified-status every 4 seconds.
+        // When Browser B clicks the verification link (no login needed there),
+        // the poll detects it and auto-advances Browser A. No intended() juggling
+        // needed because the verify link no longer requires auth middleware.
         if (! $user->hasVerifiedEmail()) {
             return redirect()->route('verification.notice');
         }
 
-        // Step 2: doc verification not submitted yet
+        // Step 2: doc verification form not submitted yet
         $verification = $user->verification();
 
         if (! $verification) {
@@ -63,12 +45,12 @@ class AuthenticatedSessionController extends Controller
             });
         }
 
-        // Step 3: doc submitted but pending/rejected admin review
+        // Step 3: docs submitted but admin has not approved yet
         if (! $verification->isApproved()) {
             return redirect()->route('verification.pending');
         }
 
-        // Fully onboarded — go to dashboard
+        // Fully onboarded
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

@@ -36,24 +36,33 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
+// ── EMAIL VERIFICATION LINK — outside 'auth' middleware ───────────────────────
+// Previously this route was inside the 'auth' group, which forced Browser B
+// (where the user opened their email) to be logged in before the link could
+// work. That caused the entire cross-browser problem.
+//
+// The signed URL already contains cryptographic proof of identity via {id} and
+// {hash} (sha1 of the user's email), protected by the HMAC signature that
+// Laravel validates via the 'signed' middleware. No session is needed.
+//
+// VerifyEmailController now looks up the user by {id} directly from the DB and
+// validates the {hash} itself — no $request->user() involved at all.
+// ─────────────────────────────────────────────────────────────────────────────
+Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
-
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
 
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
-    // ── BUG 1 FIX: polling endpoint ───────────────────────────────────────
-    // The verify-email blade polls this every 4 seconds. It returns a tiny
-    // JSON payload {"verified": true/false} so Browser A can detect when the
-    // email was verified in Browser B and auto-advance without user action.
-    // throttle:20,1 = max 20 requests per minute per user — safe for 4-s polling.
-    // ─────────────────────────────────────────────────────────────────────
+    // Polling endpoint — called by verify-email.blade.php every 4 seconds.
+    // Returns {"verified": true/false} so Browser A auto-advances the moment
+    // Browser B clicks the link (without Browser B needing to log in).
     Route::get('email/verified-status', EmailVerificationStatusController::class)
         ->middleware('throttle:20,1')
         ->name('verification.check');

@@ -15,7 +15,7 @@ Artisan::command('inspire', function () {
 // - Sends notification emails to affected business owners
 // - Busts the home-page ad cache
 Schedule::command('ads:sync-status')
-    ->dailyAt('00:05')          // 5 minutes past midnight to avoid exact-midnight races
+    ->hourlyAt(5)          // 5 minutes past each hour
     ->timezone('Asia/Kathmandu')
     ->withoutOverlapping()      // safe guard: skip if previous run hasn't finished
     ->runInBackground();

@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\PreOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class MarketplaceController extends Controller
 {
@@ -136,7 +137,9 @@ class MarketplaceController extends Controller
     public function index(Request $request)
     {
         $activeStatuses = ['available', 'upcoming'];
+        $priceStep      = 50000; // must match the slider step in marketplace.blade.php
 
+        // ── Paginated car listing (per-request, filter-aware — never cached) ──
         $query = Car::with('seller')
             ->whereIn('listing_type', ['sale', 'both'])
             ->whereIn('status', $activeStatuses)
@@ -144,21 +147,50 @@ class MarketplaceController extends Controller
 
         $this->applyFilters($query, $request);
 
-        $cars        = $query->paginate(9)->withQueryString();
-        $locations   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->pluck('location')->sort()->values();
-        $totalActive = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->count();
+        $cars = $query->paginate(9)->withQueryString();
 
-        $brands   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->orderBy('brand')->pluck('brand');
-        $models   = Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->distinct()->orderBy('model')->pluck('model');
-        $minYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('year') ?? date('Y'));
-        $maxYear  = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('year') ?? date('Y'));
-        $priceStep = 50000; // must match the slider step in marketplace.blade.php
-        $rawMin    = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->min('price') ?? 0);
-        $rawMax    = (int) (Car::whereIn('listing_type', ['sale', 'both'])->whereIn('status', $activeStatuses)->max('price') ?? 10000000);
-        // Floor min DOWN and ceil max UP to nearest step so slider always covers all prices cleanly
-        $minPrice  = (int) (floor($rawMin / $priceStep) * $priceStep);
-        $maxPrice  = (int) (ceil($rawMax  / $priceStep) * $priceStep);
+        // ── Sidebar filter options (stable across requests — cached, busted in SellerCarController) ──
+        // Collapses 7 separate aggregate queries into 1 selectRaw + 3 distinct plucks.
+        $filters = Cache::remember(
+            HomeController::CACHE_MARKETPLACE_FILTERS,
+            now()->addMinutes(10),
+            function () use ($activeStatuses, $priceStep) {
+                $base = Car::whereIn('listing_type', ['sale', 'both'])
+                            ->whereIn('status', $activeStatuses);
 
+                $agg = (clone $base)->selectRaw('
+                    MIN(year)  as min_year,
+                    MAX(year)  as max_year,
+                    MIN(price) as min_price,
+                    MAX(price) as max_price,
+                    COUNT(*)   as total_active
+                ')->first();
+
+                return [
+                    'totalActive' => (int) $agg->total_active,
+                    'minYear'     => (int) ($agg->min_year  ?? date('Y')),
+                    'maxYear'     => (int) ($agg->max_year  ?? date('Y')),
+                    'minPrice'    => (int) (floor(($agg->min_price ?? 0)        / $priceStep) * $priceStep),
+                    'maxPrice'    => (int) (ceil(($agg->max_price  ?? 10000000) / $priceStep) * $priceStep),
+                    'locations'   => (clone $base)->distinct()->pluck('location')->sort()->values(),
+                    'brands'      => (clone $base)->distinct()->orderBy('brand')->pluck('brand'),
+                    'models'      => (clone $base)->distinct()->orderBy('model')->pluck('model'),
+                ];
+            }
+        );
+
+        [
+            'totalActive' => $totalActive,
+            'minYear'     => $minYear,
+            'maxYear'     => $maxYear,
+            'minPrice'    => $minPrice,
+            'maxPrice'    => $maxPrice,
+            'locations'   => $locations,
+            'brands'      => $brands,
+            'models'      => $models,
+        ] = $filters;
+
+        // ── Marketplace ads ───────────────────────────────────────────────────
         $marketplaceAds = \App\Models\Advertisement::with('car')
             ->where('placement', 'marketplace')
             ->where('is_active', true)
@@ -166,7 +198,7 @@ class MarketplaceController extends Controller
             ->where(fn($q) => $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', today()))
             ->get();
 
-        // Collect buyer order/preorder state for the initial server-rendered page
+        // ── Buyer order/preorder state for the initial server-rendered page ───
         $orderedCarIds    = collect();
         $preOrderedCarIds = collect();
 
@@ -184,7 +216,7 @@ class MarketplaceController extends Controller
                 ->pluck('car_id');
         }
 
-        // Seller filter context — used to show a "Viewing listings by [name]" banner
+        // ── Seller filter context — "Viewing listings by [name]" banner ───────
         $sellerFilter = null;
         if ($request->filled('seller_id')) {
             $sellerFilter = \App\Models\User::select('id', 'name')->find($request->seller_id);

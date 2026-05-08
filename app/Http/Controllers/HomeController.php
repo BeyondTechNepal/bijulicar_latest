@@ -15,6 +15,8 @@ class HomeController extends Controller
     public const CACHE_HOME_ADS        = 'home.ads';
     public const CACHE_FEATURED_BIZ    = 'home.featured_businesses';
     public const CACHE_RENTABLE_COUNT  = 'home.rentable_count';
+    public const CACHE_MARKETPLACE_FILTERS = 'marketplace.filters';
+    public const CACHE_RENT_FILTERS        = 'rent.filters';
 
     public function index()
     {

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
 use App\Models\NewLocation;
 use Illuminate\Http\Request;
@@ -43,7 +43,7 @@ class AdminMapController extends Controller
         ]);
 
         $location->update($validated);
-
+        Cache::forget('map_locations');
         return redirect()->route('admin.locations.index')->with('success', 'Location updated successfully.');
     }
 
@@ -54,7 +54,7 @@ class AdminMapController extends Controller
     {
         $location = NewLocation::findOrFail($id);
         $location->delete();
-
+        Cache::forget('map_locations');
         return redirect()->route('admin.locations.index')->with('success', 'Location deleted successfully.');
     }
 
@@ -66,7 +66,7 @@ class AdminMapController extends Controller
         $location = NewLocation::findOrFail($id);
         $location->is_active = !$location->is_active;
         $location->save();
-
+        Cache::forget('map_locations');
         return back()->with('success', 'Status updated successfully.');
     }
 
@@ -87,7 +87,7 @@ class AdminMapController extends Controller
 
         $validated['user_id'] = auth()->id();
         NewLocation::create($validated);
-
+        Cache::forget('map_locations');
         return redirect()->route('admin.locations.index')->with('success', 'New location added!');
     }
 }

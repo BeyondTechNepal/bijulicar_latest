@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Cache;
 use App\Models\EvStationSlot;
 use App\Models\GarageAppointment;
 use App\Models\GarageBay;
+use App\Models\Car;
 use App\Models\NewLocation;
 
 class MapController extends Controller
@@ -14,15 +15,39 @@ class MapController extends Controller
         $locations = NewLocation::where('is_active', true)->latest()->get();
         return view('frontend.pages.map_location', compact('locations'));
     }
+public function getLocations()
+{
+    // Cache for 60 seconds — slot/bay availability is real-time-ish,
+    // so don't cache too long. Adjust to taste.
+    $enriched = Cache::remember('map_locations', 60, function () {
 
-    public function getLocations()
-    {
+        // Load ALL related data in bulk (3 queries total, not N+2)
         $locations = NewLocation::where('is_active', true)
             ->with('user')
             ->get();
 
-        $enriched = $locations->map(function ($loc) {
+        $userIds = $locations->pluck('user_id')->unique()->values();
 
+        // One query for ALL EV slots across all locations
+        $allSlots = EvStationSlot::whereIn('user_id', $userIds)
+            ->orderBy('slot_number')
+            ->get(['id', 'user_id', 'slot_number', 'status', 'free_at'])
+            ->groupBy('user_id');
+
+        // One query for ALL garage bays across all locations
+        $allBays = GarageBay::whereIn('user_id', $userIds)
+            ->orderBy('bay_number')
+            ->get(['id', 'user_id', 'bay_number', 'status', 'estimated_finish_at'])
+            ->groupBy('user_id');
+
+        // One query for ALL car listing counts (seller + business share same logic)
+        $carCounts = Car::whereIn('seller_id', $userIds)
+            ->where('status', 'available')
+            ->selectRaw('seller_id, COUNT(*) as count')
+            ->groupBy('seller_id')
+            ->pluck('count', 'seller_id');
+
+        return $locations->map(function ($loc) use ($allSlots, $allBays, $carCounts) {
             $base = [
                 'id'              => $loc->id,
                 'user_id'         => $loc->user_id,
@@ -36,65 +61,42 @@ class MapController extends Controller
             ];
 
             if ($loc->type === 'ev-station') {
-                $slots = EvStationSlot::where('user_id', $loc->user_id)
-                    ->orderBy('slot_number')
-                    ->get(['id', 'slot_number', 'status', 'free_at']);
-
-                $available = $slots->where('status', 'available')->count();
-                $pending   = $slots->where('status', 'pending')->count();
-                $booked    = $slots->where('status', 'booked')->count();
-                $occupied  = $slots->where('status', 'occupied')->count();
-
-                $nextFree = $slots
-                    ->where('status', 'occupied')
-                    ->whereNotNull('free_at')
-                    ->sortBy('free_at')
-                    ->first();
+                $slots     = $allSlots->get($loc->user_id, collect());
+                $nextFree  = $slots->where('status', 'occupied')
+                                   ->whereNotNull('free_at')
+                                   ->sortBy('free_at')
+                                   ->first();
 
                 $base['slots']           = $slots->values();
-                $base['available_slots'] = $available;
-                $base['pending_slots']   = $pending;
-                $base['booked_slots']    = $booked;
-                $base['occupied_slots']  = $occupied;
+                $base['available_slots'] = $slots->where('status', 'available')->count();
+                $base['pending_slots']   = $slots->where('status', 'pending')->count();
+                $base['booked_slots']    = $slots->where('status', 'booked')->count();
+                $base['occupied_slots']  = $slots->where('status', 'occupied')->count();
                 $base['next_free_at']    = $nextFree?->free_at?->toDateTimeString();
 
             } elseif ($loc->type === 'garage') {
-                $bays = GarageBay::where('user_id', $loc->user_id)
-                    ->orderBy('bay_number')
-                    ->get(['id', 'bay_number', 'status', 'estimated_finish_at']);
-
-                $freeBays     = $bays->where('status', 'available')->count();
-                $occupiedBays = $bays->where('status', 'occupied')->count();
-
-                $nextFinish = $bays
-                    ->where('status', 'occupied')
-                    ->whereNotNull('estimated_finish_at')
-                    ->sortBy('estimated_finish_at')
-                    ->first();
+                $bays       = $allBays->get($loc->user_id, collect());
+                $nextFinish = $bays->where('status', 'occupied')
+                                   ->whereNotNull('estimated_finish_at')
+                                   ->sortBy('estimated_finish_at')
+                                   ->first();
 
                 $base['bays']           = $bays->values();
-                $base['free_bays']      = $freeBays;
-                $base['busy_bays']      = $occupiedBays;
+                $base['free_bays']      = $bays->where('status', 'available')->count();
+                $base['busy_bays']      = $bays->where('status', 'occupied')->count();
                 $base['next_finish_at'] = $nextFinish?->estimated_finish_at?->toDateTimeString();
 
-            } elseif ($loc->type === 'seller') {
-                // Enrich with seller's active car listings count
-                $base['listing_count'] = \App\Models\Car::where('seller_id', $loc->user_id)
-                    ->where('status', 'available')
-                    ->count();
-                $base['profile_url'] = route('marketplace') . '?seller_id=' . $loc->user_id;
-
-            } elseif ($loc->type === 'business') {
-                // Enrich with business info
-                $base['listing_count'] = \App\Models\Car::where('seller_id', $loc->user_id)
-                    ->where('status', 'available')
-                    ->count();
-                $base['profile_url'] = route('businesses.show', $loc->user_id);
+            } elseif (in_array($loc->type, ['seller', 'business'])) {
+                $base['listing_count'] = $carCounts->get($loc->user_id, 0);
+                $base['profile_url']   = $loc->type === 'seller'
+                    ? route('marketplace') . '?seller_id=' . $loc->user_id
+                    : route('businesses.show', $loc->user_id);
             }
 
             return $base;
         });
+    });
 
-        return response()->json($enriched);
-    }
+    return response()->json($enriched);
+}
 }

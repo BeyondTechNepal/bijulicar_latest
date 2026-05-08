@@ -43,7 +43,7 @@ Route::get('/map_location', [App\Http\Controllers\MapController::class, 'index']
 
 // Public JSON endpoint — returns all active locations enriched with live slot/bay data
 // Consumed by map_location.blade.php JS fetch('/api/map-locations')
-Route::get('/api/map-locations', [MapController::class, 'getLocations'])->name('api.map.locations');
+Route::get('/api/map-locations', [MapController::class, 'getLocations']) ->middleware('throttle:30,1') ->name('api.map.locations');
 
 Route::get('/loan_calculator', fn() => view('frontend.pages.loan_calculator'))->name('loan_calculator');
 Route::get('/contact', [App\Http\Controllers\Frontend\ContactController::class, 'index'])->name('contact');

@@ -24,42 +24,56 @@ class AdminVerificationController extends Controller
     /** List all verifications — pending first, then reviewed history. */
     public function index()
     {
-        $buyersPending = BuyerVerification::with('user')->where('status', 'pending')->latest()->get();
-
-        $sellersPending = SellerVerification::with('user')->where('status', 'pending')->latest()->get();
-
+        // ── Pending (always load all — these need immediate attention) ──
+        $buyersPending     = BuyerVerification::with('user')->where('status', 'pending')->latest()->get();
+        $sellersPending    = SellerVerification::with('user')->where('status', 'pending')->latest()->get();
         $businessesPending = BusinessVerification::with('user')->where('status', 'pending')->latest()->get();
-
         $evStationsPending = StationVerification::with('user')->where('status', 'pending')->latest()->get();
+        $garagePending     = GarageVerification::with('user')->where('status', 'pending')->latest()->get();
 
-        $garagePending = GarageVerification::with('user')->where('status', 'pending')->latest()->get();
+        // ── History — capped at 50 most recent per type ───────────────
+        // Full unbounded ->get() is replaced with ->latest()->take(50) to
+        // prevent memory growth as the platform scales. Accurate totals for
+        // the stats row are fetched separately via COUNT(*) queries below
+        // so the summary cards remain correct even when records exceed 50.
+        $buyersAll     = BuyerVerification::with('user')->whereIn('status', ['approved', 'rejected'])->latest()->take(50)->get();
+        $sellersAll    = SellerVerification::with('user')->whereIn('status', ['approved', 'rejected'])->latest()->take(50)->get();
+        $businessesAll = BusinessVerification::with('user')->whereIn('status', ['approved', 'rejected'])->latest()->take(50)->get();
+        $evStationsAll = StationVerification::with('user')->whereIn('status', ['approved', 'rejected'])->latest()->take(50)->get();
+        $garageAll     = GarageVerification::with('user')->whereIn('status', ['approved', 'rejected'])->latest()->take(50)->get();
 
-        $buyersAll = BuyerVerification::with('user')
-            ->whereIn('status', ['approved', 'rejected'])
-            ->latest()
-            ->get();
+        // ── Accurate stats counts (DB-level, not collection counts) ───
+        // The blade previously derived $totalDone / $totalApproved / $totalRejected
+        // from the *All collections. With take(50) those would under-count,
+        // so we pass pre-computed DB counts instead.
+        $historyCounts = [
+            'total'    => 0,
+            'approved' => 0,
+            'rejected' => 0,
+        ];
 
-        $sellersAll = SellerVerification::with('user')
-            ->whereIn('status', ['approved', 'rejected'])
-            ->latest()
-            ->get();
+        foreach ([
+            BuyerVerification::class,
+            SellerVerification::class,
+            BusinessVerification::class,
+            StationVerification::class,
+            GarageVerification::class,
+        ] as $model) {
+            $counts = $model::whereIn('status', ['approved', 'rejected'])
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status');
 
-        $businessesAll = BusinessVerification::with('user')
-            ->whereIn('status', ['approved', 'rejected'])
-            ->latest()
-            ->get();
+            $historyCounts['approved'] += $counts->get('approved', 0);
+            $historyCounts['rejected'] += $counts->get('rejected', 0);
+            $historyCounts['total']    += $counts->sum();
+        }
 
-        $evStationsAll = StationVerification::with('user')
-            ->whereIn('status', ['approved', 'rejected'])
-            ->latest()
-            ->get();
-
-        $garageAll = GarageVerification::with('user')
-            ->whereIn('status', ['approved', 'rejected'])
-            ->latest()
-            ->get();
-
-        return view('admin.verifications.index', compact('buyersPending', 'sellersPending', 'businessesPending', 'evStationsPending', 'garagePending', 'buyersAll', 'sellersAll', 'businessesAll', 'evStationsAll', 'garageAll'));
+        return view('admin.verifications.index', compact(
+            'buyersPending', 'sellersPending', 'businessesPending', 'evStationsPending', 'garagePending',
+            'buyersAll', 'sellersAll', 'businessesAll', 'evStationsAll', 'garageAll',
+            'historyCounts'
+        ));
     }
 
     // ── Buyer ─────────────────────────────────────────────────────────

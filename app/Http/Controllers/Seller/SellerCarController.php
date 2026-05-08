@@ -137,6 +137,7 @@ class SellerCarController extends Controller
         Cache::forget(HomeController::CACHE_FLEET_COUNTS);
         Cache::forget(HomeController::CACHE_RECENT_CARS);
         Cache::forget(HomeController::CACHE_FEATURED_BIZ);
+        Cache::forget(HomeController::CACHE_RENTABLE_COUNT);
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')
             ->with('success', "{$car->displayName()} listed successfully with {$car->stock_quantity} unit(s).");
@@ -286,6 +287,7 @@ class SellerCarController extends Controller
         Cache::forget(HomeController::CACHE_FLEET_COUNTS);
         Cache::forget(HomeController::CACHE_RECENT_CARS);
         Cache::forget(HomeController::CACHE_FEATURED_BIZ);
+        Cache::forget(HomeController::CACHE_RENTABLE_COUNT);
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')
             ->with('success', "Listing updated. Stock: {$car->fresh()->stock_quantity} unit(s).");
@@ -349,6 +351,7 @@ class SellerCarController extends Controller
         Cache::forget(HomeController::CACHE_FLEET_COUNTS);
         Cache::forget(HomeController::CACHE_RECENT_CARS);
         Cache::forget(HomeController::CACHE_FEATURED_BIZ);
+        Cache::forget(HomeController::CACHE_RENTABLE_COUNT);
 
         return redirect()
             ->route($ctx['prefix'] . '.cars.index')

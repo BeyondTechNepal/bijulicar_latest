@@ -721,9 +721,9 @@
 
                 @can("only news [by only 'news' admin]")
                     <div class="nav-divider hide-on-collapse"></div>
-                    <div x-data="{ open: {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') ? 'true' : 'false' }} }">
+                    <div x-data="{ open: {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') || request()->routeIs('admin.business-news*') ? 'true' : 'false' }} }">
                         <button @click="open = !open"
-                            class="nav-item w-full {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') ? 'active' : '' }}"
+                            class="nav-item w-full {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news_banner*') || request()->routeIs('admin.business-news*') ? 'active' : '' }}"
                             data-tooltip="News">
                             <span class="nav-icon">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -755,11 +755,18 @@
                             @endcan
 
                             <a href="{{ route('admin.news.index') }}"
-                                class="nav-item {{ request()->routeIs('admin.news.index') ? 'active' : '' }}">
-                                <span
-                                    style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:0.5;"></span>
-                                <span class="hide-on-collapse">News Articles</span>
-                            </a>
+                class="nav-item {{ request()->routeIs('admin.news.index') ? 'active' : '' }}">
+                <span
+                    style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:0.5;"></span>
+                <span class="hide-on-collapse">News Articles</span>
+            </a>
+ 
+            <a href="{{ route('admin.business-news.index') }}"
+                class="nav-item {{ request()->routeIs('admin.business-news*') ? 'active' : '' }}">
+                <span
+                    style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:0.5;"></span>
+                <span class="hide-on-collapse">Business News</span>
+            </a>
 
                             @can('manage news banner')
                                 <a href="{{ route('admin.news_banner.index') }}"

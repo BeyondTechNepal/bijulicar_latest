@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminBusinessNewsController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
@@ -146,6 +147,8 @@ Route::prefix('admin')
                     'index' => 'newsletter.form',
                     'store' => 'newsletter.send'
                 ]);
+                Route::get('/business-news',              [AdminBusinessNewsController::class, 'index'])  ->name('business-news.index');
+                Route::delete('/business-news/{businessNews}', [AdminBusinessNewsController::class, 'destroy'])->name('business-news.destroy');
             });
 
             // ── 4. Superadmin only ─────────────────────────────────────

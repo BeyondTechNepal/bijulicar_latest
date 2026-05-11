@@ -428,7 +428,6 @@
                         <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ran</th>
                         <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ended</th>
                         <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Revenue</th>
-                        <th class="text-right px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -458,16 +457,6 @@
                             <div class="text-[10px] text-gray-400 uppercase">
                                 {{ \App\Models\Advertisement::PAYMENT_METHODS[$ad->payment_method] ?? $ad->payment_method }}
                             </div>
-                        </td>
-                        <td class="px-5 py-3.5 text-right">
-                            <form method="POST" action="{{ route('admin.advertisements.force-delete', $ad) }}"
-                                onsubmit="return confirm('Permanently delete \"{{ addslashes($ad->title) }}\"?')">
-                                @csrf @method('DELETE')
-                                <button type="submit"
-                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-500 border border-red-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
-                                    Delete
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     @endforeach

@@ -94,10 +94,10 @@
                         <div class="flex justify-between items-center ml-1">
                             <label for="password"
                                 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                            {{-- @if (Route::has('password.request'))
+                            @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}"
                                     class="text-[9px] font-black text-[#16a34a] hover:underline uppercase tracking-widest">Forgot?</a>
-                            @endif --}}
+                            @endif
                         </div>
                         <input id="password" type="password" name="password" required autocomplete="current-password"
                             placeholder="••••••••"

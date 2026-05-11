@@ -23,13 +23,40 @@ class AdminAdvertisementController extends Controller
 
     public function index()
     {
-        $pending   = Advertisement::with('owner')->pendingReview()->latest()->get();
-        $approved  = Advertisement::with('owner')->where('status', 'approved')->latest()->get();
-        $published = Advertisement::with('owner')->where('status', 'published')->latest()->paginate(20);
-        $rejected  = Advertisement::with('owner')->where('status', 'rejected')->latest()->paginate(20);
+        $pending  = Advertisement::with('owner')->pendingReview()->latest()->get();
+        $approved = Advertisement::with('owner')->where('status', 'approved')->latest()->get();
+        $rejected = Advertisement::with('owner')->where('status', 'rejected')->latest()->paginate(20);
+
+        $today = now()->toDateString();
+
+        // Currently running: published, is_active, started, not yet ended
+        $liveAds = Advertisement::with('owner')
+            ->where('status', 'published')
+            ->where('is_active', true)
+            ->where(fn($q) => $q->whereNull('starts_at')->orWhereDate('starts_at', '<=', $today))
+            ->where(fn($q) => $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', $today))
+            ->latest()
+            ->paginate(20, ['*'], 'live_page');
+
+        // Scheduled: published, is_active = false because start date is in the future
+        $scheduledAds = Advertisement::with('owner')
+            ->where('status', 'published')
+            ->where('is_active', false)
+            ->whereDate('starts_at', '>', $today)
+            ->latest()
+            ->get();
+
+        // Completed: published but end date has passed
+        $completedAds = Advertisement::with('owner')
+            ->where('status', 'published')
+            ->whereNotNull('ends_at')
+            ->whereDate('ends_at', '<', $today)
+            ->latest()
+            ->paginate(20, ['*'], 'completed_page');
 
         return view('admin.advertisements.index', compact(
-            'pending', 'approved', 'published', 'rejected'
+            'pending', 'approved', 'rejected',
+            'liveAds', 'scheduledAds', 'completedAds'
         ));
     }
 

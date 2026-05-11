@@ -7,7 +7,9 @@
 @php
     $totalPending   = $pending->count();
     $totalApproved  = $approved->count();
-    $totalPublished = $published->total();
+    $totalLive      = $liveAds->total();
+    $totalScheduled = $scheduledAds->count();
+    $totalCompleted = $completedAds->total();
     $totalRejected  = $rejected->total();
 
     // Flatten placements to value => label for the edit form selects
@@ -16,7 +18,7 @@
 @endphp
 
 {{-- Stats row --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
     <div class="bg-white border border-gray-200 rounded-2xl p-5">
         <div class="text-2xl font-black text-amber-500">{{ $totalPending }}</div>
         <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Pending Review</div>
@@ -26,8 +28,12 @@
         <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Awaiting Payment</div>
     </div>
     <div class="bg-white border border-gray-200 rounded-2xl p-5">
-        <div class="text-2xl font-black text-emerald-500">{{ $totalPublished }}</div>
-        <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Live</div>
+        <div class="text-2xl font-black text-emerald-500">{{ $totalLive }}</div>
+        <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Live Now</div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-5">
+        <div class="text-2xl font-black text-slate-500">{{ $totalCompleted }}</div>
+        <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Completed</div>
     </div>
     <div class="bg-white border border-gray-200 rounded-2xl p-5">
         <div class="text-2xl font-black text-red-500">{{ $totalRejected }}</div>
@@ -226,24 +232,27 @@
     @endif
 </div>
 
-{{-- ── PUBLISHED ───────────────────────────────────────────────────────── --}}
+{{-- ── LIVE ADS (currently running) ──────────────────────────────────── --}}
 <div class="mb-10">
     <div class="flex items-center gap-3 mb-4">
+        <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
         <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Live Ads</h2>
         <span class="text-[10px] font-black bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-            {{ $totalPublished }} total
+            {{ $totalLive }} running
         </span>
     </div>
 
-    @if ($published->isEmpty())
+    @if ($liveAds->isEmpty())
         <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
-            <p class="text-sm font-bold text-gray-400">No live ads yet</p>
+            <p class="text-sm font-bold text-gray-400">No ads are running right now</p>
         </div>
     @else
         <div class="space-y-3 mb-4">
-            @foreach ($published as $ad)
-                {{-- Summary row --}}
-                <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            @foreach ($liveAds as $ad)
+                <div class="bg-white border border-emerald-100 rounded-2xl overflow-hidden">
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4 p-5">
 
                         {{-- Thumbnail --}}
@@ -278,6 +287,11 @@
                                 <p class="text-xs text-gray-600 mt-0.5">
                                     {{ $ad->starts_at?->format('M d') }} – {{ $ad->ends_at?->format('M d, Y') }}
                                 </p>
+                                @if($ad->ends_at)
+                                    <p class="text-[10px] text-emerald-600 font-bold mt-0.5">
+                                        {{ $ad->ends_at->diffForHumans() }}
+                                    </p>
+                                @endif
                             </div>
                             <div>
                                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paid · Method</p>
@@ -307,13 +321,160 @@
                     </div>
 
                     {{-- Full edit form (hidden by default) --}}
-                    <div id="edit-ad-{{ $ad->id }}" class="hidden border-t border-blue-100 bg-blue-50/30 px-5 py-5">
+                    <div id="edit-ad-{{ $ad->id }}" class="hidden border-t border-emerald-100 bg-emerald-50/30 px-5 py-5">
                         @include('admin.advertisements._edit_form', ['ad' => $ad, 'placementOptions' => $placementOptions, 'priorityOptions' => $priorityOptions])
                     </div>
                 </div>
             @endforeach
         </div>
-        {{ $published->links() }}
+        {{ $liveAds->links() }}
+    @endif
+</div>
+
+{{-- ── SCHEDULED ADS (paid but start date is in future) ─────────────────── --}}
+@if ($scheduledAds->isNotEmpty())
+<div class="mb-10">
+    <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Scheduled</h2>
+        <span class="text-[10px] font-black bg-indigo-100 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full">
+            {{ $totalScheduled }} upcoming
+        </span>
+    </div>
+    <div class="space-y-3">
+        @foreach ($scheduledAds as $ad)
+            <div class="bg-white border border-indigo-100 rounded-2xl overflow-hidden">
+                <div class="flex flex-col lg:flex-row lg:items-center gap-4 p-5">
+                    @if ($ad->image)
+                        <div class="shrink-0">
+                            <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}"
+                                class="h-14 w-24 object-cover rounded-lg border border-gray-100">
+                        </div>
+                    @endif
+                    <div class="flex-1 grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Business</p>
+                            <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $ad->owner->name }}</p>
+                            <p class="text-xs text-gray-400">{{ $ad->owner->email }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ad</p>
+                            <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $ad->title }}</p>
+                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-full {{ $ad->priorityBadgeClass() }}">
+                                {{ $ad->priorityLabel() }}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Placement</p>
+                            <p class="text-xs text-gray-600 mt-0.5">{{ $ad->placementLabel() }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Goes Live</p>
+                            <p class="text-xs font-bold text-indigo-600 mt-0.5">{{ $ad->starts_at?->format('M d, Y') }}</p>
+                            <p class="text-[10px] text-gray-400">in {{ $ad->starts_at?->diffForHumans() }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paid</p>
+                            <p class="text-xs font-black text-emerald-600 mt-0.5">Rs {{ number_format($ad->amount_paid, 2) }}</p>
+                            <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full uppercase">
+                                {{ \App\Models\Advertisement::PAYMENT_METHODS[$ad->payment_method] ?? $ad->payment_method }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="toggleForm('edit-ad-{{ $ad->id }}')"
+                            class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                            Edit
+                        </button>
+                        <form method="POST" action="{{ route('admin.advertisements.force-delete', $ad) }}"
+                            onsubmit="return confirm('Delete \"{{ addslashes($ad->title) }}\"? This cannot be undone.')">
+                            @csrf @method('DELETE')
+                            <button type="submit"
+                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 border border-red-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div id="edit-ad-{{ $ad->id }}" class="hidden border-t border-indigo-100 bg-indigo-50/30 px-5 py-5">
+                    @include('admin.advertisements._edit_form', ['ad' => $ad, 'placementOptions' => $placementOptions, 'priorityOptions' => $priorityOptions])
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
+{{-- ── COMPLETED ADS (end date passed) ──────────────────────────────────── --}}
+<div class="mb-10">
+    <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Completed Ads</h2>
+        <span class="text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded-full">
+            {{ $totalCompleted }} total
+        </span>
+    </div>
+
+    @if ($completedAds->isEmpty())
+        <div class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <p class="text-sm font-bold text-gray-400">No completed ads yet</p>
+        </div>
+    @else
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-4">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-100 bg-slate-50/50">
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Business</th>
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ad</th>
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Placement</th>
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ran</th>
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ended</th>
+                        <th class="text-left px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Revenue</th>
+                        <th class="text-right px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @foreach ($completedAds as $ad)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-5 py-3.5">
+                            <div class="font-bold text-gray-800">{{ $ad->owner->name }}</div>
+                            <div class="text-xs text-gray-400">{{ $ad->owner->email }}</div>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <div class="font-bold text-gray-700">{{ $ad->title }}</div>
+                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-full {{ $ad->priorityBadgeClass() }}">
+                                {{ $ad->priorityLabel() }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3.5 text-xs text-gray-500">{{ $ad->placementLabel() }}</td>
+                        <td class="px-5 py-3.5 text-xs text-gray-500">
+                            {{ $ad->starts_at?->format('M d') }} – {{ $ad->ends_at?->format('M d, Y') }}
+                            <div class="text-[10px] text-gray-400">{{ $ad->durationDays() }} days</div>
+                        </td>
+                        <td class="px-5 py-3.5 text-xs text-gray-400">
+                            {{ $ad->ends_at?->format('M d, Y') }}
+                            <div class="text-[10px] text-gray-400">{{ $ad->ends_at?->diffForHumans() }}</div>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <div class="text-xs font-black text-slate-700">Rs {{ number_format($ad->amount_paid, 2) }}</div>
+                            <div class="text-[10px] text-gray-400 uppercase">
+                                {{ \App\Models\Advertisement::PAYMENT_METHODS[$ad->payment_method] ?? $ad->payment_method }}
+                            </div>
+                        </td>
+                        <td class="px-5 py-3.5 text-right">
+                            <form method="POST" action="{{ route('admin.advertisements.force-delete', $ad) }}"
+                                onsubmit="return confirm('Permanently delete \"{{ addslashes($ad->title) }}\"?')">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-500 border border-red-200 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        {{ $completedAds->links() }}
     @endif
 </div>
 

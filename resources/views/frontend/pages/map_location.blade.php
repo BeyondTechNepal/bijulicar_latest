@@ -76,8 +76,9 @@
             </div>
 
             {{-- Map container --}}
-            <div class="bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3"
-                 style="height: 760px;">
+            {{-- Mobile: height auto so sidebar + jump-to-location are fully visible above the map --}}
+            {{-- Desktop (lg+): fixed 760px two-column layout --}}
+            <div class="map-outer bg-white border border-slate-200 rounded-[2rem] p-3 shadow-xl shadow-slate-200/50 flex flex-col lg:flex-row gap-3">
 
                 {{-- ── Sidebar ──────────────────────────────────────────── --}}
                 <div class="lg:w-[420px] flex flex-col gap-3 lg:h-full overflow-hidden">
@@ -173,8 +174,8 @@
                 </div>
 
                 {{-- ── Map canvas ───────────────────────────────────────── --}}
-                <div class="flex-1 relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-slate-100 shadow-inner"
-                     style="min-height: 420px;">
+                <div class="flex-1 relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-slate-100 shadow-inner map-canvas"
+                     style="min-height: 380px;">
                     <div id="map" class="absolute inset-0 z-0"></div>
 
                     {{-- Petrol pump loading overlay --}}
@@ -231,6 +232,14 @@
 
     <style>
         .leaflet-container { background: #f1f5f9; font-family: inherit; }
+        /* Mobile: outer container sizes to content so sidebar + jump-to-location
+           are fully visible before the map canvas. Desktop: fixed 760px two-col. */
+        .map-outer  { height: auto; }
+        .map-canvas { min-height: 380px; }
+        @media (min-width: 1024px) {
+            .map-outer  { height: 760px; }
+            .map-canvas { min-height: unset; }
+        }
         .leaflet-popup-content-wrapper { border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 0; border: 1px solid #e2e8f0; }
         .leaflet-popup-content { margin: 0; }
         .leaflet-popup-tip-container { display: none; }

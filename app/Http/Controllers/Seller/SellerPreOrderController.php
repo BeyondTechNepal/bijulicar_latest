@@ -36,26 +36,31 @@ class SellerPreOrderController extends Controller
     /** Show a single pre-order detail */
     public function show(PreOrder $preOrder)
     {
-        abort_if($preOrder->car->seller_id != Auth::id(), 403);
+        $car = $preOrder->car()->withTrashed()->firstOrFail();
+        abort_if($car->seller_id != Auth::id(), 403);
         $ctx = $this->context();
-        $preOrder->load('car', 'buyer', 'order');
+        $preOrder->setRelation('car', $car);
+        $preOrder->load(['buyer', 'order']);
         return view('dashboard.seller.preorders.show', array_merge(compact('preOrder'), $ctx));
     }
 
     /** Show the confirm-deposit form */
     public function confirmDepositForm(PreOrder $preOrder)
     {
-        abort_if($preOrder->car->seller_id != Auth::id(), 403);
+        $car = $preOrder->car()->withTrashed()->firstOrFail();
+        abort_if($car->seller_id != Auth::id(), 403);
         abort_if($preOrder->status !== 'pending_deposit', 422, 'Deposit already confirmed.');
         $ctx = $this->context();
-        $preOrder->load('car', 'buyer');
+        $preOrder->setRelation('car', $car);
+        $preOrder->load(['buyer']);
         return view('dashboard.seller.preorders.confirm_deposit', array_merge(compact('preOrder'), $ctx));
     }
 
     /** Seller confirms deposit was received */
     public function confirmDeposit(Request $request, PreOrder $preOrder)
     {
-        abort_if($preOrder->car->seller_id != Auth::id(), 403);
+        $car = $preOrder->car()->withTrashed()->firstOrFail();
+        abort_if($car->seller_id != Auth::id(), 403);
         abort_if($preOrder->status !== 'pending_deposit', 422, 'Deposit already confirmed.');
 
         $request->validate([
@@ -83,10 +88,11 @@ class SellerPreOrderController extends Controller
      */
     public function convert(PreOrder $preOrder)
     {
-        abort_if($preOrder->car->seller_id != Auth::id(), 403);
+        $car = $preOrder->car()->withTrashed()->firstOrFail();
+        abort_if($car->seller_id != Auth::id(), 403);
         abort_if($preOrder->status !== 'deposit_paid', 422, 'Can only convert pre-orders with confirmed deposits.');
 
-        $car = $preOrder->car;
+        // $car already resolved above via withTrashed()
 
         // Create the full order (already confirmed since deposit was paid).
         // seller_id      — required so the order appears in the seller's dashboard
@@ -130,7 +136,8 @@ class SellerPreOrderController extends Controller
     /** Seller cancels a pre-order (and should refund deposit) */
     public function cancel(PreOrder $preOrder)
     {
-        abort_if($preOrder->car->seller_id != Auth::id(), 403);
+        $car = $preOrder->car()->withTrashed()->firstOrFail();
+        abort_if($car->seller_id != Auth::id(), 403);
         abort_if(!$preOrder->isCancellable(), 422, 'This pre-order can no longer be cancelled.');
 
         $preOrder->update(['status' => 'cancelled']);
@@ -139,7 +146,7 @@ class SellerPreOrderController extends Controller
         // If no other active pre-orders remain on this car, reset it so it
         // can accept new pre-orders (or be edited to available by the seller).
         // Without this the car stays stuck in upcoming/is_preorder=true forever.
-        $car = $preOrder->car;
+        // Use withTrashed() — the car may already be soft-deleted.
         $hasOtherActivePreOrders = PreOrder::where('car_id', $car->id)
             ->whereIn('status', ['pending_deposit', 'deposit_paid'])
             ->exists();

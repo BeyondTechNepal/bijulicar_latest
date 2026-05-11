@@ -21,6 +21,7 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-6">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Vehicle</p>
 
+                @if($preOrder->car && !$preOrder->car->trashed())
                 <div class="flex items-start gap-4">
                     <div class="w-16 h-16 bg-slate-100 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center">
                         @if($preOrder->car->primaryImage ?? false)
@@ -45,6 +46,24 @@
                         @endif
                     </div>
                 </div>
+                @elseif($preOrder->car)
+                {{-- Car was soft-deleted after this pre-order was placed --}}
+                <div class="flex items-start gap-4">
+                    <div class="w-16 h-16 bg-slate-100 rounded-2xl shrink-0 flex items-center justify-center">
+                        <span class="text-2xl opacity-20">⚡</span>
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-black text-slate-900 uppercase italic tracking-tight">
+                            {{ $preOrder->car->displayName() }}
+                        </h2>
+                        <p class="text-xs font-semibold text-amber-600 mt-1 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 inline-block">
+                            This listing has been removed by the seller. Contact them regarding your deposit.
+                        </p>
+                    </div>
+                </div>
+                @else
+                <p class="text-sm text-slate-500 italic">Listing information is no longer available.</p>
+                @endif
             </div>
 
             {{-- Deposit details --}}
@@ -126,11 +145,15 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Seller</p>
-                        <p class="text-xs font-bold text-slate-700">{{ $preOrder->car->seller->name }}</p>
+                        <p class="text-xs font-bold text-slate-700">
+                            {{ $preOrder->car?->seller?->name ?? '—' }}
+                        </p>
                     </div>
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Car Price</p>
-                        <p class="text-base font-black text-slate-900">{{ $preOrder->car->formattedPrice() }}</p>
+                        <p class="text-base font-black text-slate-900">
+                            {{ $preOrder->car ? $preOrder->car->formattedPrice() : '—' }}
+                        </p>
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-400">Status</p>

@@ -81,7 +81,7 @@ class BuyerPreOrderController extends Controller
     public function show(PreOrder $preOrder)
     {
         abort_if($preOrder->buyer_id != Auth::id(), 403);
-        $preOrder->load('car', 'order');
+        $preOrder->load(['car' => fn($q) => $q->withTrashed(), 'order']);
         return view('dashboard.buyer.preorders.show', compact('preOrder'));
     }
 
@@ -95,16 +95,19 @@ class BuyerPreOrderController extends Controller
 
         // Same car-reset logic as SellerPreOrderController@cancel: if this was
         // the last active pre-order, clear is_preorder so the car isn't stranded.
-        $car = $preOrder->car;
-        $hasOtherActivePreOrders = PreOrder::where('car_id', $car->id)
-            ->whereIn('status', ['pending_deposit', 'deposit_paid'])
-            ->exists();
+        // Use withTrashed() so a soft-deleted car still gets its flags cleared.
+        $car = $preOrder->car()->withTrashed()->first();
+        if ($car) {
+            $hasOtherActivePreOrders = PreOrder::where('car_id', $car->id)
+                ->whereIn('status', ['pending_deposit', 'deposit_paid'])
+                ->exists();
 
-        if (!$hasOtherActivePreOrders && $car->is_preorder && $car->status === 'upcoming') {
-            $car->update([
-                'status'      => 'upcoming',
-                'is_preorder' => false,
-            ]);
+            if (!$hasOtherActivePreOrders && $car->is_preorder && $car->status === 'upcoming') {
+                $car->update([
+                    'status'      => 'upcoming',
+                    'is_preorder' => false,
+                ]);
+            }
         }
 
         return redirect()

@@ -182,4 +182,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(CarRental::class, 'owner_id');
     }
+
+    /**
+     * Override Laravel's default plain-text password reset email
+     * with the Bijulicar-branded blade template.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
 }

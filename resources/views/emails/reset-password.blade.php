@@ -14,9 +14,11 @@
                     <td style="vertical-align: middle; padding-right: 8px;">
                         <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
                             <tr>
-                                <td style="width: 32px; height: 32px; background: #0f172a; border-radius: 8px; text-align: center; vertical-align: middle; font-size: 18px; line-height: 32px;">
-                                    ⚡
-                                </td>
+                                <td style="vertical-align: middle; padding-right: 12px;">
+                <img src="{{ asset('images/logo.png') }}" 
+                     alt="BijuliCar Logo"
+                     style="height: 42px; width: auto; display: block;">
+            </td>
                             </tr>
                         </table>
                     </td>

@@ -4,12 +4,12 @@
 
             <div class="lg:col-span-4 space-y-8">
                 <div class="flex items-center gap-3">
-                    <div
-                        class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-300">
-                        <svg class="w-6 h-6 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
+                    <div class="flex items-center shrink-0 px-2 xl:px-4">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
+                <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                    class="h-12 md:h-14 lg:h-16 w-auto object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm">
+            </a>
+        </div>
                     <span class="text-2xl font-black tracking-tighter text-slate-900 uppercase italic">Bijuli<span
                             class="text-[#16a34a]">Car</span></span>
                 </div>

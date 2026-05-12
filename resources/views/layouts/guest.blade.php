@@ -17,14 +17,12 @@
     <body class="bg-[#f1f5f9] min-h-screen flex flex-col items-center justify-center p-4 antialiased">
 
         {{-- Logo / Home link --}}
-        <a href="{{ route('home') }}" class="flex items-center gap-2 mb-8 group no-underline">
-            <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:bg-[#16a34a] transition-all duration-300">
-                <svg class="w-6 h-6 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-            </div>
-            <span class="text-xl font-extrabold tracking-tighter text-slate-900 uppercase">bijuli<span class="text-[#16a34a]">car</span></span>
-        </a>
+         <div class="flex items-center shrink-0 px-2 xl:px-4">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 no-underline group">
+                <img src="{{ asset('images/logo.png') }}" alt="BijuliCar Logo"
+                    class="h-12 md:h-14 lg:h-16 w-auto object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm">
+                    </a>
+        </div>
 
         {{-- Card --}}
         <div class="w-full max-w-md bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-slate-100 px-8 py-8">

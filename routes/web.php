@@ -25,6 +25,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CarExperienceController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes 
@@ -54,6 +55,17 @@ Route::get('/cars/{car}', [App\Http\Controllers\CarController::class, 'show'])->
 // Public business directory
 Route::get('/businesses', [BusinessDirectoryController::class, 'index'])->name('businesses.index');
 Route::get('/businesses/{id}', [BusinessDirectoryController::class, 'show'])->name('businesses.show')->whereNumber('id');
+
+// ── Car Experiences ────────────────────────────────────────────────────
+// Public read (guests + logged-in): paginated JSON feed + per-car feed + car search
+Route::get('/experiences',           [CarExperienceController::class, 'index'])->name('experiences.index');
+Route::get('/experiences/cars',      [CarExperienceController::class, 'carSearch'])->name('experiences.cars');
+Route::get('/cars/{car}/experiences',[CarExperienceController::class, 'forCar'])->name('experiences.for_car');
+
+// Auth-required: submit a new experience (any logged-in user, no role restriction)
+Route::post('/experiences', [CarExperienceController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('experiences.store');
 
 // newsletter
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])

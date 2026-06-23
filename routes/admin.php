@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminBusinessNewsController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminCarExperienceController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminVerificationController;
@@ -111,6 +112,14 @@ Route::prefix('admin')
                 Route::get('/news-categories/{category}/edit', [App\Http\Controllers\Admin\NewsCategoryController::class, 'edit'])->name('news_categories.edit');
                 Route::put('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'update'])->name('news_categories.update');
                 Route::delete('/news-categories/{category}', [App\Http\Controllers\Admin\NewsCategoryController::class, 'destroy'])->name('news_categories.destroy');
+
+                // ── Car Experience moderation ──────────────────────────
+                Route::prefix('car-experiences')->name('car_experiences.')->group(function () {
+                    Route::get('/',                                    [AdminCarExperienceController::class, 'index'])  ->name('index');
+                    Route::post('/{carExperience}/approve',            [AdminCarExperienceController::class, 'approve'])->name('approve');
+                    Route::post('/{carExperience}/reject',             [AdminCarExperienceController::class, 'reject']) ->name('reject');
+                    Route::delete('/{carExperience}',                  [AdminCarExperienceController::class, 'destroy'])->name('destroy');
+                });
 
                 // ── Advertisements review ──────────────────────────────
                 Route::prefix('advertisements')->name('advertisements.')->group(function () {

@@ -538,6 +538,32 @@ class NotificationService
         );
     }
 
+    // ── Car Experience ────────────────────────────────────────────────
+
+    public function experienceApproved(\App\Models\CarExperience $experience): void
+    {
+        $this->create(
+            userId: $experience->user_id,
+            type:   'experience_approved',
+            title:  'Your experience has been approved',
+            body:   'Your experience "' . $experience->title . '" is now publicly visible on BijuliCar.',
+        );
+    }
+
+    public function experienceRejected(\App\Models\CarExperience $experience): void
+    {
+        $reason = $experience->admin_note
+            ? 'Reason: ' . $experience->admin_note
+            : 'Please review and resubmit.';
+
+        $this->create(
+            userId: $experience->user_id,
+            type:   'experience_rejected',
+            title:  'Your experience was not approved',
+            body:   '"' . $experience->title . '" was rejected. ' . $reason,
+        );
+    }
+
     // ── Internal ──────────────────────────────────────────────────────
 
     private function create(int $userId, string $type, string $title, string $body = '', ?string $url = null): void

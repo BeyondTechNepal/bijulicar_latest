@@ -60,6 +60,9 @@
 
 @include('frontend.layouts.footer')
 
+{{-- Car Experience floating action button — present on all frontend pages --}}
+@include('frontend.partials.experience_fab')
+
 </body>
 
 </html>

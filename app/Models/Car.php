@@ -88,6 +88,12 @@ class Car extends Model
         return $this->hasMany(Review::class);
     }
 
+    /** All experiences shared about this car */
+    public function experiences(): HasMany
+    {
+        return $this->hasMany(CarExperience::class);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────
 
     /** e.g. "NRs 5,500,000" */

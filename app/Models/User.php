@@ -117,6 +117,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Review::class, 'buyer_id');
     }
 
+    /** Experiences shared by this user. */
+    public function carExperiences(): HasMany
+    {
+        return $this->hasMany(CarExperience::class);
+    }
+
     /**
      * Reviews written about this user as a seller / business.
      * Used for withAvg('receivedReviews', 'rating') and withCount('receivedReviews').

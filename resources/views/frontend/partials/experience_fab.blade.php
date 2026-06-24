@@ -150,10 +150,10 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <div class="flex items-center gap-2 min-w-0">
                                 <div class="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center flex-shrink-0">
-                                    <span class="text-[10px] font-black text-white" x-text="(exp.user?.name ?? 'U').substring(0,2).toUpperCase()"></span>
+                                    <span class="text-[10px] font-black text-white" x-text="(exp.author_name ?? exp.user?.name ?? 'U').substring(0,2).toUpperCase()"></span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-xs font-bold text-slate-800 truncate" x-text="exp.user?.name ?? 'User'"></p>
+                                    <p class="text-xs font-bold text-slate-800 truncate" x-text="exp.author_name ?? exp.user?.name ?? 'User'"></p>
                                     <p class="text-[10px] text-slate-400" x-text="formatDate(exp.approved_at ?? exp.created_at)"></p>
                                 </div>
                             </div>

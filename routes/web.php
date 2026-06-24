@@ -69,6 +69,11 @@ Route::post('/experiences', [CarExperienceController::class, 'store'])
     ->middleware(['auth'])
     ->name('experiences.store');
 
+// Auth-required: delete own experience
+Route::delete('/experiences/{experience}', [CarExperienceController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('experiences.destroy');
+
 // ── Experience Comments ────────────────────────────────────────────────
 // Public read — guests can read comments
 Route::get('/experiences/{experience}/comments', [ExperienceCommentController::class, 'index'])

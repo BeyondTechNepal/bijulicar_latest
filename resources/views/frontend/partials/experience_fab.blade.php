@@ -252,6 +252,24 @@
                             typeBadge(type) {
                                 const map = { rental:'bg-blue-100 text-blue-700', purchase:'bg-green-100 text-green-700', general:'bg-slate-100 text-slate-600' };
                                 return map[type] ?? 'bg-slate-100 text-slate-600';
+                            },
+                            typeLabel(type) {
+                                const map = { rental:'Rental', purchase:'Ride', general:'General' };
+                                return map[type] ?? type;
+                            },
+                            async deleteExperience(exp) {
+                                if (!confirm('Delete this experience? This cannot be undone.')) return;
+                                try {
+                                    const res = await fetch('/experiences/' + exp.id, {
+                                        method: 'DELETE',
+                                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' }
+                                    });
+                                    if (res.ok) {
+                                        this.$parent.experiences = this.$parent.experiences.filter(e => e.id !== exp.id);
+                                    } else {
+                                        alert('Could not delete this experience. Please try again.');
+                                    }
+                                } catch(e) { console.error(e); }
                             }
                         }"
                         class="border border-slate-100 rounded-2xl overflow-hidden hover:border-slate-200 hover:shadow-sm transition-all"
@@ -272,11 +290,21 @@
                                            x-text="formatDate(exp.approved_at ?? exp.created_at)"></p>
                                     </div>
                                 </div>
-                                <span
-                                    class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0"
-                                    :class="typeBadge(exp.experience_type)"
-                                    x-text="typeLabel(exp.experience_type)"
-                                ></span>
+                                <div class="flex items-center gap-1.5 flex-shrink-0">
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+                                        :class="typeBadge(exp.experience_type)"
+                                        x-text="typeLabel(exp.experience_type)"
+                                    ></span>
+                                    <button
+                                        x-show="exp.is_mine"
+                                        @click="deleteExperience(exp)"
+                                        title="Delete your experience"
+                                        class="w-6 h-6 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                                    >
+                                        <i class="fa-solid fa-trash text-[11px]"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             {{-- Car name --}}

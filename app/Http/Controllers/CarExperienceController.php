@@ -49,6 +49,11 @@ class CarExperienceController extends Controller
 
         $experiences = $query->paginate(6);
 
+        $experiences->getCollection()->transform(function ($exp) {
+            $exp->is_mine = Auth::check() && $exp->user_id === Auth::id();
+            return $exp;
+        });
+
         return response()->json($experiences);
     }
 
@@ -115,6 +120,18 @@ class CarExperienceController extends Controller
             ->paginate(5);
 
         return response()->json($experiences);
+    }
+
+    /**
+     * Delete the authenticated user's own experience.
+     */
+    public function destroy(CarExperience $experience)
+    {
+        abort_if($experience->user_id !== Auth::id(), 403, 'You can only delete your own experience.');
+
+        $experience->delete();
+
+        return response()->json(['message' => 'Your experience has been deleted.']);
     }
 
     /**

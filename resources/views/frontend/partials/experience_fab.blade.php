@@ -127,7 +127,7 @@
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                 </div>
                 <div class="flex gap-2">
-                    <template x-for="t in [{val:'',label:'All'},{val:'rental',label:'Rental'},{val:'purchase',label:'Purchase'},{val:'general',label:'General'}]" :key="t.val">
+                    <template x-for="t in [{val:'',label:'All'},{val:'rental',label:'Rental'},{val:'purchase',label:'Ride'},{val:'general',label:'General'}]" :key="t.val">
                         <button
                             @click="feedFilter.type = t.val; feedPage = 1; loadFeed()"
                             :class="feedFilter.type === t.val
@@ -594,7 +594,7 @@
                 <div>
                     <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wide">Type <span class="text-red-500">*</span></label>
                     <div class="flex gap-2">
-                        <template x-for="t in [{val:'rental',label:'Rental'},{val:'purchase',label:'Purchase'},{val:'general',label:'General'}]" :key="t.val">
+                        <template x-for="t in [{val:'rental',label:'Rental'},{val:'purchase',label:'Ride'},{val:'general',label:'General'}]" :key="t.val">
                             <button type="button" @click="form.experience_type = t.val"
                                 :class="form.experience_type === t.val
                                     ? 'bg-[#4ade80] text-black font-black ring-2 ring-[#4ade80]/40'

@@ -840,6 +840,23 @@
                     </a>
                 @endcan
 
+                {{-- Car Experiences --}}
+                <a href="{{ route('admin.car_experiences.index') }}" data-tooltip="Car Experiences"
+                    class="nav-item {{ request()->routeIs('admin.car_experiences*') ? 'active-emerald' : '' }}">
+                    <span class="nav-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 17H5a2 2 0 01-2-2V7a2 2 0 012-2h3l2-2h4l2 2h3a2 2 0 012 2v8a2 2 0 01-2 2z"/>
+                            <circle cx="12" cy="11" r="2"/>
+                        </svg>
+                    </span>
+                    <span class="hide-on-collapse" style="flex:1;">Car Experiences</span>
+                    @php $pendingExperiences = \App\Models\CarExperience::where('status', 'pending')->count(); @endphp
+                    @if ($pendingExperiences > 0)
+                        <span class="badge badge-amber hide-on-collapse">{{ $pendingExperiences }}</span>
+                    @endif
+                </a>
+
                 @can('ad pricing')
                     <a href="{{ route('admin.ad-pricing.index') }}" data-tooltip="Ad Pricing"
                         class="nav-item {{ request()->routeIs('admin.ad-pricing*') ? 'active' : '' }}">

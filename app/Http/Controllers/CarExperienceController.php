@@ -117,6 +117,26 @@ class CarExperienceController extends Controller
     }
 
     /**
+     * Return ALL available BijuliCar listings as a flat [{id, name}] array.
+     * Called once when the FAB panel opens; filtering is done client-side
+     * using the same makeTypeahead pattern as the marketplace page.
+     */
+    public function allCars()
+    {
+        $cars = Car::whereIn('status', ['available', 'upcoming'])
+            ->select('id', 'brand', 'model', 'year', 'variant')
+            ->orderBy('brand')
+            ->orderBy('model')
+            ->get()
+            ->map(fn ($car) => [
+                'id'   => $car->id,
+                'name' => $car->displayName(),
+            ]);
+
+        return response()->json($cars);
+    }
+
+    /**
      * Return the cars list for the FAB "link to BijuliCar" dropdown.
      * Searches by brand/model/year. Returns a lightweight list.
      */

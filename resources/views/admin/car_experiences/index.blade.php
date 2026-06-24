@@ -146,27 +146,19 @@
                     {{-- BijuliCar search --}}
                     <div x-show="linked" class="relative">
                         <input
+                            id="admin-car-input"
                             x-model="carQuery"
-                            @input.debounce.350ms="searchCars()"
+                            @focus="initTypeahead()"
                             type="text"
                             placeholder="Search cars on BijuliCar…"
+                            autocomplete="off"
                             class="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300 focus:border-green-400"
                         />
                         {{-- Dropdown --}}
-                        <div
-                            x-show="carResults.length > 0"
-                            class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto"
-                            style="display:none"
-                        >
-                            <template x-for="car in carResults" :key="car.id">
-                                <button
-                                    type="button"
-                                    @click="pickCar(car)"
-                                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
-                                    x-text="car.name"
-                                ></button>
-                            </template>
-                        </div>
+                        <ul
+                            id="admin-car-suggestions"
+                            class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto"
+                        ></ul>
                         {{-- Selected chip --}}
                         <div x-show="selectedCarId" class="mt-2 flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5">
                             <i class="fa-solid fa-circle-check text-green-600 text-xs"></i>
@@ -523,26 +515,77 @@ function adminExpForm() {
     return {
         linked:          false,
         carQuery:        '',
-        carResults:      [],
+        allCars:         [],
+        typeaheadReady:  false,
         selectedCarId:   null,
         selectedCarName: '',
         externalCarName: '',
         body:            '{{ old('body', '') }}',
 
-        async searchCars() {
-            if (this.carQuery.length < 1) { this.carResults = []; return; }
+        async initTypeahead() {
+            if (this.typeaheadReady) return;
             try {
-                const res = await fetch(`/experiences/cars?q=${encodeURIComponent(this.carQuery)}`);
-                this.carResults = await res.json();
+                const res    = await fetch('/experiences/cars/all');
+                this.allCars = await res.json();
             } catch (e) {
-                this.carResults = [];
+                this.allCars = [];
             }
+            this._wire();
+            this.typeaheadReady = true;
+        },
+
+        _wire() {
+            const input = document.getElementById('admin-car-input');
+            const list  = document.getElementById('admin-car-suggestions');
+            if (!input || !list) return;
+
+            const render = (matches) => {
+                list.innerHTML = '';
+                if (!matches.length) { list.classList.add('hidden'); return; }
+                matches.forEach(car => {
+                    const li = document.createElement('li');
+                    li.className = 'px-4 py-2.5 cursor-pointer text-sm font-bold text-gray-800 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0';
+                    li.textContent = car.name;
+                    li.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        this.selectedCarId   = car.id;
+                        this.selectedCarName = car.name;
+                        this.carQuery        = '';
+                        input.value          = '';
+                        list.classList.add('hidden');
+                    });
+                    list.appendChild(li);
+                });
+                list.classList.remove('hidden');
+            };
+
+            input.addEventListener('input', () => {
+                this.carQuery = input.value;
+                const q = input.value.trim().toLowerCase();
+                render(q
+                    ? this.allCars.filter(c => c.name.toLowerCase().includes(q)).slice(0, 10)
+                    : this.allCars.slice(0, 10)
+                );
+            });
+
+            input.addEventListener('focus', () => {
+                const q = input.value.trim().toLowerCase();
+                render(q
+                    ? this.allCars.filter(c => c.name.toLowerCase().includes(q)).slice(0, 10)
+                    : this.allCars.slice(0, 10)
+                );
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !list.contains(e.target)) {
+                    list.classList.add('hidden');
+                }
+            });
         },
 
         pickCar(car) {
             this.selectedCarId   = car.id;
             this.selectedCarName = car.name;
-            this.carResults      = [];
             this.carQuery        = '';
         },
     };

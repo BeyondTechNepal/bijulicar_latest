@@ -335,28 +335,17 @@
                     {{-- BijuliCar car search --}}
                     <div x-show="form.linked_to_bijulicar" class="mt-2 relative">
                         <input
+                            id="fab-car-input"
                             x-model="carSearchQuery"
-                            @input.debounce.350ms="searchCars()"
-                            @focus="carSearchQuery.length > 0 && searchCars()"
+                            @focus="initCarTypeahead()"
                             type="text"
                             placeholder="Search cars on BijuliCar…"
                             class="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4ade80]/40 focus:border-[#4ade80]"
+                            autocomplete="off"
                         />
-                        {{-- Dropdown results --}}
-                        <div
-                            x-show="carSearchResults.length > 0"
-                            class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto"
-                            style="display:none"
-                        >
-                            <template x-for="car in carSearchResults" :key="car.id">
-                                <button
-                                    type="button"
-                                    @click="selectCar(car)"
-                                    class="w-full text-left px-3 py-2.5 text-xs hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
-                                    x-text="car.name"
-                                ></button>
-                            </template>
-                        </div>
+                        <ul id="fab-car-suggestions"
+                            class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-[9999] max-h-48 overflow-y-auto">
+                        </ul>
                         {{-- Selected car chip --}}
                         <div x-show="form.car_id" class="mt-2 flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
                             <i class="fa-solid fa-circle-check text-green-600 text-xs"></i>
@@ -440,6 +429,8 @@ function experienceFab() {
         carSearchQuery:   '',
         carSearchResults: [],
         selectedCarName:  '',
+        allCars:          [],      // loaded once on first BijuliCar toggle
+        carTypeaheadReady: false,  // prevents double-init
 
         // ── Form state ─────────────────────────────────────────────────
         form: {
@@ -499,24 +490,69 @@ function experienceFab() {
             }
         },
 
-        // ── Car search ─────────────────────────────────────────────────
-        async searchCars() {
-            if (this.carSearchQuery.length < 1) {
-                this.carSearchResults = [];
-                return;
-            }
-            try {
-                const res  = await fetch(`/experiences/cars?q=${encodeURIComponent(this.carSearchQuery)}`);
-                this.carSearchResults = await res.json();
-            } catch (e) {
-                this.carSearchResults = [];
+        // ── Car typeahead (marketplace-style, client-side) ─────────────
+        async initCarTypeahead() {
+            // Load all cars once, then wire up typeahead
+            if (!this.carTypeaheadReady) {
+                try {
+                    const res    = await fetch('/experiences/cars/all');
+                    this.allCars = await res.json();
+                } catch (e) {
+                    this.allCars = [];
+                }
+                this._wireTypeahead();
+                this.carTypeaheadReady = true;
             }
         },
-        selectCar(car) {
-            this.form.car_id    = car.id;
-            this.selectedCarName = car.name;
-            this.carSearchResults = [];
-            this.carSearchQuery   = '';
+
+        _wireTypeahead() {
+            const input = document.getElementById('fab-car-input');
+            const list  = document.getElementById('fab-car-suggestions');
+            if (!input || !list) return;
+
+            const render = (matches) => {
+                list.innerHTML = '';
+                if (!matches.length) { list.classList.add('hidden'); return; }
+                matches.forEach(car => {
+                    const li = document.createElement('li');
+                    li.className = 'px-3 py-2.5 cursor-pointer text-xs font-bold text-slate-800 hover:bg-[#4ade80]/10 hover:text-[#16a34a] transition-colors border-b border-slate-50 last:border-0';
+                    li.textContent = car.name;
+                    li.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        // Update Alpine state via the component reference
+                        this.form.car_id    = car.id;
+                        this.selectedCarName = car.name;
+                        this.carSearchQuery  = '';
+                        input.value = '';
+                        list.classList.add('hidden');
+                    });
+                    list.appendChild(li);
+                });
+                list.classList.remove('hidden');
+            };
+
+            input.addEventListener('input', () => {
+                const q = input.value.trim().toLowerCase();
+                this.carSearchQuery = input.value;
+                render(q
+                    ? this.allCars.filter(c => c.name.toLowerCase().includes(q)).slice(0, 10)
+                    : this.allCars.slice(0, 10)
+                );
+            });
+
+            input.addEventListener('focus', () => {
+                const q = input.value.trim().toLowerCase();
+                render(q
+                    ? this.allCars.filter(c => c.name.toLowerCase().includes(q)).slice(0, 10)
+                    : this.allCars.slice(0, 10)
+                );
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !list.contains(e.target)) {
+                    list.classList.add('hidden');
+                }
+            });
         },
 
         // ── Submit ─────────────────────────────────────────────────────
@@ -580,11 +616,10 @@ function experienceFab() {
                 car_id:              null,
                 external_car_name:   '',
             };
-            this.carSearchQuery   = '';
-            this.carSearchResults = [];
-            this.selectedCarName  = '';
-            this.fieldErrors      = {};
-            this.formError        = '';
+            this.carSearchQuery  = '';
+            this.selectedCarName = '';
+            this.fieldErrors     = {};
+            this.formError       = '';
         },
 
         // ── Helpers ────────────────────────────────────────────────────

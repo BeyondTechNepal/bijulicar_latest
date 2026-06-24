@@ -58,9 +58,10 @@ Route::get('/businesses/{id}', [BusinessDirectoryController::class, 'show'])->na
 
 // ── Car Experiences ────────────────────────────────────────────────────
 // Public read (guests + logged-in): paginated JSON feed + per-car feed + car search
-Route::get('/experiences',           [CarExperienceController::class, 'index'])->name('experiences.index');
-Route::get('/experiences/cars',      [CarExperienceController::class, 'carSearch'])->name('experiences.cars');
-Route::get('/cars/{car}/experiences',[CarExperienceController::class, 'forCar'])->name('experiences.for_car');
+Route::get('/experiences',              [CarExperienceController::class, 'index'])->name('experiences.index');
+Route::get('/experiences/cars/all',     [CarExperienceController::class, 'allCars'])->name('experiences.cars.all');
+Route::get('/experiences/cars',         [CarExperienceController::class, 'carSearch'])->name('experiences.cars');
+Route::get('/cars/{car}/experiences',   [CarExperienceController::class, 'forCar'])->name('experiences.for_car');
 
 // Auth-required: submit a new experience (any logged-in user, no role restriction)
 Route::post('/experiences', [CarExperienceController::class, 'store'])

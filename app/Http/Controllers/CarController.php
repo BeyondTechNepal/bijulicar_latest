@@ -127,6 +127,9 @@ class CarController extends Controller
         // ── Sidebar ads for the car detail page (priority DESC) ──────────
         $carDetailAds = Advertisement::liveForPlacement('car_detail_horizontal')->get();
 
+        // Count of approved experiences linked to this car (for the section header)
+        $experienceCount = \App\Models\CarExperience::approved()->forCar($car->id)->count();
+
         return view('frontend.pages.car_detail', compact(
             'car',
             'isSoldOut',
@@ -144,7 +147,8 @@ class CarController extends Controller
             'availableForRent',
             'hasRented',
             'alreadyReviewedRental',
-            'completedRental'
+            'completedRental',
+            'experienceCount'
         ));
     }
 }

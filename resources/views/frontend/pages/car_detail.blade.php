@@ -432,6 +432,118 @@
                             </div>
                         </section>
                     @endif
+
+                    {{-- ── Car Experiences ──────────────────────────────────── --}}
+                    <div
+                        x-data="carExperiences({{ $car->id }})"
+                        x-init="load()"
+                        class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mt-5"
+                    >
+                        {{-- Section header --}}
+                        <div class="px-6 pt-5 pb-4 border-b border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">
+                                    Driver Experiences
+                                </h3>
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">
+                                    @if($experienceCount > 0)
+                                        {{ $experienceCount }} experience{{ $experienceCount !== 1 ? 's' : '' }} shared for this car
+                                    @else
+                                        No experiences shared yet
+                                    @endif
+                                </p>
+                            </div>
+                            {{-- "Share via FAB" hint --}}
+                            <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                                <i class="fa-solid fa-arrow-down-right text-[10px]"></i>
+                                Use the <span class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-[#4ade80] text-black ml-0.5 mr-0.5"><i class="fa-solid fa-star text-[8px]"></i></span> button to share
+                            </div>
+                        </div>
+
+                        {{-- Loading spinner --}}
+                        <div x-show="loading" class="flex justify-center py-8">
+                            <div class="w-5 h-5 border-2 border-[#4ade80] border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+
+                        {{-- Empty state --}}
+                        <div x-show="!loading && experiences.length === 0" class="px-6 py-8 text-center">
+                            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-road text-slate-400 text-lg"></i>
+                            </div>
+                            <p class="text-slate-500 text-sm font-semibold">No experiences yet for this car</p>
+                            <p class="text-slate-400 text-xs mt-1">Driven or rented this car? Share your story using the <strong class="text-[#16a34a]">green button</strong> at the bottom right.</p>
+                        </div>
+
+                        {{-- Experience cards --}}
+                        <div x-show="!loading && experiences.length > 0" class="divide-y divide-slate-50">
+                            <template x-for="exp in experiences" :key="exp.id">
+                                <div
+                                    x-data="{ expanded: false }"
+                                    class="px-6 py-4 hover:bg-slate-50/50 transition-colors"
+                                >
+                                    {{-- Top row --}}
+                                    <div class="flex items-start justify-between gap-2 mb-2">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <div class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center flex-shrink-0">
+                                                <span class="text-[10px] font-black text-white"
+                                                      x-text="(exp.user?.name ?? 'U').substring(0,2).toUpperCase()"></span>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-bold text-slate-800 truncate" x-text="exp.user?.name ?? 'Driver'"></p>
+                                                <p class="text-[10px] text-slate-400" x-text="formatDate(exp.approved_at ?? exp.created_at)"></p>
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0"
+                                            :class="typeBadge(exp.experience_type)"
+                                            x-text="exp.experience_type"
+                                        ></span>
+                                    </div>
+
+                                    {{-- Trip context --}}
+                                    <p x-show="exp.trip_context"
+                                       class="text-[11px] text-slate-400 italic mb-1.5"
+                                       x-text="'📍 ' + exp.trip_context"></p>
+
+                                    {{-- Title --}}
+                                    <h4 class="text-sm font-black text-slate-900 leading-snug mb-2"
+                                        x-text="exp.title"></h4>
+
+                                    {{-- Body — collapsed / expanded --}}
+                                    <p
+                                        class="text-xs text-slate-600 leading-relaxed"
+                                        :class="expanded ? '' : 'line-clamp-3'"
+                                        x-text="exp.body"
+                                    ></p>
+                                    <button
+                                        x-show="exp.body && exp.body.length > 180"
+                                        @click="expanded = !expanded"
+                                        class="text-[11px] text-[#16a34a] font-bold mt-1.5 hover:underline"
+                                        x-text="expanded ? 'Show less ↑' : 'Read more ↓'"
+                                    ></button>
+                                </div>
+                            </template>
+                        </div>
+
+                        {{-- Pagination --}}
+                        <div
+                            x-show="!loading && (page > 1 || hasMore)"
+                            class="px-6 py-4 border-t border-slate-100 flex items-center justify-between"
+                        >
+                            <button
+                                @click="page--; load()"
+                                x-show="page > 1"
+                                class="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+                            >← Prev</button>
+                            <span class="text-[11px] text-slate-400 font-medium mx-auto" x-text="'Page ' + page"></span>
+                            <button
+                                @click="page++; load()"
+                                x-show="hasMore"
+                                class="text-xs font-bold text-[#16a34a] hover:text-[#15803d] transition-colors"
+                            >Next →</button>
+                        </div>
+
+                    </div>{{-- end x-data carExperiences --}}
                 </div>
 
 
@@ -1202,6 +1314,48 @@
                 if (e.key === 'ArrowRight') nextImage(e);
             }
         });
+    </script>
+
+    <script>
+    function carExperiences(carId) {
+        return {
+            carId:       carId,
+            experiences: [],
+            loading:     false,
+            page:        1,
+            hasMore:     false,
+
+            async load() {
+                this.loading = true;
+                try {
+                    const res  = await fetch(`/cars/${this.carId}/experiences?page=${this.page}`);
+                    const data = await res.json();
+                    this.experiences = data.data   ?? [];
+                    this.hasMore     = !!data.next_page_url;
+                } catch (e) {
+                    console.error('Car experiences error:', e);
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            formatDate(dateStr) {
+                if (!dateStr) return '';
+                return new Date(dateStr).toLocaleDateString('en-US', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
+            },
+
+            typeBadge(type) {
+                const map = {
+                    rental:   'bg-blue-100 text-blue-700',
+                    purchase: 'bg-green-100 text-green-700',
+                    general:  'bg-slate-100 text-slate-600',
+                };
+                return map[type] ?? 'bg-slate-100 text-slate-600';
+            },
+        };
+    }
     </script>
 
 @endsection

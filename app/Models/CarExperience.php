@@ -9,6 +9,7 @@ class CarExperience extends Model
 {
     protected $fillable = [
         'user_id',
+        'author_name',
         'car_id',
         'external_car_name',
         'title',
@@ -45,6 +46,16 @@ class CarExperience extends Model
     }
 
     // ── Display helpers ───────────────────────────────────────────────
+
+    /**
+     * Safe author name for display.
+     * Admin-posted experiences carry an explicit author_name override.
+     * Falls back to the linked user's name.
+     */
+    public function authorDisplayName(): string
+    {
+        return $this->author_name ?? $this->user?->name ?? 'Driver';
+    }
 
     /**
      * Safe car name for display at all times.

@@ -116,6 +116,7 @@ Route::prefix('admin')
                 // ── Car Experience moderation ──────────────────────────
                 Route::prefix('car-experiences')->name('car_experiences.')->group(function () {
                     Route::get('/',                                    [AdminCarExperienceController::class, 'index'])  ->name('index');
+                    Route::post('/',                                   [AdminCarExperienceController::class, 'store'])  ->name('store');
                     Route::post('/{carExperience}/approve',            [AdminCarExperienceController::class, 'approve'])->name('approve');
                     Route::post('/{carExperience}/reject',             [AdminCarExperienceController::class, 'reject']) ->name('reject');
                     Route::delete('/{carExperience}',                  [AdminCarExperienceController::class, 'destroy'])->name('destroy');

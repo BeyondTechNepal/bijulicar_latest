@@ -11,12 +11,29 @@
 --}}
 
 <div
-    x-data="experienceFab()"
+    x-data="experienceFab"
     x-init="init()"
     @keydown.escape.window="open && closePanel()"
 >
 
     {{-- ── FAB button ─────────────────────────────────────────────────── --}}
+
+    {{-- Cycling label above the FAB --}}
+    <div
+        id="fab-label"
+        class="fixed bottom-24 right-4 z-50 pointer-events-none"
+        style="opacity:0; transform: translateY(6px); transition: opacity 0.5s ease, transform 0.5s ease;"
+    >
+        <div class="bg-slate-900 text-white text-xs font-black px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap flex items-center gap-1.5">
+            <i class="fa-solid fa-star text-[#4ade80] text-[10px]"></i>
+            Share your experience
+        </div>
+        {{-- small arrow pointing down to the FAB --}}
+        <div class="flex justify-end pr-4">
+            <div class="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-slate-900"></div>
+        </div>
+    </div>
+
     <button
         @click="togglePanel()"
         title="Car Experiences"
@@ -143,8 +160,100 @@
                 {{-- ── Experience cards ──────────────────────────────── --}}
                 <template x-for="exp in experiences" :key="exp.id">
                     <div
-                        x-data="experienceCard(exp)"
-                        x-init="initCard()"
+                        x-data="{
+                            commentsOpen: false,
+                            commentsLoading: false,
+                            comments: [],
+                            commentCount: exp.comments_count ?? 0,
+                            newCommentBody: '',
+                            replyingToId: null,
+                            replyBody: '',
+                            editingId: null,
+                            editBody: '',
+                            commentSubmitting: false,
+
+                            async toggleComments() {
+                                this.commentsOpen = !this.commentsOpen;
+                                if (this.commentsOpen && this.comments.length === 0) {
+                                    await this.loadComments();
+                                }
+                            },
+                            async loadComments() {
+                                this.commentsLoading = true;
+                                try {
+                                    const res = await fetch('/experiences/' + exp.id + '/comments');
+                                    this.comments = await res.json();
+                                    this.commentCount = this.comments.reduce((sum, c) => sum + 1 + (c.replies?.length ?? 0), 0);
+                                } catch(e) { console.error(e); }
+                                finally { this.commentsLoading = false; }
+                            },
+                            startReply(comment) { this.replyingToId = comment.id; this.replyBody = ''; this.editingId = null; },
+                            startEdit(comment) { this.editingId = comment.id; this.editBody = comment.body; this.replyingToId = null; },
+                            async postComment(parentId) {
+                                const body = parentId ? this.replyBody : this.newCommentBody;
+                                if (!body.trim()) return;
+                                this.commentSubmitting = true;
+                                try {
+                                    const res = await fetch('/experiences/' + exp.id + '/comments', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
+                                        body: JSON.stringify({ body, parent_id: parentId })
+                                    });
+                                    if (res.ok) {
+                                        const c = await res.json();
+                                        if (parentId) {
+                                            const parent = this.comments.find(c => c.id === parentId);
+                                            if (parent) { if (!parent.replies) parent.replies = []; parent.replies.push(c); }
+                                            this.replyingToId = null; this.replyBody = '';
+                                        } else {
+                                            c.replies = []; this.comments.push(c); this.newCommentBody = '';
+                                        }
+                                        this.commentCount++;
+                                    } else if (res.status === 401) { window.location.href = '/login'; }
+                                } catch(e) { console.error(e); }
+                                finally { this.commentSubmitting = false; }
+                            },
+                            async saveEdit(comment) {
+                                if (!this.editBody.trim()) return;
+                                try {
+                                    const res = await fetch('/experience-comments/' + comment.id, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
+                                        body: JSON.stringify({ body: this.editBody })
+                                    });
+                                    if (res.ok) { const d = await res.json(); comment.body = d.body; comment.is_edited = d.is_edited; this.editingId = null; }
+                                } catch(e) { console.error(e); }
+                            },
+                            async deleteComment(comment) {
+                                if (!confirm('Delete this comment?')) return;
+                                try {
+                                    const res = await fetch('/experience-comments/' + comment.id, {
+                                        method: 'DELETE',
+                                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' }
+                                    });
+                                    if (res.ok) {
+                                        if (comment.parent_id) {
+                                            const parent = this.comments.find(c => c.id === comment.parent_id);
+                                            if (parent) parent.replies = parent.replies.filter(r => r.id !== comment.id);
+                                        } else {
+                                            const c = this.comments.find(c => c.id === comment.id);
+                                            if (c) this.commentCount -= 1 + (c.replies?.length ?? 0);
+                                            this.comments = this.comments.filter(c => c.id !== comment.id);
+                                            return;
+                                        }
+                                        this.commentCount--;
+                                    }
+                                } catch(e) { console.error(e); }
+                            },
+                            formatDate(dateStr) {
+                                if (!dateStr) return '';
+                                return new Date(dateStr).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' });
+                            },
+                            typeBadge(type) {
+                                const map = { rental:'bg-blue-100 text-blue-700', purchase:'bg-green-100 text-green-700', general:'bg-slate-100 text-slate-600' };
+                                return map[type] ?? 'bg-slate-100 text-slate-600';
+                            }
+                        }"
                         class="border border-slate-100 rounded-2xl overflow-hidden hover:border-slate-200 hover:shadow-sm transition-all"
                     >
                         {{-- Card body --}}
@@ -579,9 +688,10 @@
 
 
 <script>
+document.addEventListener('alpine:init', () => {
+
 // ── Main FAB component ────────────────────────────────────────────────────
-function experienceFab() {
-    return {
+Alpine.data('experienceFab', () => ({
         open: false,
         tab:  'feed',
 
@@ -612,6 +722,30 @@ function experienceFab() {
 
         init() {
             this.loadFeed();
+            this._cycleFabLabel();
+        },
+
+        _cycleFabLabel() {
+            const label = document.getElementById('fab-label');
+            if (!label) return;
+
+            const show = () => {
+                // Slide up + fade in
+                label.style.opacity   = '1';
+                label.style.transform = 'translateY(0)';
+
+                // After 4s — fade out + slide down
+                setTimeout(() => {
+                    label.style.opacity   = '0';
+                    label.style.transform = 'translateY(6px)';
+
+                    // After 5s wait — show again
+                    setTimeout(show, 5000);
+                }, 4000);
+            };
+
+            // Small initial delay so it doesn't pop instantly on page load
+            setTimeout(show, 1200);
         },
 
         togglePanel() {
@@ -752,174 +886,7 @@ function experienceFab() {
             const map = { rental:'bg-blue-100 text-blue-700', purchase:'bg-green-100 text-green-700', general:'bg-slate-100 text-slate-600' };
             return map[type] ?? 'bg-slate-100 text-slate-600';
         },
-    };
-}
+}));
 
-// ── Per-experience card component (comments) ──────────────────────────────
-function experienceCard(exp) {
-    return {
-        exp,
-
-        // comment state
-        commentsOpen:     false,
-        commentsLoading:  false,
-        comments:         [],
-        commentCount:     0,
-
-        // new top-level comment
-        newCommentBody:   '',
-
-        // reply state
-        replyingToId:     null,
-        replyBody:        '',
-
-        // edit state
-        editingId:        null,
-        editBody:         '',
-
-        commentSubmitting: false,
-
-        initCard() {
-            // Show comment count badge without loading all comments yet
-            this.commentCount = exp.comment_count ?? 0;
-        },
-
-        async toggleComments() {
-            this.commentsOpen = !this.commentsOpen;
-            if (this.commentsOpen && this.comments.length === 0) {
-                await this.loadComments();
-            }
-        },
-
-        async loadComments() {
-            this.commentsLoading = true;
-            try {
-                const res      = await fetch(`/experiences/${this.exp.id}/comments`);
-                this.comments  = await res.json();
-                this.commentCount = this.comments.reduce((sum, c) => sum + 1 + (c.replies?.length ?? 0), 0);
-            } catch (e) {
-                console.error('Comments load error:', e);
-            } finally {
-                this.commentsLoading = false;
-            }
-        },
-
-        startReply(comment) {
-            this.replyingToId = comment.id;
-            this.replyBody    = '';
-            this.editingId    = null;
-        },
-
-        startEdit(comment) {
-            this.editingId    = comment.id;
-            this.editBody     = comment.body;
-            this.replyingToId = null;
-        },
-
-        async postComment(parentId) {
-            const body = parentId ? this.replyBody : this.newCommentBody;
-            if (!body.trim()) return;
-
-            this.commentSubmitting = true;
-            try {
-                const res  = await fetch(`/experiences/${this.exp.id}/comments`, {
-                    method:  'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept':       'application/json',
-                    },
-                    body: JSON.stringify({ body, parent_id: parentId }),
-                });
-
-                if (res.ok) {
-                    const newComment = await res.json();
-                    if (parentId) {
-                        // Add reply under the parent comment
-                        const parent = this.comments.find(c => c.id === parentId);
-                        if (parent) {
-                            if (!parent.replies) parent.replies = [];
-                            parent.replies.push(newComment);
-                        }
-                        this.replyingToId = null;
-                        this.replyBody    = '';
-                    } else {
-                        // Add top-level comment
-                        newComment.replies    = [];
-                        this.comments.push(newComment);
-                        this.newCommentBody   = '';
-                    }
-                    this.commentCount++;
-                } else if (res.status === 401) {
-                    window.location.href = '/login';
-                }
-            } catch (e) {
-                console.error('Post comment error:', e);
-            } finally {
-                this.commentSubmitting = false;
-            }
-        },
-
-        async saveEdit(comment) {
-            if (!this.editBody.trim()) return;
-            try {
-                const res  = await fetch(`/experience-comments/${comment.id}`, {
-                    method:  'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept':       'application/json',
-                    },
-                    body: JSON.stringify({ body: this.editBody }),
-                });
-                if (res.ok) {
-                    const data    = await res.json();
-                    comment.body      = data.body;
-                    comment.is_edited = data.is_edited;
-                    this.editingId    = null;
-                }
-            } catch (e) {
-                console.error('Edit comment error:', e);
-            }
-        },
-
-        async deleteComment(comment) {
-            if (!confirm('Delete this comment?')) return;
-            try {
-                const res = await fetch(`/experience-comments/${comment.id}`, {
-                    method:  'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept':       'application/json',
-                    },
-                });
-                if (res.ok) {
-                    if (comment.parent_id) {
-                        // Remove reply from parent
-                        const parent = this.comments.find(c => c.id === comment.parent_id);
-                        if (parent) parent.replies = parent.replies.filter(r => r.id !== comment.id);
-                    } else {
-                        // Remove top-level comment + its replies from count
-                        const c = this.comments.find(c => c.id === comment.id);
-                        if (c) this.commentCount -= 1 + (c.replies?.length ?? 0);
-                        this.comments = this.comments.filter(c => c.id !== comment.id);
-                        return; // count already updated above
-                    }
-                    this.commentCount--;
-                }
-            } catch (e) {
-                console.error('Delete comment error:', e);
-            }
-        },
-
-        formatDate(dateStr) {
-            if (!dateStr) return '';
-            return new Date(dateStr).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' });
-        },
-        typeBadge(type) {
-            const map = { rental:'bg-blue-100 text-blue-700', purchase:'bg-green-100 text-green-700', general:'bg-slate-100 text-slate-600' };
-            return map[type] ?? 'bg-slate-100 text-slate-600';
-        },
-    };
-}
+}); // end alpine:init
 </script>

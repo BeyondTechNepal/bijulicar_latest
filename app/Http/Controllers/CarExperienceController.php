@@ -23,6 +23,7 @@ class CarExperienceController extends Controller
     {
         $query = CarExperience::approved()
             ->with(['user:id,name,profile_photo', 'car:id,brand,model,year,variant'])
+            ->withCount('comments')
             ->latest('approved_at');
 
         // ── Filters ───────────────────────────────────────────────────

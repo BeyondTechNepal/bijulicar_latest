@@ -26,6 +26,7 @@ use App\Http\Controllers\MapController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CarExperienceController;
+use App\Http\Controllers\ExperienceCommentController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public frontend routes 
@@ -67,6 +68,18 @@ Route::get('/cars/{car}/experiences',   [CarExperienceController::class, 'forCar
 Route::post('/experiences', [CarExperienceController::class, 'store'])
     ->middleware(['auth'])
     ->name('experiences.store');
+
+// ── Experience Comments ────────────────────────────────────────────────
+// Public read — guests can read comments
+Route::get('/experiences/{experience}/comments', [ExperienceCommentController::class, 'index'])
+    ->name('experience.comments.index');
+
+// Auth-required — post, edit, delete
+Route::middleware(['auth'])->group(function () {
+    Route::post('/experiences/{experience}/comments',    [ExperienceCommentController::class, 'store'])  ->name('experience.comments.store');
+    Route::patch('/experience-comments/{comment}',       [ExperienceCommentController::class, 'update']) ->name('experience.comments.update');
+    Route::delete('/experience-comments/{comment}',      [ExperienceCommentController::class, 'destroy'])->name('experience.comments.destroy');
+});
 
 // newsletter
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])

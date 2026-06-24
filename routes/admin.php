@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminBusinessNewsController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCarExperienceController;
+use App\Http\Controllers\ExperienceCommentController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\AdminVerificationController;
@@ -121,6 +122,10 @@ Route::prefix('admin')
                     Route::post('/{carExperience}/reject',             [AdminCarExperienceController::class, 'reject']) ->name('reject');
                     Route::delete('/{carExperience}',                  [AdminCarExperienceController::class, 'destroy'])->name('destroy');
                 });
+
+                // ── Experience comment moderation (admin delete only) ───
+                Route::delete('/experience-comments/{comment}', [ExperienceCommentController::class, 'destroy'])
+                    ->name('experience.comments.admin.destroy');
 
                 // ── Advertisements review ──────────────────────────────
                 Route::prefix('advertisements')->name('advertisements.')->group(function () {

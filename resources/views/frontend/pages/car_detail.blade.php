@@ -433,7 +433,8 @@
                         </section>
                     @endif
 
-                    {{-- ── Car Experiences ──────────────────────────────────── --}}
+                    {{-- ── Car Experiences (only shown when approved linked experiences exist) --}}
+                    @if($experienceCount > 0)
                     <div
                         x-data="carExperiences({{ $car->id }})"
                         x-init="load()"
@@ -544,6 +545,7 @@
                         </div>
 
                     </div>{{-- end x-data carExperiences --}}
+                    @endif
                 </div>
 
 

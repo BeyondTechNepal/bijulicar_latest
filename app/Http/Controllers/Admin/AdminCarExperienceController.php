@@ -10,6 +10,57 @@ use Illuminate\Http\Request;
 class AdminCarExperienceController extends Controller
 {
     /**
+     * Admin posts an experience directly (e.g. sourced from social media).
+     * Goes straight to approved — no moderation queue needed for admin posts.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'author_name'         => ['required', 'string', 'max:100'],
+            'title'               => ['required', 'string', 'max:150'],
+            'trip_context'        => ['nullable', 'string', 'max:150'],
+            'body'                => ['required', 'string', 'min:30', 'max:3000'],
+            'experience_type'     => ['required', 'in:rental,purchase,general'],
+            'linked_to_bijulicar' => ['required', 'boolean'],
+            'car_id'              => ['nullable', 'required_if:linked_to_bijulicar,true', 'exists:cars,id'],
+            'external_car_name'   => ['nullable', 'required_if:linked_to_bijulicar,false', 'string', 'max:100'],
+        ], [
+            'author_name.required'          => 'Please enter the author\'s name.',
+            'car_id.required_if'            => 'Please select a car from BijuliCar.',
+            'external_car_name.required_if' => 'Please enter the car name.',
+            'body.min'                      => 'Experience must be at least 30 characters.',
+        ]);
+
+        $carId           = null;
+        $externalCarName = null;
+
+        if ($request->boolean('linked_to_bijulicar')) {
+            $car             = \App\Models\Car::findOrFail($request->car_id);
+            $carId           = $car->id;
+            $externalCarName = $car->displayName();
+        } else {
+            $externalCarName = $request->external_car_name;
+        }
+
+        CarExperience::create([
+            'user_id'          => auth()->id(),
+            'author_name'      => $request->author_name,
+            'car_id'           => $carId,
+            'external_car_name' => $externalCarName,
+            'title'            => $request->title,
+            'trip_context'     => $request->trip_context,
+            'body'             => $request->body,
+            'experience_type'  => $request->experience_type,
+            'status'           => 'approved',
+            'approved_at'      => now(),
+        ]);
+
+        return redirect()
+            ->route('admin.car_experiences.index')
+            ->with('success', 'Experience posted and published successfully.');
+    }
+
+    /**
      * List all experiences grouped by status —
      * pending first (needs action), then approved and rejected history.
      */

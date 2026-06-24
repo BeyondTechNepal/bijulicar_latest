@@ -275,7 +275,7 @@
                                 <span
                                     class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0"
                                     :class="typeBadge(exp.experience_type)"
-                                    x-text="exp.experience_type"
+                                    x-text="typeLabel(exp.experience_type)"
                                 ></span>
                             </div>
 
@@ -885,6 +885,10 @@ Alpine.data('experienceFab', () => ({
         typeBadge(type) {
             const map = { rental:'bg-blue-100 text-blue-700', purchase:'bg-green-100 text-green-700', general:'bg-slate-100 text-slate-600' };
             return map[type] ?? 'bg-slate-100 text-slate-600';
+        },
+        typeLabel(type) {
+            const map = { rental:'Rental', purchase:'Ride', general:'General' };
+            return map[type] ?? type;
         },
 }));
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CarExperience extends Model
 {
@@ -133,6 +134,12 @@ class CarExperience extends Model
             'rejected' => 'bg-red-100 text-red-700',
             default    => 'bg-slate-100 text-slate-600',
         };
+    }
+
+    /** All comments on this experience. */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(ExperienceComment::class);
     }
 
     // ── Scopes ────────────────────────────────────────────────────────

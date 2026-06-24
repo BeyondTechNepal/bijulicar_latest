@@ -564,6 +564,23 @@ class NotificationService
         );
     }
 
+    // ── Experience Comments ───────────────────────────────────────────
+
+    public function commentReplied(
+        \App\Models\ExperienceComment $reply,
+        \App\Models\ExperienceComment $parent,
+        \App\Models\CarExperience $experience
+    ): void {
+        $replierName = $reply->user->name ?? 'Someone';
+
+        $this->create(
+            userId: $parent->user_id,
+            type:   'comment_reply',
+            title:  $replierName . ' replied to your comment',
+            body:   '"' . \Illuminate\Support\Str::limit($reply->body, 80) . '" — on experience: ' . $experience->title,
+        );
+    }
+
     // ── Internal ──────────────────────────────────────────────────────
 
     private function create(int $userId, string $type, string $title, string $body = '', ?string $url = null): void

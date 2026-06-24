@@ -73,7 +73,7 @@
                     >
                         <option value="general"  {{ old('experience_type') === 'general'  ? 'selected' : '' }}>General</option>
                         <option value="rental"   {{ old('experience_type') === 'rental'   ? 'selected' : '' }}>Rental</option>
-                        <option value="purchase" {{ old('experience_type') === 'purchase' ? 'selected' : '' }}>Purchase</option>
+                        <option value="purchase" {{ old('experience_type') === 'purchase' ? 'selected' : '' }}>Ride</option>
                     </select>
                     @error('experience_type')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

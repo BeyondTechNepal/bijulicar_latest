@@ -83,7 +83,7 @@ class CarExperience extends Model
     {
         return match ($this->experience_type) {
             'rental'   => 'Rental',
-            'purchase' => 'Purchase',
+            'purchase' => 'Ride',
             'general'  => 'General',
             default    => ucfirst($this->experience_type),
         };

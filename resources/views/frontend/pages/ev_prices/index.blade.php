@@ -1,40 +1,82 @@
 @extends('frontend.app')
 
+<title>EV Price List | BijuliCar</title>
+
 @section('content')
 
-    <section class="bg-slate-900 pt-20 pb-10">
-        <div class="max-w-7xl mx-auto px-4 md:px-6">
-            <p class="text-[#4ade80] text-[12px] font-bold uppercase tracking-widest mb-2">Powered by our EV Nepal
-                partnership</p>
-            <h1 class="text-3xl md:text-4xl font-black text-white mb-2">EV Price List</h1>
-            <p class="text-slate-400 text-sm max-w-2xl">Current electric vehicle prices in Nepal, synced regularly from
-                our data partner. Not part of the BijuliCar marketplace listings.</p>
+    {{-- ── Hero + Filter section (styled to match Marketplace) ───────────── --}}
+    <section
+        class="relative pt-32 pb-10 lg:pt-38 lg:pb-8 min-h-60vh flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
+
+        <div class="absolute inset-0 z-0">
+            @if ($listings->isNotEmpty() && $listings->first()->image_url)
+                <img src="{{ $listings->first()->image_url }}"
+                    class="w-full h-full object-cover scale-105 blur-[8px] opacity-20 lg:opacity-20" alt="Background">
+            @endif
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(15,23,42,0.1)_0%,_#0a0f1e_100%)]">
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
+
+            <div class="mb-6 lg:mb-10">
+                <div class="flex items-center gap-3 mb-2 lg:mb-3">
+                    <span class="w-8 lg:w-10 h-[2px] bg-[#4ade80]"></span>
+                    <span class="text-[9px] lg:text-[10px] uppercase tracking-[0.4em] text-[#4ade80] font-bold">
+                        Powered by our EV Nepal partnership
+                    </span>
+                </div>
+                <h1
+                    class="text-[27px] md:text-6xl lg:text-7xl font-black tracking-tighter text-white uppercase italic leading-none whitespace-nowrap">
+                    EV <span class="text-slate-500">Price List</span>
+                </h1>
+                <p class="mt-3 lg:mt-4 text-slate-400 text-xs lg:text-base font-medium max-w-sm lg:max-w-md leading-relaxed">
+                    Current electric vehicle prices in Nepal, synced regularly from our data partner. Not part of the
+                    BijuliCar marketplace listings.
+                </p>
+            </div>
+
+            {{-- Search / filter pill bar --}}
+            <form method="GET" action="{{ route('ev-prices.index') }}">
+                <div
+                    class="bg-white rounded-[2rem] lg:rounded-full p-2 lg:p-2.5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-md">
+                    <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-2 items-center">
+
+                        <div class="w-full relative group">
+                            <div
+                                class="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within:text-[#4ade80] transition-colors z-10">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search brand or model..."
+                                class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 pl-14 pr-8 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/20 transition-all">
+                        </div>
+
+                        <select name="brand"
+                            class="w-full bg-slate-100/80 lg:bg-slate-100/50 border-none rounded-2xl lg:rounded-full py-4 lg:py-6 px-8 text-sm font-black text-slate-900 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 uppercase tracking-tight transition-all">
+                            <option value="">All Brands</option>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand }}" {{ request('brand') === $brand ? 'selected' : '' }}>
+                                    {{ $brand }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <button type="submit"
+                            class="w-full md:w-auto px-10 py-4 lg:py-6 rounded-2xl lg:rounded-full bg-[#4ade80] text-black text-sm font-black uppercase tracking-tight hover:bg-[#22c55e] transition-colors">
+                            Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+
         </div>
     </section>
 
     <section class="bg-slate-50 py-10">
         <div class="max-w-7xl mx-auto px-4 md:px-6">
 
-            {{-- Filters --}}
-            <form method="GET" class="flex flex-wrap gap-3 mb-8">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search brand or model..."
-                    class="flex-1 min-w-[200px] px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300 focus:border-green-400" />
-
-                <select name="brand"
-                    class="px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300">
-                    <option value="">All Brands</option>
-                    @foreach ($brands as $brand)
-                        <option value="{{ $brand }}" {{ request('brand') === $brand ? 'selected' : '' }}>{{ $brand }}</option>
-                    @endforeach
-                </select>
-
-                <button type="submit"
-                    class="px-5 py-2.5 text-sm font-bold rounded-xl bg-[#4ade80] text-black hover:bg-[#22c55e] transition-colors">
-                    Filter
-                </button>
-            </form>
-
-            {{-- Grid --}}
             @if ($listings->isEmpty())
                 <div class="text-center py-20 text-slate-400">
                     <p>No EV listings found yet. Run the sync command to pull the latest prices.</p>

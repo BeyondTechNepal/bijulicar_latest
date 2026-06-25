@@ -22,7 +22,21 @@ class EvListingController extends Controller
             });
         }
 
-        $listings = $query->orderBy('brand')->orderBy('model')->paginate(12)->withQueryString();
+        if ($minPrice = $request->get('min_price')) {
+            $query->where('price', '>=', (int) $minPrice);
+        }
+
+        if ($maxPrice = $request->get('max_price')) {
+            $query->where('price', '<=', (int) $maxPrice);
+        }
+
+        match ($request->get('sort', 'newest')) {
+            'price_asc'  => $query->orderBy('price', 'asc'),
+            'price_desc' => $query->orderBy('price', 'desc'),
+            default      => $query->orderByDesc('created_at'),
+        };
+
+        $listings = $query->paginate(12)->withQueryString();
 
         $brands = EvListing::query()->select('brand')->distinct()->orderBy('brand')->pluck('brand');
 

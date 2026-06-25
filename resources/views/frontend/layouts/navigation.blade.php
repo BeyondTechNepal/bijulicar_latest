@@ -43,6 +43,10 @@
                     class="px-2 xl:px-3 py-2 rounded-xl text-[12px] xl:text-[14px] font-bold {{ Route::is('businesses.*') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">
                     Businesses
                 </a>
+                <a href="{{ route('ev-prices.index') }}"
+                    class="px-2 xl:px-3 py-2 rounded-xl text-[12px] xl:text-[14px] font-bold {{ Route::is('ev-prices.*') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">
+                    EV Prices
+                </a>
                 <a href="{{ route('map_location') }}"
                     class="px-2 xl:px-3 py-2 rounded-xl text-[12px] xl:text-[14px] font-bold {{ Route::is('map_location') ? 'text-green-600 bg-green-50' : 'text-slate-800 hover:bg-slate-50' }}">
                     Map Search
@@ -358,6 +362,12 @@
                         <span class="font-bold">Businesses</span>
                         <span class="text-lg"><i class="fa-solid fa-user-tie"
                                 style="color: rgb(55, 225, 175);"></i></span>
+                    </a>
+
+                    <a href="{{ route('ev-prices.index') }}"
+                        class="flex items-center justify-between p-4 rounded-2xl {{ Route::is('ev-prices.*') ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-700' }}">
+                        <span class="font-bold">EV Prices</span>
+                        <span class="text-lg"><i class="fa-solid fa-bolt" style="color: rgb(55, 225, 175);"></i></span>
                     </a>
 
                     <a href="{{ route('map_location') }}"

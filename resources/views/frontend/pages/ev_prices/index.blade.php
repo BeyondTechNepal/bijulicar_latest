@@ -39,9 +39,9 @@
             {{-- Search / filter card --}}
             <form method="GET" action="{{ route('ev-prices.index') }}">
                 <div
-                    class="bg-white rounded-3xl p-4 lg:p-5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-md space-y-3">
+                    class="bg-white rounded-3xl p-4 lg:p-5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-md">
 
-                    <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-3 items-stretch">
+                    <div class="grid grid-cols-1 md:grid-cols-[1.6fr_0.9fr_0.7fr_0.7fr_auto] gap-3 items-stretch">
 
                         <div class="w-full relative group">
                             <div
@@ -64,24 +64,22 @@
                             @endforeach
                         </select>
 
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400">Rs.</span>
+                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min"
+                                class="w-full h-full bg-slate-100/70 border-none rounded-2xl py-4 pl-10 pr-3 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/30 transition-all">
+                        </div>
+
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400">Rs.</span>
+                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max"
+                                class="w-full h-full bg-slate-100/70 border-none rounded-2xl py-4 pl-10 pr-3 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/30 transition-all">
+                        </div>
+
                         <button type="submit"
                             class="w-full md:w-auto px-8 py-4 rounded-2xl bg-[#4ade80] text-black text-sm font-black uppercase tracking-tight hover:bg-[#22c55e] transition-colors whitespace-nowrap">
                             Filter
                         </button>
-                    </div>
-
-                    {{-- Price range row --}}
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-5 flex items-center text-sm font-bold text-slate-400">Rs.</span>
-                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min price"
-                                class="w-full bg-slate-100/70 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/30 transition-all">
-                        </div>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-5 flex items-center text-sm font-bold text-slate-400">Rs.</span>
-                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max price"
-                                class="w-full bg-slate-100/70 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold placeholder:text-slate-400 text-slate-900 focus:ring-2 focus:ring-[#4ade80]/30 transition-all">
-                        </div>
                     </div>
                 </div>
             </form>
@@ -101,7 +99,7 @@
                     <span class="text-[10px] font-bold text-slate-400 uppercase italic">Sort:</span>
                     @php
                         $sortLinks = [
-                            
+                        
                             'price_asc'  => 'Price ↑',
                             'price_desc' => 'Price ↓',
                         ];

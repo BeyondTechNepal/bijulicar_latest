@@ -27,13 +27,6 @@
                     <p class="text-[#4ade80] text-[12px] font-bold uppercase tracking-widest mb-2">{{ $listing->brand }}</p>
                     <h1 class="text-3xl md:text-4xl font-black text-white mb-4">{{ $listing->model }} {{ $listing->variant }}</h1>
                     <p class="text-3xl font-black text-[#4ade80] mb-6">{{ $listing->formattedPrice() }}</p>
-
-                    @if ($listing->source_url)
-                        <a href="{{ $listing->source_url }}" target="_blank" rel="noopener"
-                            class="text-[12px] text-slate-400 hover:text-slate-200 underline">
-                            View original listing on EV Nepal ↗
-                        </a>
-                    @endif
                 </div>
             </div>
         </div>

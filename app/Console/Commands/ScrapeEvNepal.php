@@ -70,6 +70,8 @@ class ScrapeEvNepal extends Command
         }
 
         foreach ($variants as $car) {
+            $slugForVariant = $this->uniqueSlug($car['brand'], $car['model'], $car['variant'] ?? '');
+
             EvListing::updateOrCreate(
                 [
                     'brand'   => $car['brand'],
@@ -77,7 +79,7 @@ class ScrapeEvNepal extends Command
                     'variant' => $car['variant'] ?: null,
                 ],
                 [
-                    'slug'                => Str::slug("{$car['brand']}-{$car['model']}-{$car['variant']}"),
+                    'slug'                => $slugForVariant,
                     'price'               => $car['price'] ?? null,
                     'battery_kwh'         => $car['battery_kwh'] ?? null,
                     'motor_kw'            => $car['motor_kw'] ?? null,
@@ -123,6 +125,35 @@ class ScrapeEvNepal extends Command
         if (!isset($matches[1])) return [];
 
         return json_decode($matches[1], true) ?? [];
+    }
+
+    /**
+     * Build a slug, and if it collides with a DIFFERENT car (e.g. "E2" and
+     * "E2+" both strip down to "e2"), append -2, -3, etc. until it's unique.
+     * If the colliding row is itself the same brand+model+variant we're
+     * about to update, that's fine — just reuse its existing slug.
+     */
+    protected function uniqueSlug(string $brand, string $model, string $variant): string
+    {
+        $base = Str::slug("{$brand}-{$model}-{$variant}");
+        $slug = $base;
+        $i = 2;
+
+        while (true) {
+            $existing = EvListing::where('slug', $slug)->first();
+
+            if (!$existing) {
+                return $slug;
+            }
+
+            // Same logical car (matched by brand/model/variant) — keep its slug.
+            if ($existing->brand === $brand && $existing->model === $model && $existing->variant === ($variant ?: null)) {
+                return $slug;
+            }
+
+            $slug = "{$base}-{$i}";
+            $i++;
+        }
     }
 
     protected function numeric(?string $raw): ?int

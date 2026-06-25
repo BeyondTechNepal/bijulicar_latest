@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EvListingController;
 use App\Http\Controllers\Buyer\BuyerOrderController;
 use App\Http\Controllers\Buyer\BuyerPreOrderController;
 use App\Http\Controllers\Buyer\BuyerPurchaseController;
@@ -63,6 +64,11 @@ Route::get('/experiences',              [CarExperienceController::class, 'index'
 Route::get('/experiences/cars/all',     [CarExperienceController::class, 'allCars'])->name('experiences.cars.all');
 Route::get('/experiences/cars',         [CarExperienceController::class, 'carSearch'])->name('experiences.cars');
 Route::get('/cars/{car}/experiences',   [CarExperienceController::class, 'forCar'])->name('experiences.for_car');
+
+// EV Price List — standalone page, separate from the marketplace.
+// Data here comes from the EV Nepal partner feed (see ScrapeEvNepal command).
+Route::get('/ev-prices', [EvListingController::class, 'index'])->name('ev-prices.index');
+Route::get('/ev-prices/{evListing}', [EvListingController::class, 'show'])->name('ev-prices.show');
 
 // Auth-required: submit a new experience (any logged-in user, no role restriction)
 Route::post('/experiences', [CarExperienceController::class, 'store'])

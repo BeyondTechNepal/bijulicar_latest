@@ -16,10 +16,10 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                <div class="rounded-2xl overflow-hidden bg-slate-800 aspect-[4/3]">
+                <div class="rounded-2xl overflow-hidden bg-slate-800 aspect-[4/3] p-6">
                     @if ($listing->image_url)
                         <img src="{{ $listing->image_url }}" alt="{{ $listing->displayName() }}"
-                            class="w-full h-full object-cover" />
+                            class="w-full h-full object-contain" />
                     @endif
                 </div>
 
@@ -45,6 +45,7 @@
                             'Range'            => $listing->range_km ? "{$listing->range_km} km ({$listing->range_test_standard})" : null,
                             'Drive Type'       => $listing->drivetrain,
                             'Seating Capacity' => $listing->seating_capacity ? "{$listing->seating_capacity} People" : null,
+                            'Total Airbags'    => $listing->total_airbags ?: null,
                             'Ground Clearance' => $listing->ground_clearance_mm ? "{$listing->ground_clearance_mm} mm" : null,
                             'Boot Space'       => $listing->boot_space_litres ? "{$listing->boot_space_litres} L" : null,
                             'Charging Time'    => $listing->charging_time,
@@ -63,15 +64,40 @@
                 </div>
             </div>
 
+            @if ($listing->about_text)
+                <div class="bg-white rounded-2xl border border-slate-100 p-6 mb-8">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">About {{ $listing->displayName() }}</h2>
+                    <div class="text-sm text-slate-600 leading-relaxed space-y-3">
+                        @foreach (explode("\n\n", $listing->about_text) as $paragraph)
+                            <p>{{ $paragraph }}</p>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if (!empty($listing->key_features))
+                <div class="bg-white rounded-2xl border border-slate-100 p-6 mb-8">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">Key Features</h2>
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @foreach ($listing->key_features as $feature)
+                            <li class="flex items-start gap-2 text-sm text-slate-700">
+                                <i class="fa-solid fa-check text-[#22c55e] text-xs mt-1"></i>
+                                <span>{{ $feature }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @if ($similar->isNotEmpty())
                 <h2 class="text-xl font-bold text-slate-900 mb-5">More from {{ $listing->brand }}</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     @foreach ($similar as $car)
                         <a href="{{ route('ev-prices.show', $car) }}"
                             class="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div class="aspect-[4/3] bg-slate-100">
+                            <div class="aspect-[4/3] bg-slate-100 p-3">
                                 @if ($car->image_url)
-                                    <img src="{{ $car->image_url }}" class="w-full h-full object-cover" />
+                                    <img src="{{ $car->image_url }}" class="w-full h-full object-contain" />
                                 @endif
                             </div>
                             <div class="p-3">

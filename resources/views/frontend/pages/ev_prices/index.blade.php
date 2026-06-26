@@ -99,11 +99,10 @@
                     <span class="text-[10px] font-bold text-slate-400 uppercase italic">Sort:</span>
                     @php
                         $sortLinks = [
-                        
                             'price_asc'  => 'Price ↑',
                             'price_desc' => 'Price ↓',
                         ];
-                        $currentSort = request('sort', 'newest');
+                        $currentSort = request('sort');
                     @endphp
                     @foreach ($sortLinks as $value => $label)
                         <a href="{{ request()->fullUrlWithQuery(['sort' => $value, 'page' => null]) }}"
@@ -123,10 +122,10 @@
                     @foreach ($listings as $car)
                         <a href="{{ route('ev-prices.show', $car) }}"
                             class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                            <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
+                            <div class="aspect-[4/3] bg-slate-100 overflow-hidden p-4">
                                 @if ($car->image_url)
                                     <img src="{{ $car->image_url }}" alt="{{ $car->displayName() }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                        class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                                 @else
                                     <div class="w-full h-full flex items-center justify-center text-slate-300">
                                         <i class="fa-solid fa-car-side text-4xl"></i>

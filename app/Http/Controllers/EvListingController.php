@@ -30,10 +30,10 @@ class EvListingController extends Controller
             $query->where('price', '<=', (int) $maxPrice);
         }
 
-        match ($request->get('sort', 'newest')) {
+        match ($request->get('sort')) {
             'price_asc'  => $query->orderBy('price', 'asc'),
             'price_desc' => $query->orderBy('price', 'desc'),
-            default      => $query->orderByDesc('created_at'),
+            default      => $query->orderBy('brand')->orderBy('model'),
         };
 
         $listings = $query->paginate(12)->withQueryString();

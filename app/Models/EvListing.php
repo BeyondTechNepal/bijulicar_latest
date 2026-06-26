@@ -10,7 +10,8 @@ class EvListing extends Model
         'brand', 'model', 'variant', 'slug',
         'price', 'battery_kwh', 'motor_kw', 'range_km', 'range_test_standard',
         'drivetrain', 'seating_capacity', 'ground_clearance_mm', 'boot_space_litres',
-        'charging_time', 'safety_rating', 'dimensions',
+        'charging_time', 'safety_rating', 'total_airbags', 'dimensions',
+        'about_text', 'key_features',
         'image_url', 'gallery_urls',
         'source_url', 'last_synced_at',
     ];
@@ -19,6 +20,7 @@ class EvListing extends Model
     {
         return [
             'gallery_urls'   => 'array',
+            'key_features'   => 'array',
             'last_synced_at' => 'datetime',
             'battery_kwh'    => 'float',
         ];

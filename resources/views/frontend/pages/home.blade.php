@@ -1049,8 +1049,7 @@
                             </div>
                             <h3 class="text-2xl font-bold text-slate-900 mb-4 tracking-tight">EV Price List</h3>
                             <p class="text-slate-500 text-sm leading-relaxed font-medium">
-                                Current electric vehicle prices in Nepal, synced regularly from our EV Nepal partner
-                                feed — batteries, range, specs, and pricing in one place.
+                                Current electric vehicle prices in Nepal, and infos on — batteries, range, specs, and pricing in one place.
                             </p>
                         </div>
                         <div class="mt-10 flex items-center justify-between border-t border-slate-200 pt-8">

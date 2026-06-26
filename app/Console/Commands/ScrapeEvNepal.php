@@ -63,6 +63,8 @@ class ScrapeEvNepal extends Command
 
         $variants = $this->extractVariants($html);
         $enriched = $this->extractEnrichedSpecs($html);
+        $aboutText = $this->extractAbout($html);
+        $keyFeatures = $this->extractKeyFeatures($html);
 
         if (empty($variants)) {
             $this->warn('  -> no variant data found, skipping');
@@ -91,7 +93,10 @@ class ScrapeEvNepal extends Command
                     'boot_space_litres'   => $this->numeric($enriched['Boot Space'] ?? null),
                     'charging_time'       => $car['charging_time'] ?? null,
                     'safety_rating'       => $enriched['Safety Rating'] ?? null,
+                    'total_airbags'       => $this->numeric($enriched['Total Airbags'] ?? null),
                     'dimensions'          => $enriched['Dimensions'] ?? null,
+                    'about_text'          => $aboutText,
+                    'key_features'        => $keyFeatures,
                     'image_url'           => $car['image'] ?? null,
                     'source_url'          => $url,
                     'last_synced_at'      => now(),
@@ -125,6 +130,42 @@ class ScrapeEvNepal extends Command
         if (!isset($matches[1])) return [];
 
         return json_decode($matches[1], true) ?? [];
+    }
+
+    /**
+     * The "About {Brand} {Model}" section renders as two <p> tags with a
+     * shared "leading-7 ..." className. We don't need a full DOM parse for
+     * this — just grab every paragraph using that className signature and
+     * join them, in document order.
+     */
+    protected function extractAbout(string $html): ?string
+    {
+        preg_match_all('/"leading-7[^"]*","children":"((?:[^"\\\\]|\\\\.)*?)"/s', $html, $matches);
+
+        if (empty($matches[1])) return null;
+
+        $paragraphs = array_map(fn($p) => stripslashes($p), $matches[1]);
+
+        return implode("\n\n", $paragraphs);
+    }
+
+    /**
+     * "Key features" renders as a <ul> of <li> items right after a
+     * "Key features" heading. We bound our search to the text between that
+     * heading and the next one ("FAQs") so we don't accidentally pick up
+     * unrelated <li> elements elsewhere on the page (e.g. similar-cars list).
+     */
+    protected function extractKeyFeatures(string $html): array
+    {
+        $start = strpos($html, '"children":"Key features"');
+        if ($start === false) return [];
+
+        $end = strpos($html, '"children":"FAQs"', $start);
+        $block = $end !== false ? substr($html, $start, $end - $start) : substr($html, $start, 5000);
+
+        preg_match_all('/"li","\d+",\{"children":"((?:[^"\\\\]|\\\\.)*?)"/s', $block, $matches);
+
+        return array_map(fn($f) => stripslashes($f), $matches[1]);
     }
 
     /**

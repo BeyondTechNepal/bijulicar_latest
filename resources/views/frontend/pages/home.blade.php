@@ -1020,6 +1020,82 @@
             </div>
         </section>
 
+              {{-- ══════════════════════════════════════════════════════════
+         MORE FROM BIJULICAR  (EV Price List + Share Your Experience)
+    ══════════════════════════════════════════════════════════════ --}}
+        <section class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-6">
+
+                <div class="mb-16">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="h-[2px] w-8 bg-[#4ade80]"></span>
+                        <span class="text-xs font-bold tracking-[0.3em] uppercase text-slate-400">Beyond the
+                            Marketplace</span>
+                    </div>
+                    <h2 class="text-5xl md:text-6xl font-black tracking-tighter text-slate-900 uppercase italic">
+                        More from <span class="text-[#4ade80]">BijuliCar</span>
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    {{-- EV Price List --}}
+                    <a href="{{ route('ev-prices.index') }}"
+                        class="group relative bg-slate-50 rounded-[2.5rem] p-10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col justify-between h-full overflow-hidden">
+                        <div>
+                            <div
+                                class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#4ade80]/10 transition-colors">
+                                <i class="fa-solid fa-bolt text-xl text-slate-900 group-hover:text-[#4ade80] transition-colors"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4 tracking-tight">EV Price List</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                                Current electric vehicle prices in Nepal, synced regularly from our EV Nepal partner
+                                feed — batteries, range, specs, and pricing in one place.
+                            </p>
+                        </div>
+                        <div class="mt-10 flex items-center justify-between border-t border-slate-200 pt-8">
+                            <span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Browse Prices</span>
+                            <div
+                                class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white transform group-hover:scale-110 group-hover:bg-[#16a34a] transition-all duration-300">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    {{-- Share Your Experience --}}
+                    <a href="{{ route('marketplace') }}#share-experience"
+                        class="group relative bg-slate-50 rounded-[2.5rem] p-10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.12)] transition-all duration-500 border border-transparent hover:border-slate-100 flex flex-col justify-between h-full overflow-hidden">
+                        <div>
+                            <div
+                                class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#4ade80]/10 transition-colors">
+                                <i class="fa-solid fa-comment-dots text-xl text-slate-900 group-hover:text-[#4ade80] transition-colors"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4 tracking-tight">Share Your Experience</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                                Real stories from real drivers. Share your ride, rental, or general car experience —
+                                or browse what others have to say before you decide.
+                            </p>
+                        </div>
+                        <div class="mt-10 flex items-center justify-between border-t border-slate-200 pt-8">
+                            <span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Read & Share
+                                Stories</span>
+                            <div
+                                class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white transform group-hover:scale-110 group-hover:bg-[#16a34a] transition-all duration-300">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+
         {{-- ══════════════════════════════════════════════════════════
          FINAL CTA
     ══════════════════════════════════════════════════════════════ --}}

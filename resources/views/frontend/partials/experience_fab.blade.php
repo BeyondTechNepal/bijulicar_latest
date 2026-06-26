@@ -751,6 +751,14 @@ Alpine.data('experienceFab', () => ({
         init() {
             this.loadFeed();
             this._cycleFabLabel();
+
+            // Allow other pages to link directly into the Share tab,
+            // e.g. <a href="{{ route('marketplace') }}#share-experience">
+            if (window.location.hash === '#share-experience') {
+                this.tab = 'share';
+                this.open = true;
+                document.body.style.overflow = 'hidden';
+            }
         },
 
         _cycleFabLabel() {

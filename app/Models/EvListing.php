@@ -42,4 +42,23 @@ class EvListing extends Model
     {
         return $this->price ? 'Rs. ' . number_format($this->price) : 'Price on request';
     }
+
+    /**
+     * How many used units of THIS car are currently for sale on our own
+     * marketplace — matched by brand + model, case-insensitively (EV Nepal
+     * and our marketplace sellers don't always type casing the same way).
+     */
+    public function usedMarketplaceListings()
+    {
+        return Car::query()
+            ->where('condition', 'used')
+            ->where('status', 'available')
+            ->whereRaw('LOWER(brand) = ?', [strtolower($this->brand)])
+            ->whereRaw('LOWER(model) LIKE ?', ['%' . strtolower($this->model) . '%']);
+    }
+
+    public function usedListingsCount(): int
+    {
+        return $this->usedMarketplaceListings()->count();
+    }
 }

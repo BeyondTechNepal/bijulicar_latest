@@ -116,6 +116,7 @@ class MarketplaceController extends Controller
             $query->where('location', 'like', '%' . $request->location . '%');
         }
         if ($request->filled('seller_id'))  { $query->where('seller_id', $request->seller_id); }
+        if ($request->filled('condition') && $request->condition !== 'all') { $query->where('condition', $request->condition); }
         if ($request->filled('brand'))      { $query->where('brand', 'like', '%' . $request->brand . '%'); }
         if ($request->filled('model_name')) { $query->where('model', 'like', '%' . $request->model_name . '%'); }
         if ($request->filled('year_from'))  { $query->where('year', '>=', $request->year_from); }

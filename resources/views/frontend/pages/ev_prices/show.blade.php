@@ -27,6 +27,25 @@
                     <p class="text-[#4ade80] text-[12px] font-bold uppercase tracking-widest mb-2">{{ $listing->brand }}</p>
                     <h1 class="text-3xl md:text-4xl font-black text-white mb-4">{{ $listing->model }} {{ $listing->variant }}</h1>
                     <p class="text-3xl font-black text-[#4ade80] mb-6">{{ $listing->formattedPrice() }}</p>
+
+                    @php $usedCount = $listing->usedListingsCount(); @endphp
+                    @if ($usedCount > 0)
+                        <a href="{{ route('marketplace', ['condition' => 'used', 'brand' => $listing->brand, 'model_name' => $listing->model, 'only_available' => 1]) }}"
+                            class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors mb-4">
+                            <i class="fa-solid fa-tag text-[#4ade80]"></i>
+                            {{ $usedCount }} used {{ Str::plural('unit', $usedCount) }} on sale on BijuliCar
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </a>
+                    @endif
+
+                    @if ($listing->source_url)
+                        <a href="{{ $listing->source_url }}" target="_blank" rel="noopener"
+                            class="text-[12px] text-slate-400 hover:text-slate-200 underline">
+                            View original listing on EV Nepal ↗
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

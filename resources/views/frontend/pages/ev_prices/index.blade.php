@@ -122,7 +122,14 @@
                     @foreach ($listings as $car)
                         <a href="{{ route('ev-prices.show', $car) }}"
                             class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                            <div class="aspect-[4/3] bg-slate-100 overflow-hidden p-4">
+                            <div class="aspect-[4/3] bg-slate-100 overflow-hidden p-4 relative">
+                                @php $usedCount = $car->usedListingsCount(); @endphp
+                                @if ($usedCount > 0)
+                                    <span
+                                        class="absolute top-3 right-3 z-10 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                                        {{ $usedCount }} used on sale
+                                    </span>
+                                @endif
                                 @if ($car->image_url)
                                     <img src="{{ $car->image_url }}" alt="{{ $car->displayName() }}"
                                         class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />

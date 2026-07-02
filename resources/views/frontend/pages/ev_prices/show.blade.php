@@ -39,14 +39,6 @@
                             </svg>
                         </a>
                     @endif
-
-                    @if ($listing->source_url)
-                        <a href="{{ $listing->source_url }}" target="_blank" rel="noopener"
-                            class="text-[12px] text-slate-400 hover:text-slate-200 underline">
-                            View original listing on EV Nepal ↗
-                        </a>
-                    @endif
-                </div>
             </div>
         </div>
     </section>
@@ -120,7 +112,7 @@
                                 @endif
                             </div>
                             <div class="p-3">
-                                <p class="text-sm font-bold text-slate-900">{{ $car->model }}</p>
+                                <p class="text-sm font-bold text-slate-900">{{ $car->model }} {{ $car->variant }}</p>
                                 <p class="text-xs text-slate-500">{{ $car->formattedPrice() }}</p>
                             </div>
                         </a>

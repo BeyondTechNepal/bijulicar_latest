@@ -9,8 +9,8 @@
         class="relative pt-32 pb-10 lg:pt-38 lg:pb-8 min-h-60vh flex flex-col justify-end overflow-hidden bg-[#0a0f1e] text-white">
 
         <div class="absolute inset-0 z-0">
-            @if ($listings->isNotEmpty() && $listings->first()->image_url)
-                <img src="{{ $listings->first()->image_url }}"
+            @if ($listings->isNotEmpty() && $listings->first()->variants->first()->image_url)
+                <img src="{{ $listings->first()->variants->first()->image_url }}"
                     class="w-full h-full object-cover scale-105 blur-[8px] opacity-20 lg:opacity-20" alt="Background">
             @endif
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(15,23,42,0.1)_0%,_#0a0f1e_100%)]">
@@ -119,37 +119,69 @@
                 </div>
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($listings as $car)
-                        <a href="{{ route('ev-prices.show', $car) }}"
-                            class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                    @foreach ($listings as $group)
+                        @php
+                            $variants = $group->variants;
+                            $firstVariant = $variants->first();
+                            $usedCount = $firstVariant->usedListingsCount();
+                            $variantData = $variants->map(fn ($v) => [
+                                'slug'    => $v->slug,
+                                'label'   => $v->variant ?: 'Standard',
+                                'price'   => $v->formattedPrice(),
+                                'battery' => $v->battery_kwh,
+                                'range'   => $v->range_km,
+                                'image'   => $v->image_url,
+                                'url'     => route('ev-prices.show', $v),
+                            ])->values();
+                        @endphp
+                        <a href="{{ $variantData->first()['url'] }}"
+                            x-data="{ variants: {{ Illuminate\Support\Js::from($variantData) }}, active: 0 }"
+                            :href="variants[active].url"
+                            class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group block">
                             <div class="aspect-[4/3] bg-slate-100 overflow-hidden p-4 relative">
-                                @php $usedCount = $car->usedListingsCount(); @endphp
                                 @if ($usedCount > 0)
                                     <span
                                         class="absolute top-3 right-3 z-10 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
                                         {{ $usedCount }} used on sale
                                     </span>
                                 @endif
-                                @if ($car->image_url)
-                                    <img src="{{ $car->image_url }}" alt="{{ $car->displayName() }}"
+                                <div x-show="!variants[active].image"
+                                    class="w-full h-full flex items-center justify-center text-slate-300">
+                                    <i class="fa-solid fa-car-side text-4xl"></i>
+                                </div>
+                                <template x-for="(v, i) in variants" :key="v.slug">
+                                    <img x-show="active === i && v.image" :src="v.image" :alt="v.label"
                                         class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
-                                        <i class="fa-solid fa-car-side text-4xl"></i>
-                                    </div>
-                                @endif
+                                </template>
                             </div>
                             <div class="p-4">
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-[#22c55e] mb-1">{{ $car->brand }}</p>
-                                <h3 class="font-bold text-slate-900 mb-1">{{ $car->model }} {{ $car->variant }}</h3>
-                                <p class="text-lg font-black text-slate-900 mb-2">{{ $car->formattedPrice() }}</p>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-[#22c55e] mb-1">{{ $group->brand }}</p>
+                                <h3 class="font-bold text-slate-900 mb-2">{{ $group->model }}</h3>
+
+                                @if ($variants->count() > 1)
+                                    <div class="flex flex-wrap gap-2 mb-3" role="group" aria-label="Select variant">
+                                        <template x-for="(v, i) in variants" :key="v.slug">
+                                            <button type="button" @click.stop.prevent="active = i"
+                                                :class="active === i
+                                                    ? 'border-[#22c55e] text-[#16a34a] bg-[#22c55e]/10'
+                                                    : 'border-slate-200 text-slate-500 hover:border-slate-300'"
+                                                class="px-3 py-1.5 rounded-xl border text-xs font-bold transition-colors"
+                                                x-text="v.label"></button>
+                                        </template>
+                                    </div>
+                                @endif
+
+                                <p class="text-lg font-black text-slate-900 mb-2" x-text="variants[active].price"></p>
+
                                 <div class="flex items-center gap-3 text-[12px] text-slate-500">
-                                    @if ($car->battery_kwh)
-                                        <span><i class="fa-solid fa-battery-three-quarters mr-1"></i>{{ $car->battery_kwh }} kWh</span>
-                                    @endif
-                                    @if ($car->range_km)
-                                        <span><i class="fa-solid fa-road mr-1"></i>{{ $car->range_km }} km</span>
-                                    @endif
+                                    <span x-show="variants[active].battery">
+                                        <i class="fa-solid fa-battery-three-quarters mr-1"></i>
+                                        <span x-text="variants[active].battery"></span> kWh
+                                    </span>
+                                    <span x-show="variants[active].range">
+                                        <i class="fa-solid fa-road mr-1"></i>
+                                        <span x-text="variants[active].range"></span> km
+                                    </span>
                                 </div>
                             </div>
                         </a>

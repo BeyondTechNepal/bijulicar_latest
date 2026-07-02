@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EvListing;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class EvListingController extends Controller
 {
@@ -30,13 +31,41 @@ class EvListingController extends Controller
             $query->where('price', '<=', (int) $maxPrice);
         }
 
-        match ($request->get('sort')) {
-            'price_asc'  => $query->orderBy('price', 'asc'),
-            'price_desc' => $query->orderBy('price', 'desc'),
-            default      => $query->orderBy('brand')->orderBy('model'),
+        // Pull every matching variant row, then fold them into one
+        // "card" per brand+model so Dynamic/Premium/etc. become
+        // toggleable variants on a single card instead of separate cards.
+        $all = $query->orderBy('brand')->orderBy('model')->orderBy('price')->get();
+
+        $groups = $all
+            ->groupBy(fn ($ev) => $ev->brand . '|' . $ev->model)
+            ->map(function ($variants) {
+                return (object) [
+                    'brand'     => $variants->first()->brand,
+                    'model'     => $variants->first()->model,
+                    'variants'  => $variants->values(),
+                    'min_price' => $variants->min('price'),
+                ];
+            })
+            ->values();
+
+        $groups = match ($request->get('sort')) {
+            'price_asc'  => $groups->sortBy('min_price')->values(),
+            'price_desc' => $groups->sortByDesc('min_price')->values(),
+            default      => $groups->sortBy(fn ($g) => $g->brand . $g->model)->values(),
         };
 
-        $listings = $query->paginate(12)->withQueryString();
+        // Manually paginate the grouped collection (12 distinct
+        // cars per page), preserving the current query string.
+        $perPage = 12;
+        $page = LengthAwarePaginator::resolveCurrentPage();
+
+        $listings = new LengthAwarePaginator(
+            $groups->forPage($page, $perPage)->values(),
+            $groups->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         $brands = EvListing::query()->select('brand')->distinct()->orderBy('brand')->pluck('brand');
 
